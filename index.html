@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Silsilah Interaktif Trah Tirtowiyanan</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+          },
+          colors: {
+            batik: {
+              cream: '#FAF8F5',
+              sand: '#F3EFEA',
+              gold: '#B45309',
+              goldLight: '#FEF3C7',
+              indigo: '#1E3A5F',
+              indigoDark: '#132640',
+              teak: '#292524',
+              sage: '#15803D',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #FAF8F5;
+      color: #1C1917;
+      overscroll-behavior: none;
+    }
+    .heritage-bg {
+      background-color: #FAF8F5;
+      background-image: radial-gradient(#D6CFC7 0.75px, transparent 0.75px);
+      background-size: 20px 20px;
+    }
+    .tree-viewport {
+      touch-action: none;
+      cursor: grab;
+      user-select: none;
+    }
+    .tree-viewport:active {
+      cursor: grabbing;
+    }
+    .tree-canvas-layer {
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    .node-card {
+      contain: layout style paint;
+      transition: box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
+    }
+    .node-card:hover {
+      transform: translateY(-2px);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F3EFEA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C7BEB5;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A89F95;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+  </style>
+</head>
+<body class="h-screen h-[100dvh] overflow-hidden flex flex-col font-sans antialiased selection:bg-amber-200 selection:text-stone-900">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-sm no-print">
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-6 pt-2.5 pb-2">
+      <div class="flex flex-wrap items-center justify-between gap-2.5">
+        
+        <!-- Brand & Heritage Emblem -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-batik-indigo to-batik-indigoDark text-amber-300 flex items-center justify-center shadow-sm border border-amber-400/30 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-14c-3.5 0-6 2-6 5m6-5c3.5 0 6 2 6 5m-6 4c-4.5 0-8 2-8 5m8-5c4.5 0 8 2 8 5" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-serif font-bold text-base sm:text-lg text-batik-indigo leading-tight">
+                Trah Tirtowiyanan
+              </h1>
+              <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="syncStatusText">Siap &amp; Tersimpan</span>
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-stone-500 hidden sm:block">
+              Eyang Kakung Suprapto Tirtowiyono &amp; Eyang Putri Sumiyati &bull; Silsilah Digital Publik
+            </p>
+          </div>
+        </div>
+
+        <!-- Global Search Bar -->
+        <div class="relative flex-1 max-w-md order-3 lg:order-2 w-full lg:w-auto">
+          <div class="relative">
+            <svg class="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
+            </svg>
+            <input
+              id="globalSearchInput"
+              type="text"
+              placeholder="Cari nama anggota, pasangan, kelompok, atau kota..."
+              class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-stone-100/80 hover:bg-stone-100 focus:bg-white border border-stone-200 focus:border-batik-indigo rounded-xl outline-none transition"
+              autocomplete="off"
+            />
+            <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-0.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <!-- Live Search Dropdown -->
+          <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 mt-1.5 bg-white rounded-2xl shadow-xl border border-stone-200 max-h-80 overflow-y-auto z-50 divide-y divide-stone-100">
+          </div>
+        </div>
+
+        <!-- Primary Actions -->
+        <div class="flex items-center gap-2 order-2 lg:order-3">
+          <button
+            id="topHeritageBtn"
+            type="button"
+            onclick="switchTab('heritage')"
+            title="Sejarah, Visi Misi &amp; Log Pembaruan Trah"
+            class="px-2.5 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition"
+          >
+            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>Kisah &amp; Log</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="openShareModal()"
+            title="Bagikan Akses Publik Keluarga"
+            class="p-2 sm:px-3 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition"
+          >
+            <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            <span class="hidden md:inline">Akses Publik</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="openAddModal({ mode: 'descendant' })"
+            class="px-3 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-1.5 transition"
+          >
+            <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span id="primaryAddBtnLabel">Tambah Silsilah</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Primary Family Branch Tabs (Gabungan + Per Keluarga Besar) -->
+      <div class="mt-2.5 pt-2 border-t border-stone-100">
+        <div id="familyBranchTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          <!-- Rendered dynamically: Gabungan Trah Tirtowiyono + 8 Keluarga Besar -->
+        </div>
+      </div>
+
+      <!-- Active Tab Context & View Mode Switcher -->
+      <div id="branchContextBar" class="flex flex-wrap items-center justify-between gap-2 mt-1.5 pt-2 border-t border-stone-100/90">
+        <!-- Active Branch Context Info -->
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="activeBranchBadge" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 shrink-0">
+            Gabungan
+          </span>
+          <div class="truncate">
+            <span id="activeBranchContextTitle" class="text-xs sm:text-sm font-bold text-stone-800">
+              Seluruh Keluarga Trah Tirtowiyono
+            </span>
+            <span id="activeBranchContextSub" class="text-[11px] text-stone-500 hidden md:inline ml-1.5">
+              &bull; Menampilkan gabungan 8 keluarga besar dari Eyang Suprapto Tirtowiyono &amp; Eyang Sumiyati
+            </span>
+          </div>
+        </div>
+
+        <!-- View Switcher (Per Cabang / Gabungan) -->
+        <nav class="flex items-center gap-1 bg-stone-100 p-1 rounded-xl overflow-x-auto max-w-full">
+          <button type="button" data-tab="tree" onclick="switchTab('tree')" class="tab-btn active px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap bg-white text-batik-indigo shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11v2a2 2 0 002 2h6a2 2 0 002-2v-2M12 7v8m0-8a2 2 0 100-4 2 2 0 000 4zm-5 12a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+            Bagan Pohon
+          </button>
+          <button type="button" data-tab="directory" onclick="switchTab('directory')" class="tab-btn px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Direktori
+          </button>
+          <button type="button" data-tab="stats" onclick="switchTab('stats')" class="tab-btn px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Statistik
+          </button>
+        </nav>
+      </div>
+
+      <!-- Global Heritage Context Bar (Shown when viewing Kisah & Log) -->
+      <div id="heritageContextBar" class="hidden flex-wrap items-center justify-between gap-2 mt-1.5 pt-2 border-t border-stone-100/90">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+            Arsip Trah
+          </span>
+          <span class="text-xs sm:text-sm font-bold text-stone-800 truncate">
+            Sejarah Leluhur, Visi Misi Paguyuban &amp; Log Pembaruan Data
+          </span>
+        </div>
+        <button type="button" onclick="switchTab('tree')" class="px-3 py-1 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-semibold flex items-center gap-1.5 transition">
+          <span>&larr; Kembali ke Bagan Pohon</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <main class="flex-1 min-h-0 flex flex-col relative overflow-hidden">
+
+    <!-- VIEW 1: INTERACTIVE FAMILY TREE CANVAS -->
+    <section id="view-tree" class="flex-1 min-h-0 flex flex-col relative">
+      
+      <!-- Dedicated Non-Overlapping Tree Toolbar (Legend & Branch Controls) -->
+      <div class="shrink-0 z-20 px-3 sm:px-6 py-2 bg-batik-cream/95 backdrop-blur-xs border-b border-stone-200/75 flex flex-wrap items-center justify-between gap-2 no-print">
+        <!-- Generation Legend -->
+        <div class="flex items-center gap-2.5 px-3 py-1 rounded-xl bg-white border border-stone-200/90 shadow-2xs text-[11px] font-medium text-stone-600 overflow-x-auto no-scrollbar max-w-full">
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-batik-indigo"></span>Eyang/Buyut</span>
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-amber-500"></span>Putra-Putri</span>
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-600"></span>Cucu</span>
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-sky-600"></span>Cicit</span>
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-purple-600"></span>Canggah</span>
+          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-rose-600"></span>Wareng</span>
+        </div>
+
+        <!-- Expand / Collapse & Focus Indicator -->
+        <div class="flex items-center gap-1.5 ml-auto shrink-0">
+          <button type="button" id="clearFocusBtn" onclick="clearFocusLineage()" class="hidden px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs items-center gap-1 transition">
+            <span>Matikan Mode Fokus</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+          <button type="button" onclick="expandAllNodes()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 text-xs font-semibold shadow-2xs transition">
+            Buka Semua
+          </button>
+          <button type="button" onclick="collapseToDefault()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 text-xs font-semibold shadow-2xs transition">
+            Ringkas Cabang
+          </button>
+        </div>
+      </div>
+
+      <!-- Pan & Zoom Viewport -->
+      <div id="treeViewport" class="tree-viewport flex-1 min-h-0 w-full heritage-bg relative overflow-hidden">
+        <div id="treeCanvasLayer" class="tree-canvas-layer absolute top-0 left-0">
+          <svg id="treeConnectorsSvg" class="absolute top-0 left-0 pointer-events-none overflow-visible"></svg>
+          <div id="treeNodesContainer" class="relative"></div>
+        </div>
+      </div>
+
+      <!-- Bottom-Right Zoom & Navigation Controls -->
+      <div class="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 bg-white/95 backdrop-blur p-1.5 rounded-2xl border border-stone-200 shadow-lg no-print">
+        <button type="button" onclick="zoomTree(0.15)" title="Perbesar (Zoom In)" class="p-2 rounded-xl hover:bg-stone-100 text-stone-700 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14m7-7H5"/></svg>
+        </button>
+        <div id="zoomLevelLabel" class="text-[10px] font-bold text-center text-stone-500 select-none">85%</div>
+        <button type="button" onclick="zoomTree(-0.15)" title="Perkecil (Zoom Out)" class="p-2 rounded-xl hover:bg-stone-100 text-stone-700 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M5 12h14"/></svg>
+        </button>
+        <div class="h-px bg-stone-200 my-0.5"></div>
+        <button type="button" onclick="centerOnRoot()" title="Pusatkan ke Leluhur Utama" class="p-2 rounded-xl hover:bg-stone-100 text-batik-indigo transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+      </div>
+
+      <!-- Bottom-Left Helper Tip & Viewport Render Counter -->
+      <div class="hidden sm:flex absolute bottom-4 left-4 z-20 items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur border border-stone-200/80 text-[11px] text-stone-500 shadow-sm pointer-events-none no-print">
+        <span>Geser kanvas untuk menjelajah &bull; Klik kartu anggota untuk detail, edit, atau tambah anak/cucu/cicit</span>
+        <span id="viewportRenderBadge" class="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 font-semibold"></span>
+      </div>
+    </section>
+
+    <!-- VIEW 2: DIRECTORY & STRUCTURED OUTLINE VIEW -->
+    <section id="view-directory" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto">
+      <div class="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-stone-50/70">
+          <div>
+            <h2 class="font-serif font-bold text-lg sm:text-xl text-batik-indigo">Direktori &amp; Urutan Garis Keturunan</h2>
+            <p class="text-xs sm:text-sm text-stone-500 mt-0.5">Tampilan terstruktur dari Eyang Leluhur hingga Cicit &amp; Canggah. Klik tombol <strong>+ Anak</strong> untuk menambah keturunan langsung.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="genFilterSelect" onchange="renderDirectoryView()" class="px-3 py-2 rounded-xl border border-stone-200 bg-white text-xs font-medium text-stone-700 outline-none">
+              <option value="ALL">Semua Generasi</option>
+              <option value="0">Generasi 1 (Eyang / Buyut)</option>
+              <option value="1">Generasi 2 (Putra-Putri Utama)</option>
+              <option value="2">Generasi 3 (Wayah / Cucu)</option>
+              <option value="3">Generasi 4 (Cicit)</option>
+              <option value="4">Generasi 5 (Canggah)</option>
+              <option value="5">Generasi 6 (Wareng)</option>
+            </select>
+            <select id="statusFilterSelect" onchange="renderDirectoryView()" class="px-3 py-2 rounded-xl border border-stone-200 bg-white text-xs font-medium text-stone-700 outline-none">
+              <option value="ALL">Semua Status</option>
+              <option value="ALIVE">Masih Hidup</option>
+              <option value="DECEASED">Almarhum / Almarhumah</option>
+            </select>
+            <button type="button" onclick="exportJsonBackup()" class="px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-semibold text-stone-700 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Unduh Data JSON
+            </button>
+          </div>
+        </div>
+        <div id="directoryListContainer" class="divide-y divide-stone-100"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ANALYTICS & DEMOGRAPHICS VIEW -->
+    <section id="view-stats" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto space-y-6">
+      <div id="statsSummaryCards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-sm">
+          <h3 id="branchChartTitle" class="font-serif font-bold text-lg text-batik-indigo mb-1">Sebaran 8 Kelompok Trah Tirtowiyanan</h3>
+          <p id="branchChartSubtitle" class="text-xs text-stone-500 mb-4">Jumlah total keturunan berdasarkan cabang keluarga besar</p>
+          <div id="branchChartContainer" class="space-y-3"></div>
+        </div>
+        <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-sm">
+          <h3 class="font-serif font-bold text-lg text-batik-indigo mb-1">Komposisi Lintas Generasi</h3>
+          <p class="text-xs text-stone-500 mb-4">Perkembangan regenerasi dari Eyang Buyut hingga Cicit &amp; Canggah</p>
+          <div id="generationChartContainer" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: HERITAGE STORY, VISI MISI & LIVE ACTIVITY LOG -->
+    <section id="view-heritage" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Narrative Column -->
+        <div class="lg:col-span-2 space-y-6">
+          <article class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-semibold mb-3">
+              Arsip Sejarah Paguyuban Trah Tirtowiyanan
+            </div>
+            <h2 class="font-serif font-bold text-2xl text-batik-indigo mb-3">
+              Sepenggal Kisah Eyang Kakung Suprapto Tirtowiyono &amp; Eyang Putri Sumiyati
+            </h2>
+            <div class="prose prose-stone prose-sm max-w-none text-stone-600 space-y-3 leading-relaxed">
+              <p>
+                Di Desa Rejoso, Kelurahan Sambon, Kecamatan Banyudono, Boyolali, hiduplah pasangan panutan keluarga: <strong>Eyang Kakung Suprapto Tirtowiyono</strong> dan <strong>Eyang Putri Sumiyati</strong>. Beliau berdua dikaruniai delapan (8) orang putra-putri yang terdiri dari enam (6) putra dan dua (2) putri, yang kini berkembang menjadi 8 Kelompok Trah Tirtowiyanan di berbagai kota.
+              </p>
+              <p>
+                Eyang Putri Sumiyati dikenal sebagai pedagang beras yang ulet dan sukses—mengirimkan beras terbaik menggunakan truk hingga Kabupaten Salatiga dan Kota Semarang—didampingi penuh kasih sayang dan kebijaksanaan oleh Eyang Kakung Suprapto Tirtowiyono. Beliau juga dikenal gemar kuliner tradisional Jawa seperti ubi, gembili, dan buah duku.
+              </p>
+              <p>
+                Lebih dari sekadar kesuksesan materi, keduanya dikenang karena kedermawanan kepada warga sekitar serta keteguhan iman yang luar biasa—setiap Minggu pagi berjalan kaki bersama menuju gereja dengan penuh syukur.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80">
+                  <div class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Eyang Kakung Suprapto Tirtowiyono</div>
+                  <div class="text-xs font-semibold text-stone-800 mt-1">Wafat: Selasa Kliwon, 31 Maret 1998</div>
+                  <div class="text-xs text-stone-500">Dalam usia 97 tahun</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80">
+                  <div class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Eyang Putri Sumiyati</div>
+                  <div class="text-xs font-semibold text-stone-800 mt-1">Wafat: Minggu Kliwon, 3 November 1991</div>
+                  <div class="text-xs text-stone-500">Dalam usia 93 tahun</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+            <h3 class="font-serif font-bold text-xl text-batik-indigo mb-2">Visi &amp; Misi Paguyuban Trah Tirtowiyanan</h3>
+            <p class="text-xs text-stone-500 mb-4">
+              Berawal dari pertemuan pertama di Semarang (kediaman Bapak Hartono / Mbak Yayuk) pada Januari 2004, berlanjut hingga Periode Kedua &amp; Penyusunan Buku Silsilah oleh Ketua Pengurus <strong>Ambang Wibana, S.Psi., M.Si.</strong>
+            </p>
+            <ul class="space-y-2.5 text-sm text-stone-700">
+              <li class="flex items-start gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-batik-indigo text-white text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <span>Mewujudkan solidaritas dan kebersamaan di antara seluruh keturunan Almarhum Eyang Kakung Suprapto Tirtowiyono.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-batik-indigo text-white text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <span>Menjaga dan mengembangkan nilai-nilai kearifan lokal serta teladan kebaikan para leluhur.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-batik-indigo text-white text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <span>Memberikan bantuan dan dukungan moral maupun finansial kepada anggota keluarga yang membutuhkan.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-batik-indigo text-white text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                <span>Menciptakan lingkungan yang kondusif bagi pertumbuhan dan perkembangan generasi penerus trah.</span>
+              </li>
+            </ul>
+          </article>
+        </div>
+
+        <!-- Live Family Update Log Column -->
+        <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-sm flex flex-col max-h-[780px]">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-serif font-bold text-lg text-batik-indigo">Riwayat Pembaruan Data</h3>
+              <p class="text-xs text-stone-500">Catatan pembaruan silsilah oleh anggota keluarga</p>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          </div>
+          <div id="activityLogList" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== SLIDE-OVER MEMBER DETAIL DRAWER ==================== -->
+  <div id="memberDrawerBackdrop" onclick="closeMemberDrawer()" class="hidden fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-40 transition-opacity no-print"></div>
+  <aside id="memberDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl border-l border-stone-200 z-50 transform translate-x-full transition-transform duration-300 flex flex-col no-print">
+    <div id="memberDrawerContent" class="flex-1 flex flex-col overflow-hidden"></div>
+  </aside>
+
+  <!-- ==================== ADD / EDIT MEMBER MODAL ==================== -->
+  <div id="memberFormModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/80">
+        <div>
+          <h3 id="formModalTitle" class="font-serif font-bold text-lg text-batik-indigo">Tambah Anggota Silsilah</h3>
+          <p id="formModalSubtitle" class="text-xs text-stone-500">Lengkapi data anggota keluarga untuk memperbarui pohon trah</p>
+        </div>
+        <button type="button" onclick="closeFormModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="memberForm" onsubmit="handleMemberFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 text-sm">
+        <input type="hidden" id="formMemberId" />
+        <input type="hidden" id="formMode" value="descendant" />
+
+        <!-- Relationship Mode Selector (when adding) -->
+        <div id="relationModeSelector" class="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 space-y-2">
+          <label class="block text-xs font-bold text-amber-900 uppercase tracking-wide">Posisi Hubungan Keluarga</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-amber-200 cursor-pointer">
+              <input type="radio" name="addRelationType" value="descendant" checked onchange="onRelationTypeChange(this.value)" class="accent-batik-indigo" />
+              <span class="text-xs font-semibold text-stone-800">Keturunan (Anak / Cucu / Cicit)</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-amber-200 cursor-pointer">
+              <input type="radio" name="addRelationType" value="ancestor_above" onchange="onRelationTypeChange(this.value)" class="accent-batik-indigo" />
+              <span class="text-xs font-semibold text-stone-800">Leluhur / Buyut di Atas Eyang</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Parent Selection (for descendant mode) -->
+        <div id="parentSelectWrapper">
+          <label for="formParentId" class="block text-xs font-semibold text-stone-700 mb-1">
+            Orang Tua (Jalur Trah) <span class="text-red-500">*</span>
+          </label>
+          <select id="formParentId" onchange="updateAutoGenPreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-xs sm:text-sm focus:border-batik-indigo outline-none">
+          </select>
+          <p id="autoGenPreview" class="text-[11px] text-batik-indigo font-medium mt-1"></p>
+        </div>
+
+        <!-- Primary Person Name & Order -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div class="sm:col-span-3">
+            <label for="formName" class="block text-xs font-semibold text-stone-700 mb-1">
+              Nama Lengkap Anggota Trah <span class="text-red-500">*</span>
+            </label>
+            <input id="formName" type="text" required placeholder="Contoh: R. Bagus Prakoso" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="formOrder" class="block text-xs font-semibold text-stone-700 mb-1">Anak Ke-</label>
+            <input id="formOrder" type="number" min="1" max="30" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <!-- Gender & Living Status -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formGender" class="block text-xs font-semibold text-stone-700 mb-1">Jenis Kelamin</label>
+            <select id="formGender" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label for="formIsDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Anggota</label>
+            <select id="formIsDeceased" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none">
+              <option value="false">Masih Hidup</option>
+              <option value="true">Almarhum / Almarhumah (Alm.)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Spouse Section -->
+        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/90 space-y-3">
+          <div class="text-xs font-bold text-stone-700">Data Pasangan (Suami / Istri) — Opsional</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input id="formSpouseName" type="text" placeholder="Nama lengkap pasangan (jika sudah menikah)" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-xs sm:text-sm" />
+            </div>
+            <div>
+              <select id="formSpouseDeceased" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-xs sm:text-sm">
+                <option value="false">Pasangan Hidup</option>
+                <option value="true">Pasangan Alm.</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kelompok & Domicile -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formKelompok" class="block text-xs font-semibold text-stone-700 mb-1">Kelompok / Cabang Trah</label>
+            <input id="formKelompok" list="kelompokSuggestions" type="text" placeholder="Contoh: 4. Kelompok Sorogenen - Boyolali" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+            <datalist id="kelompokSuggestions"></datalist>
+          </div>
+          <div>
+            <label for="formDomicile" class="block text-xs font-semibold text-stone-700 mb-1">Domisili / Kota Tinggal</label>
+            <input id="formDomicile" type="text" placeholder="Contoh: Boyolali / Semarang / Bandung" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <!-- Additional Notes & Contributor Name -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formNotes" class="block text-xs font-semibold text-stone-700 mb-1">Catatan / Tahun Lahir / Wafat</label>
+            <input id="formNotes" type="text" placeholder="Misal: Lahir 1995, atau keterangan keluarga" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="formContributor" class="block text-xs font-semibold text-stone-700 mb-1">Nama Pengisi / Pengupdate</label>
+            <input id="formContributor" type="text" placeholder="Nama Anda (agar tercatat di log)" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-stone-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeFormModal()" class="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold text-xs sm:text-sm hover:bg-stone-50">
+            Batal
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white font-semibold text-xs sm:text-sm shadow-sm">
+            Simpan ke Silsilah
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== PUBLIC ACCESS & DATA BACKUP MODAL ==================== -->
+  <div id="shareModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-lg overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/80">
+        <h3 class="font-serif font-bold text-lg text-batik-indigo">Akses Publik &amp; Cadangan Data Trah</h3>
+        <button type="button" onclick="closeShareModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-5 space-y-4 text-xs sm:text-sm text-stone-600">
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            Kolaborasi Keluarga Terbuka
+          </div>
+          <p class="text-xs leading-relaxed">
+            Setiap anggota keluarga dapat membuka tab cabangnya masing-masing untuk menambahkan kelahiran anak/cucu/cicit baru maupun memperbarui data pasangan dan domisili, dan seluruh data langsung tergabung otomatis pada tab <strong>Gabungan Trah Tirtowiyono</strong>.
+          </p>
+          <div class="pt-1 text-[11px] font-mono text-emerald-800 break-all">
+            Mode Penyimpanan: <span id="displayFullUserId">Tersimpan Lokal &amp; Cloud</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-stone-700">Bagikan Tautan Silsilah ke Grup WhatsApp Keluarga</label>
+          <div class="flex gap-2">
+            <input id="shareUrlInput" type="text" readonly class="flex-1 px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs text-stone-600 outline-none" />
+            <button type="button" onclick="copyShareUrl()" class="px-3.5 py-2 rounded-xl bg-batik-indigo text-white text-xs font-semibold hover:bg-batik-indigoDark shrink-0">
+              Salin Tautan
+            </button>
+          </div>
+        </div>
+
+        <!-- Pengaturan Cloud untuk GitHub Pages / Vercel -->
+        <details class="rounded-2xl border border-stone-200 bg-stone-50/70 p-3 text-xs">
+          <summary class="font-bold text-batik-indigo cursor-pointer select-none">
+            Pengaturan Sinkronisasi Cloud (Untuk Hosting GitHub Pages / Vercel)
+          </summary>
+          <div class="mt-2.5 space-y-2 text-stone-600">
+            <p class="leading-relaxed">
+              Agar semua anggota keluarga yang membuka link <strong>GitHub Pages / Vercel</strong> melihat pembaruan data secara bersamaan, tempelkan konfigurasi <strong>Firebase Web App</strong> (gratis) di bawah ini lalu klik simpan:
+            </p>
+            <textarea
+              id="customFirebaseConfigInput"
+              rows="4"
+              placeholder='Tempel firebaseConfig dari Firebase Console (contoh: { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." })'
+              class="w-full p-2.5 rounded-xl border border-stone-300 bg-white font-mono text-[11px] focus:border-batik-indigo outline-none"
+            ></textarea>
+            <div class="flex items-center justify-end gap-2">
+              <button type="button" onclick="resetCustomFirebaseConfig()" class="px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 font-semibold">
+                Reset
+              </button>
+              <button type="button" onclick="saveCustomFirebaseConfig()" class="px-3 py-1.5 rounded-lg bg-batik-indigo hover:bg-batik-indigoDark text-white font-semibold">
+                Simpan &amp; Hubungkan Cloud
+              </button>
+            </div>
+          </div>
+        </details>
+
+        <div class="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+          <button type="button" onclick="exportJsonBackup()" class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700">
+            Ekspor Backup JSON
+          </button>
+          <label class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700 cursor-pointer">
+            Impor JSON
+            <input type="file" accept=".json" onchange="importJsonBackup(event)" class="hidden" />
+          </label>
+          <button type="button" onclick="window.print()" class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700">
+            Cetak Halaman
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CUSTOM CONFIRMATION DIALOG ==================== -->
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-sm p-5 space-y-4">
+      <h4 id="confirmTitle" class="font-serif font-bold text-lg text-stone-900">Konfirmasi</h4>
+      <p id="confirmMessage" class="text-xs sm:text-sm text-stone-600 leading-relaxed"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50">Batal</button>
+        <button type="button" onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-semibold text-white">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastContainer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 no-print"></div>
+
+  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, addDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // =========================================================================
+    // 1. COMPLETE SEED DATA FROM "BUKU TRAH TIRTOWIYANAN CETAKAN KE-1 (2024)"
+    // =========================================================================
+    const INITIAL_TRAH_MEMBERS = [
+      // GENERASI 1: LELUHUR UTAMA
+      {
+        id: "root_tirtowiyono",
+        parentId: null,
+        order: 1,
+        name: "Eyang Kakung Suprapto Tirtowiyono",
+        gender: "L",
+        isDeceased: true,
+        spouseName: "Eyang Putri Sumiyati",
+        spouseDeceased: true,
+        kelompok: "Leluhur Utama (Rejoso - Boyolali)",
+        domicile: "Desa Rejoso, Sambon, Banyudono, Boyolali",
+        notes: "Eyang Kakung wafat Selasa Kliwon 31-03-1998 (97 th) & Eyang Putri wafat Minggu Kliwon 03-11-1991 (93 th). Dikaruniai 8 putra-putri.",
+        updatedBy: "Buku Trah Cetakan Ke-1 (2024)",
+        updatedAt: "2024-01-01T00:00:00.000Z"
+      },
+
+      // GENERASI 2: 8 PUTRA-PUTRI / KELOMPOK TRAH TIRTOWIYANAN
+      { id: "b1", parentId: "root_tirtowiyono", order: 1, name: "Dwijo Martono", gender: "L", isDeceased: true, spouseName: "Suyati", spouseDeceased: true, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "Jetis, Boyolali", notes: "Putra ke-1 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:01:00.000Z" },
+      { id: "b2", parentId: "root_tirtowiyono", order: 2, name: "Suciningsih", gender: "P", isDeceased: true, spouseName: "Hadisuroto", spouseDeceased: true, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "Delanggu, Klaten", notes: "Putri ke-2 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:02:00.000Z" },
+      { id: "b3", parentId: "root_tirtowiyono", order: 3, name: "Masdul Hartosarwono", gender: "L", isDeceased: true, spouseName: "Mariyatun", spouseDeceased: true, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Nangka, Semarang", notes: "Putra ke-3 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:03:00.000Z" },
+      { id: "b4", parentId: "root_tirtowiyono", order: 4, name: "Hadi Ruminto", gender: "L", isDeceased: true, spouseName: "Giarti", spouseDeceased: true, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "Sorogenen, Boyolali", notes: "Putra ke-4 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:04:00.000Z" },
+      { id: "b5", parentId: "root_tirtowiyono", order: 5, name: "Sayuti", gender: "L", isDeceased: false, spouseName: "Suparmini", spouseDeceased: true, kelompok: "5. Kelompok Kartasura", domicile: "Kartasura, Sukoharjo", notes: "Putra ke-5 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:05:00.000Z" },
+      { id: "b6", parentId: "root_tirtowiyono", order: 6, name: "Suparno", gender: "L", isDeceased: true, spouseName: "Nani Hayati", spouseDeceased: true, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "Putra ke-6 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:06:00.000Z" },
+      { id: "b7", parentId: "root_tirtowiyono", order: 7, name: "Sudarmo", gender: "L", isDeceased: true, spouseName: "Sumarijah", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "Putra ke-7 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:07:00.000Z" },
+      { id: "b8", parentId: "root_tirtowiyono", order: 8, name: "Sri Mulatsih", gender: "P", isDeceased: false, spouseName: "Sukirman", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Medoho, Semarang", notes: "Putri ke-8 Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T00:08:00.000Z" },
+
+      // CABANG 1: DWIJO MARTONO (JETIS - BOYOLALI)
+      { id: "b1_1", parentId: "b1", order: 1, name: "Murniyati", gender: "P", isDeceased: true, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "Boyolali", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:01:00.000Z" },
+      { id: "b1_2", parentId: "b1", order: 2, name: "Suprapto", gender: "L", isDeceased: true, spouseName: "Sri Hastuti", spouseDeceased: true, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "Boyolali", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:02:00.000Z" },
+      { id: "b1_2_1", parentId: "b1_2", order: 1, name: "Kelik BP", gender: "L", isDeceased: false, spouseName: "Nur Hayati", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:02:10.000Z" },
+      { id: "b1_2_1_1", parentId: "b1_2_1", order: 1, name: "Fitriana Ekaputri", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:02:11.000Z" },
+      { id: "b1_2_1_2", parentId: "b1_2_1", order: 2, name: "Saaliha Rahmuna Yamin", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:02:12.000Z" },
+      { id: "b1_3", parentId: "b1", order: 3, name: "Seno Prasetyo", gender: "L", isDeceased: true, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:03:00.000Z" },
+      { id: "b1_4", parentId: "b1", order: 4, name: "Setyo Marsudi", gender: "L", isDeceased: true, spouseName: "Siti Muryanah", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:00.000Z" },
+      { id: "b1_4_1", parentId: "b1_4", order: 1, name: "Erma Kristiani", gender: "P", isDeceased: false, spouseName: "Topan Tri Atmojo", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:10.000Z" },
+      { id: "b1_4_2", parentId: "b1_4", order: 2, name: "Dyah Yulyastiti", gender: "P", isDeceased: false, spouseName: "Ihwan Hidayat", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:20.000Z" },
+      { id: "b1_4_2_1", parentId: "b1_4_2", order: 1, name: "Muh. Arya Pradana P.H.", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:21.000Z" },
+      { id: "b1_4_2_2", parentId: "b1_4_2", order: 2, name: "Arsyanendra Bima P.H", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:22.000Z" },
+      { id: "b1_4_2_3", parentId: "b1_4_2", order: 3, name: "Arjuna Farzand P.H", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:23.000Z" },
+      { id: "b1_4_3", parentId: "b1_4", order: 3, name: "Mikha Damarwati", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:04:30.000Z" },
+      { id: "b1_5", parentId: "b1", order: 5, name: "Puji Hastuti", gender: "P", isDeceased: false, spouseName: "Mulyadi", spouseDeceased: true, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:05:00.000Z" },
+      { id: "b1_5_1", parentId: "b1_5", order: 1, name: "Nova Aristayaty", gender: "P", isDeceased: false, spouseName: "Ridwan Amal", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:05:10.000Z" },
+      { id: "b1_5_1_1", parentId: "b1_5_1", order: 1, name: "Pratama Riefly Noerachman", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:05:11.000Z" },
+      { id: "b1_5_2", parentId: "b1_5", order: 2, name: "Christia Bangun Pamungkas", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:05:20.000Z" },
+      { id: "b1_6", parentId: "b1", order: 6, name: "Agus Wiratno", gender: "L", isDeceased: false, spouseName: "Purwanti", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:06:00.000Z" },
+      { id: "b1_6_1", parentId: "b1_6", order: 1, name: "Bertha Heru Purnomo", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:06:10.000Z" },
+      { id: "b1_6_2", parentId: "b1_6", order: 2, name: "Cristian Dwi Ayuningrum", gender: "P", isDeceased: false, spouseName: "Kukuh Bayu", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:06:20.000Z" },
+      { id: "b1_6_2_1", parentId: "b1_6_2", order: 1, name: "Kidung Yudya Satria", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:06:21.000Z" },
+      { id: "b1_6_2_2", parentId: "b1_6_2", order: 2, name: "Kayumwangi Kujang Satria", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "1. Kelompok Jetis - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T01:06:22.000Z" },
+
+      // CABANG 2: SUCININGSIH (DELANGGU - KLATEN)
+      { id: "b2_1", parentId: "b2", order: 1, name: "Sukarno", gender: "L", isDeceased: true, spouseName: "Kasilah", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "Delanggu, Klaten", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:00.000Z" },
+      { id: "b2_1_1", parentId: "b2_1", order: 1, name: "Yudith Irawati", gender: "P", isDeceased: false, spouseName: "Agus Sunaryadi", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:10.000Z" },
+      { id: "b2_1_1_1", parentId: "b2_1_1", order: 1, name: "Sashyara Nabila Nareswari", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:11.000Z" },
+      { id: "b2_1_1_2", parentId: "b2_1_1", order: 2, name: "Kanaya Najwa Larasati", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:12.000Z" },
+      { id: "b2_1_2", parentId: "b2_1", order: 2, name: "Yudo Bangun Pamungkas", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:20.000Z" },
+      { id: "b2_1_3", parentId: "b2_1", order: 3, name: "Bangkit Adiguno", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:01:30.000Z" },
+      { id: "b2_2", parentId: "b2", order: 2, name: "Sri Wahyuni", gender: "P", isDeceased: false, spouseName: "Maryono", spouseDeceased: true, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:00.000Z" },
+      { id: "b2_2_1", parentId: "b2_2", order: 1, name: "Niken Diana Habsari", gender: "P", isDeceased: false, spouseName: "Kuswara S. Taryono", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:10.000Z" },
+      { id: "b2_2_1_1", parentId: "b2_2_1", order: 1, name: "Sekar Kinanti Tistia", gender: "P", isDeceased: false, spouseName: "Darmawan Sampurna", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:11.000Z" },
+      { id: "b2_2_1_2", parentId: "b2_2_1", order: 2, name: "Arum Karimah Larasati", gender: "P", isDeceased: false, spouseName: "Lingga Aji Jala Virya", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:12.000Z" },
+      { id: "b2_2_2", parentId: "b2_2", order: 2, name: "Ketjuk Wahid Habsoro", gender: "L", isDeceased: false, spouseName: "Rosanti Herawati", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:20.000Z" },
+      { id: "b2_2_2_1", parentId: "b2_2_2", order: 1, name: "Egar Adyan Prasetio", gender: "L", isDeceased: false, spouseName: "Anida Karima", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:21.000Z" },
+      { id: "b2_2_2_1_1", parentId: "b2_2_2_1", order: 1, name: "Kaleia Anasera Prasetio", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "Generasi Canggah Eyang Tirtowiyono", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:25.000Z" },
+      { id: "b2_2_2_2", parentId: "b2_2_2", order: 2, name: "Edrina Malfa Salsabila", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:22.000Z" },
+      { id: "b2_2_3", parentId: "b2_2", order: 3, name: "Bendi Barkah Prastowo", gender: "L", isDeceased: false, spouseName: "Krisna Damayanti", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:30.000Z" },
+      { id: "b2_2_3_1", parentId: "b2_2_3", order: 1, name: "Bimasena Borneo Prastowo", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:31.000Z" },
+      { id: "b2_2_3_2", parentId: "b2_2_3", order: 2, name: "Belanova Betari Prastowo", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "2. Kelompok Delanggu - Klaten", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T02:02:32.000Z" },
+
+      // CABANG 3: MASDUL HARTOSARWONO (NANGKA - SEMARANG)
+      { id: "b3_1", parentId: "b3", order: 1, name: "Bambang", gender: "L", isDeceased: false, spouseName: "Ari", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:01:00.000Z" },
+      { id: "b3_1_1", parentId: "b3_1", order: 1, name: "Intan", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:01:10.000Z" },
+      { id: "b3_1_2", parentId: "b3_1", order: 2, name: "Kiki", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:01:20.000Z" },
+      { id: "b3_2", parentId: "b3", order: 2, name: "Budi Sardjono", gender: "L", isDeceased: false, spouseName: "Yuni", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:02:00.000Z" },
+      { id: "b3_2_1", parentId: "b3_2", order: 1, name: "Wahyu", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:02:10.000Z" },
+      { id: "b3_2_2", parentId: "b3_2", order: 2, name: "Brian", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:02:20.000Z" },
+      { id: "b3_3", parentId: "b3", order: 3, name: "Agung S", gender: "L", isDeceased: false, spouseName: "Umi", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:03:00.000Z" },
+      { id: "b3_3_1", parentId: "b3_3", order: 1, name: "Vicky", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:03:10.000Z" },
+      { id: "b3_3_2", parentId: "b3_3", order: 2, name: "Faris", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "3. Kelompok Nangka - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T03:03:20.000Z" },
+
+      // CABANG 4: HADI RUMINTO (SOROGENEN - BOYOLALI)
+      { id: "b4_1", parentId: "b4", order: 1, name: "Hartono", gender: "L", isDeceased: false, spouseName: "Sri Rahayu", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "Semarang / Boyolali", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:01:00.000Z" },
+      { id: "b4_1_1", parentId: "b4_1", order: 1, name: "Hugo Andriya", gender: "L", isDeceased: false, spouseName: "Debora Ratna Nilasari", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:01:10.000Z" },
+      { id: "b4_1_1_1", parentId: "b4_1_1", order: 1, name: "Audrey Deraya Intani", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:01:11.000Z" },
+      { id: "b4_1_1_2", parentId: "b4_1_1", order: 2, name: "Abigael Denara Intani", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:01:12.000Z" },
+      { id: "b4_1_2", parentId: "b4_1", order: 2, name: "Hayuk Rinta Dessi", gender: "P", isDeceased: true, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:01:20.000Z" },
+      { id: "b4_2", parentId: "b4", order: 2, name: "Bambang Wijanarko", gender: "L", isDeceased: false, spouseName: "Martuti", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:02:00.000Z" },
+      { id: "b4_2_1", parentId: "b4_2", order: 1, name: "Pradita Nur Arifa", gender: "L", isDeceased: false, spouseName: "Yesica Marina Murti", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:02:10.000Z" },
+      { id: "b4_2_1_1", parentId: "b4_2_1", order: 1, name: "Arsyad Satrio Drajat", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:02:11.000Z" },
+      { id: "b4_2_2", parentId: "b4_2", order: 2, name: "Bangkit Yoga Kharisma", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:02:20.000Z" },
+      { id: "b4_3", parentId: "b4", order: 3, name: "Heri Purnomo", gender: "L", isDeceased: false, spouseName: "Widayati", spouseDeceased: true, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:03:00.000Z" },
+      { id: "b4_3_1", parentId: "b4_3", order: 1, name: "Edward Primatama", gender: "L", isDeceased: false, spouseName: "Estuarin Primordia", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:03:10.000Z" },
+      { id: "b4_3_1_1", parentId: "b4_3_1", order: 1, name: "Adhila Rossa Putri W", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:03:11.000Z" },
+      { id: "b4_3_1_2", parentId: "b4_3_1", order: 2, name: "Adhiza Rossa Putri W", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:03:12.000Z" },
+      { id: "b4_3_2", parentId: "b4_3", order: 2, name: "Melly Widya Purnama", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:03:20.000Z" },
+      { id: "b4_4", parentId: "b4", order: 4, name: "Mundaryati", gender: "P", isDeceased: false, spouseName: "Suhartono Sariyanto", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:04:00.000Z" },
+      { id: "b4_4_1", parentId: "b4_4", order: 1, name: "Favo Perdana Hadiyanto Saputra", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:04:10.000Z" },
+      { id: "b4_4_2", parentId: "b4_4", order: 2, name: "Fagya Bayuaji Hadiyanto Saputra", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:04:20.000Z" },
+      { id: "b4_5", parentId: "b4", order: 5, name: "Endriyanto P.S.G", gender: "L", isDeceased: false, spouseName: "Siti Parjanti", spouseDeceased: true, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:05:00.000Z" },
+      { id: "b4_5_1", parentId: "b4_5", order: 1, name: "Torry Istadeni AY", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:05:10.000Z" },
+      { id: "b4_6", parentId: "b4", order: 6, name: "Windratno", gender: "L", isDeceased: false, spouseName: "Nurohmah Sri W", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:06:00.000Z" },
+      { id: "b4_6_1", parentId: "b4_6", order: 1, name: "Devi Yuanita Sari", gender: "P", isDeceased: false, spouseName: "Heslon Napitupulu", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:06:10.000Z" },
+      { id: "b4_6_1_1", parentId: "b4_6_1", order: 1, name: "Shaka Akhlan Syabani N", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:06:11.000Z" },
+      { id: "b4_7", parentId: "b4", order: 7, name: "Ambang Wibana, S.Psi., M.Si.", gender: "L", isDeceased: false, spouseName: "Nunik Herawati", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "Boyolali", notes: "Ketua Pengurus Paguyuban Trah Tirtowiyanan & Penyusun Buku Silsilah", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:07:00.000Z" },
+      { id: "b4_7_1", parentId: "b4_7", order: 1, name: "Zaki Ariqoh Rafif", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:07:10.000Z" },
+      { id: "b4_7_2", parentId: "b4_7", order: 2, name: "Isryad Huda Syafa'at", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:07:20.000Z" },
+      { id: "b4_8", parentId: "b4", order: 8, name: "Agus P", gender: "L", isDeceased: true, spouseName: "Novi Lindawati", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:08:00.000Z" },
+      { id: "b4_8_1", parentId: "b4_8", order: 1, name: "Berliana Prita Valerina", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:08:10.000Z" },
+      { id: "b4_9", parentId: "b4", order: 9, name: "Widi Antoro", gender: "L", isDeceased: false, spouseName: "Sri Suwantini", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:09:00.000Z" },
+      { id: "b4_9_1", parentId: "b4_9", order: 1, name: "Anisa Hasna Widyaputri", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "4. Kelompok Sorogenen - Boyolali", domicile: "", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T04:09:10.000Z" },
+
+      // CABANG 5: SAYUTI (KARTASURA)
+      { id: "b5_1", parentId: "b5", order: 1, name: "Ayub Eka Wahyu Widada", gender: "L", isDeceased: false, spouseName: "Tabita Endang Mulmiyarsih", spouseDeceased: false, kelompok: "5. Kelompok Kartasura", domicile: "Kartasura", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T05:01:00.000Z" },
+      { id: "b5_1_1", parentId: "b5_1", order: 1, name: "Anjelir Clarissa Wahyu Ristiwantoro", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "5. Kelompok Kartasura", domicile: "Kartasura", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T05:01:10.000Z" },
+      { id: "b5_1_2", parentId: "b5_1", order: 2, name: "Kwilla Innocentia Wahyu Ristiwantoro", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "5. Kelompok Kartasura", domicile: "Kartasura", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T05:01:20.000Z" },
+
+      // CABANG 6: SUPARNO (BANDUNG)
+      { id: "b6_1", parentId: "b6", order: 1, name: "Ade Romy Sutaryat", gender: "L", isDeceased: true, spouseName: "Euis Netty Faryanah", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:00.000Z" },
+      { id: "b6_1_1", parentId: "b6_1", order: 1, name: "Siska Dewi Masitoh", gender: "P", isDeceased: false, spouseName: "Tatang", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:10.000Z" },
+      { id: "b6_1_1_1", parentId: "b6_1_1", order: 1, name: "Irani Teheran", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:11.000Z" },
+      { id: "b6_1_1_2", parentId: "b6_1_1", order: 2, name: "Rifki", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:12.000Z" },
+      { id: "b6_1_1_3", parentId: "b6_1_1", order: 3, name: "Rafika", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:13.000Z" },
+      { id: "b6_1_2", parentId: "b6_1", order: 2, name: "Zulfikar Dikri Rozak", gender: "L", isDeceased: false, spouseName: "Lufthilatifah Nuraisyah", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:20.000Z" },
+      { id: "b6_1_2_1", parentId: "b6_1_2", order: 1, name: "M Fajri Sidiq", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:21.000Z" },
+      { id: "b6_1_2_2", parentId: "b6_1_2", order: 2, name: "M Fahri Hamzah", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:22.000Z" },
+      { id: "b6_1_2_3", parentId: "b6_1_2", order: 3, name: "M Fathir Kalif", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:23.000Z" },
+      { id: "b6_1_3", parentId: "b6_1", order: 3, name: "Ikmal Iksanul Akmal", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:30.000Z" },
+      { id: "b6_1_4", parentId: "b6_1", order: 4, name: "Dinda Adithia Sutaryat", gender: "P", isDeceased: false, spouseName: "Fajar Adithia Permana", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:40.000Z" },
+      { id: "b6_1_4_1", parentId: "b6_1_4", order: 1, name: "Bisma", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:41.000Z" },
+      { id: "b6_1_4_2", parentId: "b6_1_4", order: 2, name: "Adrian", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "6. Kelompok Bandung", domicile: "Bandung", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T06:01:42.000Z" },
+
+      // CABANG 7: SUDARMO (SURABAYA)
+      { id: "b7_1", parentId: "b7", order: 1, name: "Prihandoko", gender: "L", isDeceased: true, spouseName: "Winuksmi", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:01:00.000Z" },
+      { id: "b7_2", parentId: "b7", order: 2, name: "Retno PN", gender: "P", isDeceased: false, spouseName: "Choirul Anam", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:02:00.000Z" },
+      { id: "b7_2_1", parentId: "b7_2", order: 1, name: "Shinta AL", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:02:10.000Z" },
+      { id: "b7_2_2", parentId: "b7_2", order: 2, name: "Rizky Ayu N", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:02:20.000Z" },
+      { id: "b7_3", parentId: "b7", order: 3, name: "Hari S", gender: "L", isDeceased: false, spouseName: "Dyah N", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:03:00.000Z" },
+      { id: "b7_3_1", parentId: "b7_3", order: 1, name: "Pramana S", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:03:10.000Z" },
+      { id: "b7_3_2", parentId: "b7_3", order: 2, name: "Satria Bima", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "7. Kelompok Surabaya", domicile: "Surabaya", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T07:03:20.000Z" },
+
+      // CABANG 8: SRI MULATSIH (MEDOHO - SEMARANG)
+      { id: "b8_1", parentId: "b8", order: 1, name: "Heru Hardiyanto", gender: "L", isDeceased: false, spouseName: "Dwi Pujiani", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:01:00.000Z" },
+      { id: "b8_1_1", parentId: "b8_1", order: 1, name: "Tian Hadi Wijaya", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:01:10.000Z" },
+      { id: "b8_1_2", parentId: "b8_1", order: 2, name: "Dian Ratna Wijaya", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:01:20.000Z" },
+      { id: "b8_1_3", parentId: "b8_1", order: 3, name: "Quinta Hapsari Wijaya", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:01:30.000Z" },
+      { id: "b8_2", parentId: "b8", order: 2, name: "Indah S", gender: "P", isDeceased: false, spouseName: "M. Purba Ari Sutami", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:02:00.000Z" },
+      { id: "b8_2_1", parentId: "b8_2", order: 1, name: "Raisa Ardhia Pramesti", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:02:10.000Z" },
+      { id: "b8_2_2", parentId: "b8_2", order: 2, name: "Fatimah Arinda Sutami", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:02:20.000Z" },
+      { id: "b8_3", parentId: "b8", order: 3, name: "Puja Handaya", gender: "L", isDeceased: false, spouseName: "Eunike Benty", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:03:00.000Z" },
+      { id: "b8_3_1", parentId: "b8_3", order: 1, name: "Joshua Aurellius Handoyo", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:03:10.000Z" },
+      { id: "b8_4", parentId: "b8", order: 4, name: "Hendar Oktrastianto", gender: "L", isDeceased: false, spouseName: "Wahyu Wulansari", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:04:00.000Z" },
+      { id: "b8_4_1", parentId: "b8_4", order: 1, name: "Pradipta Alvaro", gender: "L", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:04:10.000Z" },
+      { id: "b8_4_2", parentId: "b8_4", order: 2, name: "Gracella Elvina", gender: "P", isDeceased: false, spouseName: "", spouseDeceased: false, kelompok: "8. Kelompok Medoho - Semarang", domicile: "Semarang", notes: "", updatedBy: "Buku Trah 2024", updatedAt: "2024-01-01T08:04:20.000Z" }
+    ];
+
+    // =========================================================================
+    // 2. APPLICATION STATE & KINSHIP METADATA
+    // =========================================================================
+    const LOCAL_STORAGE_MEMBERS_KEY = 'trah_tirtowiyanan_members_v2';
+    const LOCAL_STORAGE_LOGS_KEY = 'trah_tirtowiyanan_logs_v2';
+
+    let members = [];
+    let activityLogs = [];
+    let activeTab = 'tree';
+    let activeBranchId = 'ALL'; // 'ALL' = Gabungan Trah Tirtowiyono, or branch head ID ('b1'..'b8')
+    let selectedMemberId = null;
+    let focusedLineageSet = null;
+    let collapsedIds = new Set();
+    let confirmCallback = null;
+    let cachedTreeStructure = null;
+    let cachedMembersRef = null;
+
+    // Directory progressive pagination state (keeps DOM light for large datasets)
+    const DIRECTORY_PAGE_SIZE = 60;
+    let directoryVisibleLimit = DIRECTORY_PAGE_SIZE;
+    let directoryFilteredCache = [];
+
+    // Firebase runtime handles
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let useCloudFirestore = false;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'trah-tirtowiyanan-public';
+
+    // Pan, Zoom & Virtualized Viewport State
+    const canvasState = {
+      scale: 0.85,
+      panX: 60,
+      panY: 50,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      lastPinchDist: 0,
+      nodePositions: new Map(),
+      layoutNodes: [],
+      layoutConnectors: [],
+      rafPending: false,
+      lastCullKey: ''
+    };
+
+    function invalidateTreeCache() {
+      cachedTreeStructure = null;
+      cachedMembersRef = null;
+    }
+
+    const GEN_LABELS = [
+      { title: 'Generasi 1 • Eyang Leluhur / Buyut', short: 'Eyang / Buyut', border: 'border-batik-indigo', headerBg: 'bg-batik-indigo text-white', badgeBg: 'bg-indigo-100 text-batik-indigo' },
+      { title: 'Generasi 2 • Putra-Putri Utama', short: 'Putra / Putri', border: 'border-amber-500', headerBg: 'bg-amber-500 text-stone-950', badgeBg: 'bg-amber-100 text-amber-900' },
+      { title: 'Generasi 3 • Wayah / Cucu', short: 'Wayah / Cucu', border: 'border-emerald-600', headerBg: 'bg-emerald-600 text-white', badgeBg: 'bg-emerald-100 text-emerald-900' },
+      { title: 'Generasi 4 • Buyut / Cicit', short: 'Cicit', border: 'border-sky-600', headerBg: 'bg-sky-600 text-white', badgeBg: 'bg-sky-100 text-sky-900' },
+      { title: 'Generasi 5 • Canggah', short: 'Canggah', border: 'border-purple-600', headerBg: 'bg-purple-600 text-white', badgeBg: 'bg-purple-100 text-purple-900' },
+      { title: 'Generasi 6 • Wareng', short: 'Wareng', border: 'border-rose-600', headerBg: 'bg-rose-600 text-white', badgeBg: 'bg-rose-100 text-rose-900' }
+    ];
+
+    function getGenMeta(depth) {
+      return GEN_LABELS[Math.min(Math.max(0, depth), GEN_LABELS.length - 1)];
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatDisplayName(name, isDeceased) {
+      if (!name) return '';
+      const trimmed = name.trim();
+      if (!isDeceased) return trimmed;
+      if (/\(alm/i.test(trimmed)) return trimmed;
+      return `${trimmed} (Alm.)`;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const el = document.createElement('div');
+      const bgClass = type === 'error' ? 'bg-red-700 text-white' : 'bg-stone-900 text-white';
+      el.className = `${bgClass} px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2`;
+      el.innerHTML = `<span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-300' : 'bg-amber-400'}"></span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+      requestAnimationFrame(() => {
+        el.classList.remove('opacity-0', 'translate-y-2');
+      });
+      setTimeout(() => {
+        el.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => el.remove(), 300);
+      }, 3200);
+    }
+
+    // =========================================================================
+    // 3. DATA PERSISTENCE (FIREBASE FIRESTORE + LOCALSTORAGE FALLBACK)
+    // =========================================================================
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_MEMBERS_KEY, JSON.stringify(members));
+        localStorage.setItem(LOCAL_STORAGE_LOGS_KEY, JSON.stringify(activityLogs));
+      } catch (e) {
+        console.warn('LocalStorage save warning:', e);
+      }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const rawMembers = localStorage.getItem(LOCAL_STORAGE_MEMBERS_KEY);
+        const rawLogs = localStorage.getItem(LOCAL_STORAGE_LOGS_KEY);
+        if (rawMembers) {
+          const parsed = JSON.parse(rawMembers);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            members = parsed;
+          }
+        }
+        if (rawLogs) {
+          const parsedLogs = JSON.parse(rawLogs);
+          if (Array.isArray(parsedLogs)) {
+            activityLogs = parsedLogs;
+          }
+        }
+      } catch (e) {
+        console.warn('LocalStorage load warning:', e);
+      }
+
+      if (members.length === 0) {
+        members = JSON.parse(JSON.stringify(INITIAL_TRAH_MEMBERS));
+        activityLogs = [
+          {
+            id: 'init_log_1',
+            action: 'Memuat Basis Data Buku Silsilah Trah Tirtowiyanan (Cetakan Ke-1 Tahun 2024)',
+            contributor: 'Sistem Arsip Trah',
+            timestamp: '2024-01-01T00:00:00.000Z'
+          }
+        ];
+        saveToLocalStorage();
+      }
+      invalidateTreeCache();
+    }
+
+    // =========================================================================
+    // KONFIGURASI FIREBASE UNTUK DEPLOY GITHUB PAGES / VERCEL (OPSIONAL)
+    // Isi objek di bawah ini jika ingin seluruh pengunjung link publik langsung
+    // terhubung ke database cloud keluarga secara otomatis.
+    // =========================================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDh8B2HL8MgG4wsasq-zOizh6QtYiGj_NY",
+    authDomain: "silsilah-trah-tirtowiyanan.firebaseapp.com",
+    projectId: "silsilah-trah-tirtowiyanan",
+    storageBucket: "silsilah-trah-tirtowiyanan.firebasestorage.app",
+    messagingSenderId: "672799950474",
+    appId: "1:672799950474:web:8c344657311c29b80d8f73"
+  };
+
+    const LOCAL_STORAGE_FB_CONFIG_KEY = 'trah_tirtowiyanan_firebase_config_v1';
+
+    function parseFirebaseConfigInput(rawText) {
+      if (!rawText || typeof rawText !== 'string') return null;
+      try {
+        const parsed = JSON.parse(rawText);
+        if (parsed && parsed.apiKey && parsed.projectId) return parsed;
+      } catch (_) {
+        // Ekstrak pasangan key: "value" dari potongan kode JS Firebase Console
+        const extracted = {};
+        const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+        keys.forEach((k) => {
+          const match = rawText.match(new RegExp(`${k}\\s*:\\s*["']([^"']+)["']`));
+          if (match && match[1]) extracted[k] = match[1].trim();
+        });
+        if (extracted.apiKey && extracted.projectId) return extracted;
+      }
+      return null;
+    }
+
+    function resolveFirebaseConfig() {
+      if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+        return JSON.parse(__firebase_config);
+      }
+      if (STANDALONE_FIREBASE_CONFIG.apiKey && STANDALONE_FIREBASE_CONFIG.projectId) {
+        return STANDALONE_FIREBASE_CONFIG;
+      }
+      try {
+        const saved = localStorage.getItem(LOCAL_STORAGE_FB_CONFIG_KEY);
+        if (saved) return parseFirebaseConfigInput(saved);
+      } catch (_) {}
+      return null;
+    }
+
+    window.saveCustomFirebaseConfig = function () {
+      const raw = document.getElementById('customFirebaseConfigInput')?.value || '';
+      const parsed = parseFirebaseConfigInput(raw);
+      if (!parsed) {
+        showToast('Format konfigurasi Firebase tidak valid (pastikan ada apiKey & projectId)', 'error');
+        return;
+      }
+      localStorage.setItem(LOCAL_STORAGE_FB_CONFIG_KEY, JSON.stringify(parsed));
+      showToast('Konfigurasi Cloud tersimpan. Memuat ulang koneksi...');
+      setTimeout(() => window.location.reload(), 900);
+    };
+
+    window.resetCustomFirebaseConfig = function () {
+      localStorage.removeItem(LOCAL_STORAGE_FB_CONFIG_KEY);
+      showToast('Konfigurasi Cloud kustom dihapus');
+      setTimeout(() => window.location.reload(), 800);
+    };
+
+    async function initDataLayer() {
+      const statusTextEl = document.getElementById('syncStatusText');
+      const userIdDisplayEl = document.getElementById('displayFullUserId');
+
+      try {
+        const firebaseConfig = resolveFirebaseConfig();
+        if (firebaseConfig) {
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            currentUser = user;
+            useCloudFirestore = true;
+            if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
+            if (userIdDisplayEl) userIdDisplayEl.textContent = `Cloud ID: ${user.uid}`;
+
+            const membersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+            const logsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+
+            const existingSnap = await getDocs(membersColRef);
+            if (existingSnap.empty) {
+              loadFromLocalStorage();
+              // Commit initial records using Firestore writeBatch (400 docs/batch) for fast bulk upload
+              const BATCH_CHUNK = 400;
+              for (let i = 0; i < members.length; i += BATCH_CHUNK) {
+                const batch = writeBatch(db);
+                members.slice(i, i + BATCH_CHUNK).forEach((m) => {
+                  batch.set(doc(membersColRef, m.id), m);
+                });
+                await batch.commit();
+              }
+              await addDoc(logsColRef, {
+                action: 'Inisialisasi basis data publik Trah Tirtowiyanan',
+                contributor: 'Paguyuban Trah Tirtowiyanan',
+                timestamp: new Date().toISOString()
+              });
+            }
+
+            let snapshotDebounceTimer = null;
+            onSnapshot(membersColRef, (snapshot) => {
+              const cloudMembers = [];
+              snapshot.forEach((docSnap) => {
+                cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              if (cloudMembers.length > 0) {
+                clearTimeout(snapshotDebounceTimer);
+                snapshotDebounceTimer = setTimeout(() => {
+                  members = cloudMembers;
+                  invalidateTreeCache();
+                  saveToLocalStorage();
+                  refreshAllViews(false);
+                }, 80);
+              }
+            });
+
+            onSnapshot(logsColRef, (snapshot) => {
+              const cloudLogs = [];
+              snapshot.forEach((docSnap) => {
+                cloudLogs.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              cloudLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+              activityLogs = cloudLogs.slice(0, 60);
+              saveToLocalStorage();
+              if (activeTab === 'heritage') renderActivityLogs();
+            });
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn('Cloud sync fallback to local browser storage:', err);
+      }
+
+      // Standalone / Offline-ready LocalStorage Mode
+      loadFromLocalStorage();
+      if (statusTextEl) statusTextEl.textContent = 'Tersimpan di Perangkat';
+      if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser + Ekspor/Impor JSON';
+      collapseToDefault(false);
+      refreshAllViews(true);
+    }
+
+    async function persistMemberRecord(record, isNew, logMessage, contributorName) {
+      const idx = members.findIndex((m) => m.id === record.id);
+      if (idx >= 0) {
+        members[idx] = record;
+      } else {
+        members.push(record);
+      }
+      invalidateTreeCache();
+
+      const logEntry = {
+        id: `log_${Date.now()}`,
+        action: logMessage,
+        contributor: contributorName || 'Anggota Keluarga',
+        timestamp: new Date().toISOString()
+      };
+      activityLogs.unshift(logEntry);
+      saveToLocalStorage();
+
+      if (useCloudFirestore && db) {
+        try {
+          const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', record.id);
+          await setDoc(memberDocRef, record);
+          const logsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+          await addDoc(logsColRef, logEntry);
+        } catch (e) {
+          console.warn('Cloud write warning:', e);
+        }
+      }
+    }
+
+    async function removeMemberRecord(memberId, logMessage) {
+      members = members.filter((m) => m.id !== memberId);
+      invalidateTreeCache();
+      const logEntry = {
+        id: `log_${Date.now()}`,
+        action: logMessage,
+        contributor: 'Pengurus / Anggota Keluarga',
+        timestamp: new Date().toISOString()
+      };
+      activityLogs.unshift(logEntry);
+      saveToLocalStorage();
+
+      if (useCloudFirestore && db) {
+        try {
+          await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', memberId));
+          await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), logEntry);
+        } catch (e) {
+          console.warn('Cloud delete warning:', e);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 4. TREE HIERARCHY & BRANCH HELPERS (MEMOIZED FOR LARGE TREES)
+    // =========================================================================
+    function buildTreeStructure() {
+      if (cachedTreeStructure && cachedMembersRef === members) {
+        return cachedTreeStructure;
+      }
+
+      const map = new Map();
+      members.forEach((m) => {
+        map.set(m.id, { ...m, children: [], depth: 0 });
+      });
+
+      const roots = [];
+      map.forEach((node) => {
+        if (node.parentId && map.has(node.parentId)) {
+          map.get(node.parentId).children.push(node);
+        } else {
+          roots.push(node);
+        }
+      });
+
+      const sortChildren = (nodes) => {
+        nodes.sort((a, b) => (a.order || 99) - (b.order || 99) || a.name.localeCompare(b.name));
+        nodes.forEach((n) => sortChildren(n.children));
+      };
+      sortChildren(roots);
+
+      const assignDepth = (node, depth) => {
+        node.depth = depth;
+        node.children.forEach((c) => assignDepth(c, depth + 1));
+      };
+      roots.forEach((r) => assignDepth(r, 0));
+
+      cachedTreeStructure = { roots, map };
+      cachedMembersRef = members;
+      return cachedTreeStructure;
+    }
+
+    function countAllDescendants(node) {
+      let count = 0;
+      node.children.forEach((c) => {
+        count += 1 + countAllDescendants(c);
+      });
+      return count;
+    }
+
+    function getAncestorChain(memberId, nodeMap) {
+      const chain = [];
+      let curr = nodeMap.get(memberId);
+      const visited = new Set();
+      while (curr && !visited.has(curr.id)) {
+        visited.add(curr.id);
+        chain.unshift(curr);
+        curr = curr.parentId ? nodeMap.get(curr.parentId) : null;
+      }
+      return chain;
+    }
+
+    function getBranchHeads(nodeMap) {
+      const rootNode = nodeMap.get('root_tirtowiyono');
+      if (rootNode && rootNode.children.length > 0) {
+        return rootNode.children;
+      }
+      return Array.from(nodeMap.values())
+        .filter((n) => n.depth === 1)
+        .sort((a, b) => (a.order || 99) - (b.order || 99));
+    }
+
+    function getBranchSubtreeIds(branchHeadId, nodeMap) {
+      const ids = new Set();
+      if (!branchHeadId || branchHeadId === 'ALL') {
+        nodeMap.forEach((_, key) => ids.add(key));
+        return ids;
+      }
+      const head = nodeMap.get(branchHeadId);
+      if (!head) return ids;
+      const collect = (n) => {
+        ids.add(n.id);
+        n.children.forEach(collect);
+      };
+      collect(head);
+      return ids;
+    }
+
+    function findBranchHeadIdForMember(memberId, nodeMap) {
+      const chain = getAncestorChain(memberId, nodeMap);
+      const branchHeads = new Set(getBranchHeads(nodeMap).map((b) => b.id));
+      for (const item of chain) {
+        if (branchHeads.has(item.id)) return item.id;
+      }
+      return 'ALL';
+    }
+
+    function getShortBranchTabLabel(branchNode, index) {
+      const num = branchNode.order || index + 1;
+      const cleanName = branchNode.name.replace(/\(alm\.?\)/gi, '').trim();
+      const words = cleanName.split(/\s+/);
+      const shortName = cleanName.length > 16 && words.length > 2 ? words.slice(0, 2).join(' ') : cleanName;
+      return `${num}. Kel. ${shortName}`;
+    }
+
+    // =========================================================================
+    // 5. INTERACTIVE FAMILY TREE LAYOUT & VIEWPORT VIRTUALIZATION
+    // =========================================================================
+    const CARD_WIDTH = 236;
+    const CARD_HEIGHT = 118;
+    const H_GAP = 28;
+    const V_GAP = 64;
+    const VIEWPORT_OVERSCAN_PX = 320;
+
+    function buildSingleCardHtml(node) {
+      const genMeta = getGenMeta(node.depth);
+      const isCollapsed = collapsedIds.has(node.id);
+      const descendantCount = countAllDescendants(node);
+      const hasChildren = node.children.length > 0;
+      const isDimmed = focusedLineageSet && !focusedLineageSet.has(node.id);
+      const isSelected = selectedMemberId === node.id;
+
+      return `
+        <div
+          onclick="openMemberDrawer('${node.id}')"
+          style="left:${node.x}px; top:${node.y}px; width:${CARD_WIDTH}px; height:${CARD_HEIGHT}px;"
+          class="node-card absolute rounded-2xl bg-white border-2 ${
+            isSelected ? 'border-amber-500 ring-4 ring-amber-200/70' : genMeta.border
+          } shadow-md hover:shadow-xl cursor-pointer flex flex-col justify-between overflow-hidden ${
+            isDimmed ? 'opacity-25' : 'opacity-100'
+          }"
+        >
+          <!-- Card Header Strip -->
+          <div class="px-3 py-1 ${genMeta.headerBg} flex items-center justify-between text-[10px] font-bold tracking-wide">
+            <span class="truncate">${escapeHtml(genMeta.short)} ${node.order ? `#${node.order}` : ''}</span>
+            ${
+              node.kelompok && !node.kelompok.startsWith('Leluhur')
+                ? `<span class="opacity-85 truncate max-w-[115px]">${escapeHtml(node.kelompok.replace(/^\d+\.\s*Kelompok\s*/i, ''))}</span>`
+                : ''
+            }
+          </div>
+
+          <!-- Card Body -->
+          <div class="px-3 py-1.5 flex-1 flex flex-col justify-center min-h-0">
+            <div class="font-bold text-xs sm:text-[13px] text-stone-900 leading-snug line-clamp-1" title="${escapeHtml(node.name)}">
+              ${escapeHtml(formatDisplayName(node.name, node.isDeceased))}
+            </div>
+            ${
+              node.spouseName && node.spouseName.trim()
+                ? `<div class="text-[11px] text-stone-600 leading-tight line-clamp-1 mt-0.5" title="Pasangan: ${escapeHtml(node.spouseName)}">
+                    <span class="text-amber-700 font-semibold">+</span> ${escapeHtml(formatDisplayName(node.spouseName, node.spouseDeceased))}
+                  </div>`
+                : `<div class="text-[11px] text-stone-400 italic leading-tight line-clamp-1 mt-0.5" title="Belum menikah / Tanpa pasangan">
+                    <span class="text-stone-300 not-italic">&mdash;</span> Belum menikah / Tanpa pasangan
+                  </div>`
+            }
+          </div>
+
+          <!-- Card Footer Actions -->
+          <div class="px-2.5 py-1 bg-stone-50 border-t border-stone-100 flex items-center justify-between gap-1">
+            <button
+              type="button"
+              onclick="event.stopPropagation(); openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+              title="Tambah Anak / Keturunan"
+              class="px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-[10px] font-bold transition"
+            >
+              + Anak
+            </button>
+
+            ${
+              hasChildren
+                ? `<button
+                    type="button"
+                    onclick="event.stopPropagation(); toggleNodeCollapse('${node.id}')"
+                    title="${isCollapsed ? 'Tampilkan keturunan' : 'Sembunyikan keturunan'}"
+                    class="px-2 py-0.5 rounded-md bg-stone-200/80 hover:bg-stone-300 text-stone-800 text-[10px] font-bold transition flex items-center gap-1"
+                  >
+                    <span>${isCollapsed ? `+ ${descendantCount} keturunan` : `− (${node.children.length})`}</span>
+                  </button>`
+                : `<span class="text-[10px] text-stone-400 px-1">Detail &rarr;</span>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVisibleTreeViewport(force = false) {
+      const viewport = document.getElementById('treeViewport');
+      const svgEl = document.getElementById('treeConnectorsSvg');
+      const containerEl = document.getElementById('treeNodesContainer');
+      if (!viewport || !svgEl || !containerEl) return;
+
+      const rect = viewport.getBoundingClientRect();
+      const viewW = rect.width || window.innerWidth || 1200;
+      const viewH = rect.height || window.innerHeight || 700;
+      const scale = canvasState.scale || 0.85;
+
+      // Convert viewport rectangle into unscaled tree canvas coordinates with overscan
+      const minX = (-canvasState.panX - VIEWPORT_OVERSCAN_PX) / scale;
+      const maxX = (-canvasState.panX + viewW + VIEWPORT_OVERSCAN_PX) / scale;
+      const minY = (-canvasState.panY - VIEWPORT_OVERSCAN_PX) / scale;
+      const maxY = (-canvasState.panY + viewH + VIEWPORT_OVERSCAN_PX) / scale;
+
+      // Quantize culling bucket (120px grid) so tiny mouse movements don't rebuild DOM
+      const bucketSize = 120 / scale;
+      const cullKey = `${Math.floor(minX / bucketSize)}:${Math.floor(minY / bucketSize)}:${Math.ceil(maxX / bucketSize)}:${Math.ceil(maxY / bucketSize)}:${canvasState.layoutNodes.length}:${selectedMemberId || ''}:${focusedLineageSet ? focusedLineageSet.size : 0}`;
+      if (!force && cullKey === canvasState.lastCullKey) {
+        return;
+      }
+      canvasState.lastCullKey = cullKey;
+
+      // Filter only cards intersecting the visible viewport
+      const visibleNodes = [];
+      for (let i = 0; i < canvasState.layoutNodes.length; i++) {
+        const n = canvasState.layoutNodes[i];
+        if (n.x + CARD_WIDTH >= minX && n.x <= maxX && n.y + CARD_HEIGHT >= minY && n.y <= maxY) {
+          visibleNodes.push(n);
+        }
+      }
+      containerEl.innerHTML = visibleNodes.map(buildSingleCardHtml).join('');
+
+      // Batch all visible orthogonal connector lines into at most 3 SVG <path> elements
+      const normalSegments = [];
+      const dimmedSegments = [];
+      const highlightedSegments = [];
+
+      for (let i = 0; i < canvasState.layoutConnectors.length; i++) {
+        const c = canvasState.layoutConnectors[i];
+        if (c.maxX < minX || c.minX > maxX || c.maxY < minY || c.minY > maxY) continue;
+        const dSeg = `M${c.px} ${c.py}V${c.my}H${c.cx}V${c.cy}`;
+        if (focusedLineageSet) {
+          if (focusedLineageSet.has(c.parentId) && focusedLineageSet.has(c.childId)) {
+            highlightedSegments.push(dSeg);
+          } else {
+            dimmedSegments.push(dSeg);
+          }
+        } else {
+          normalSegments.push(dSeg);
+        }
+      }
+
+      const pathsHtml = [];
+      if (dimmedSegments.length > 0) {
+        pathsHtml.push(`<path d="${dimmedSegments.join('')}" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />`);
+      }
+      if (normalSegments.length > 0) {
+        pathsHtml.push(`<path d="${normalSegments.join('')}" fill="none" stroke="#94A3B8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />`);
+      }
+      if (highlightedSegments.length > 0) {
+        pathsHtml.push(`<path d="${highlightedSegments.join('')}" fill="none" stroke="#B45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />`);
+      }
+      svgEl.innerHTML = pathsHtml.join('');
+
+      const badgeEl = document.getElementById('viewportRenderBadge');
+      if (badgeEl) {
+        badgeEl.textContent = `Menampilkan ${visibleNodes.length} / ${canvasState.layoutNodes.length} kartu`;
+      }
+    }
+
+    function renderTreeView(shouldCenter = false) {
+      const { roots, map } = buildTreeStructure();
+      const svgEl = document.getElementById('treeConnectorsSvg');
+      const containerEl = document.getElementById('treeNodesContainer');
+      if (!svgEl || !containerEl) return;
+
+      let displayRoots = roots;
+      if (activeBranchId !== 'ALL' && map.has(activeBranchId)) {
+        displayRoots = [map.get(activeBranchId)];
+      }
+
+      // Compute subtree widths recursively
+      const computeWidth = (node) => {
+        const isCollapsed = collapsedIds.has(node.id);
+        if (isCollapsed || node.children.length === 0) {
+          node.subtreeWidth = CARD_WIDTH;
+          return CARD_WIDTH;
+        }
+        let childrenTotalWidth = 0;
+        node.children.forEach((child, idx) => {
+          childrenTotalWidth += computeWidth(child);
+          if (idx < node.children.length - 1) childrenTotalWidth += H_GAP;
+        });
+        node.subtreeWidth = Math.max(CARD_WIDTH, childrenTotalWidth);
+        return node.subtreeWidth;
+      };
+
+      displayRoots.forEach((r) => computeWidth(r));
+
+      const positionedNodes = [];
+      const connectorSegments = [];
+      let maxDepthSeen = 0;
+
+      const assignCoords = (node, leftX, level) => {
+        maxDepthSeen = Math.max(maxDepthSeen, level);
+        const x = leftX + (node.subtreeWidth - CARD_WIDTH) / 2;
+        const y = level * (CARD_HEIGHT + V_GAP);
+        node.x = x;
+        node.y = y;
+        positionedNodes.push(node);
+
+        const isCollapsed = collapsedIds.has(node.id);
+        if (!isCollapsed && node.children.length > 0) {
+          let childrenTotalWidth = 0;
+          node.children.forEach((c, i) => {
+            childrenTotalWidth += c.subtreeWidth + (i < node.children.length - 1 ? H_GAP : 0);
+          });
+
+          let childCursorX = leftX + (node.subtreeWidth - childrenTotalWidth) / 2;
+          const parentCenterX = Math.round(x + CARD_WIDTH / 2);
+          const parentBottomY = Math.round(y + CARD_HEIGHT);
+          const midY = Math.round(parentBottomY + V_GAP / 2);
+
+          node.children.forEach((child) => {
+            assignCoords(child, childCursorX, level + 1);
+            const childCenterX = Math.round(child.x + CARD_WIDTH / 2);
+            const childTopY = Math.round(child.y);
+
+            connectorSegments.push({
+              parentId: node.id,
+              childId: child.id,
+              px: parentCenterX,
+              py: parentBottomY,
+              my: midY,
+              cx: childCenterX,
+              cy: childTopY,
+              minX: Math.min(parentCenterX, childCenterX),
+              maxX: Math.max(parentCenterX, childCenterX),
+              minY: parentBottomY,
+              maxY: childTopY
+            });
+
+            childCursorX += child.subtreeWidth + H_GAP;
+          });
+        }
+      };
+
+      let rootCursorX = 40;
+      displayRoots.forEach((r) => {
+        assignCoords(r, rootCursorX, 0);
+        rootCursorX += r.subtreeWidth + H_GAP * 2;
+      });
+
+      const svgWidth = Math.max(800, rootCursorX + 80);
+      const svgHeight = Math.max(600, (maxDepthSeen + 1) * (CARD_HEIGHT + V_GAP) + 120);
+      svgEl.setAttribute('width', svgWidth);
+      svgEl.setAttribute('height', svgHeight);
+
+      canvasState.nodePositions.clear();
+      for (let i = 0; i < positionedNodes.length; i++) {
+        const n = positionedNodes[i];
+        canvasState.nodePositions.set(n.id, { x: n.x, y: n.y });
+      }
+      canvasState.layoutNodes = positionedNodes;
+      canvasState.layoutConnectors = connectorSegments;
+      canvasState.lastCullKey = '';
+
+      if (shouldCenter) {
+        centerOnRoot();
+      } else {
+        renderVisibleTreeViewport(true);
+      }
+    }
+
+    function applyCanvasTransform(forceCull = false) {
+      const layer = document.getElementById('treeCanvasLayer');
+      const zoomLabel = document.getElementById('zoomLevelLabel');
+      if (layer) {
+        layer.style.transform = `translate3d(${canvasState.panX}px, ${canvasState.panY}px, 0) scale(${canvasState.scale})`;
+      }
+      if (zoomLabel) {
+        zoomLabel.textContent = `${Math.round(canvasState.scale * 100)}%`;
+      }
+      if (forceCull) {
+        renderVisibleTreeViewport(true);
+      } else if (!canvasState.rafPending) {
+        canvasState.rafPending = true;
+        requestAnimationFrame(() => {
+          canvasState.rafPending = false;
+          renderVisibleTreeViewport(false);
+        });
+      }
+    }
+
+    window.zoomTree = function (delta) {
+      const viewport = document.getElementById('treeViewport');
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const oldScale = canvasState.scale;
+      const newScale = Math.min(1.6, Math.max(0.28, oldScale + delta));
+      const scaleRatio = newScale / oldScale;
+
+      canvasState.panX = centerX - (centerX - canvasState.panX) * scaleRatio;
+      canvasState.panY = centerY - (centerY - canvasState.panY) * scaleRatio;
+      canvasState.scale = newScale;
+      applyCanvasTransform(false);
+    };
+
+    window.centerOnRoot = function () {
+      const viewport = document.getElementById('treeViewport');
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      const targetId = activeBranchId !== 'ALL' ? activeBranchId : 'root_tirtowiyono';
+      const pos = canvasState.nodePositions.get(targetId) || Array.from(canvasState.nodePositions.values())[0];
+      if (!pos) return;
+
+      canvasState.scale = activeBranchId !== 'ALL' ? 0.9 : 0.78;
+      canvasState.panX = rect.width / 2 - (pos.x + CARD_WIDTH / 2) * canvasState.scale;
+      canvasState.panY = 36 - pos.y * canvasState.scale;
+      applyCanvasTransform(true);
+    };
+
+    function focusCanvasOnNode(memberId) {
+      const viewport = document.getElementById('treeViewport');
+      const pos = canvasState.nodePositions.get(memberId);
+      if (!viewport || !pos) return;
+      const rect = viewport.getBoundingClientRect();
+      canvasState.scale = Math.max(canvasState.scale, 0.9);
+      canvasState.panX = rect.width / 2 - (pos.x + CARD_WIDTH / 2) * canvasState.scale;
+      canvasState.panY = rect.height / 2 - (pos.y + CARD_HEIGHT / 2) * canvasState.scale;
+      applyCanvasTransform(true);
+    }
+
+    window.toggleNodeCollapse = function (memberId) {
+      if (collapsedIds.has(memberId)) {
+        collapsedIds.delete(memberId);
+      } else {
+        collapsedIds.add(memberId);
+      }
+      renderTreeView(false);
+    };
+
+    window.expandAllNodes = function () {
+      collapsedIds.clear();
+      renderTreeView(false);
+    };
+
+    window.collapseToDefault = function (shouldRender = true) {
+      const { map } = buildTreeStructure();
+      collapsedIds.clear();
+      if (activeBranchId === 'ALL') {
+        map.forEach((node) => {
+          if (node.depth >= 1 && node.children.length > 0) {
+            collapsedIds.add(node.id);
+          }
+        });
+      }
+      if (shouldRender) renderTreeView(true);
+    };
+
+    function setupCanvasPanAndZoom() {
+      const viewport = document.getElementById('treeViewport');
+      if (!viewport) return;
+
+      viewport.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.node-card') || e.target.closest('button')) return;
+        canvasState.isDragging = true;
+        canvasState.startX = e.clientX - canvasState.panX;
+        canvasState.startY = e.clientY - canvasState.panY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!canvasState.isDragging) return;
+        canvasState.panX = e.clientX - canvasState.startX;
+        canvasState.panY = e.clientY - canvasState.startY;
+        applyCanvasTransform(false);
+      });
+
+      window.addEventListener('mouseup', () => {
+        canvasState.isDragging = false;
+      });
+
+      viewport.addEventListener(
+        'wheel',
+        (e) => {
+          e.preventDefault();
+          const delta = e.deltaY < 0 ? 0.08 : -0.08;
+          window.zoomTree(delta);
+        },
+        { passive: false }
+      );
+
+      // Touch drag & pinch zoom
+      viewport.addEventListener(
+        'touchstart',
+        (e) => {
+          if (e.target.closest('.node-card') || e.target.closest('button')) return;
+          if (e.touches.length === 1) {
+            canvasState.isDragging = true;
+            canvasState.startX = e.touches[0].clientX - canvasState.panX;
+            canvasState.startY = e.touches[0].clientY - canvasState.panY;
+          } else if (e.touches.length === 2) {
+            canvasState.isDragging = false;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            canvasState.lastPinchDist = Math.hypot(dx, dy);
+          }
+        },
+        { passive: true }
+      );
+
+      viewport.addEventListener(
+        'touchmove',
+        (e) => {
+          if (e.touches.length === 1 && canvasState.isDragging) {
+            canvasState.panX = e.touches[0].clientX - canvasState.startX;
+            canvasState.panY = e.touches[0].clientY - canvasState.startY;
+            applyCanvasTransform(false);
+          } else if (e.touches.length === 2 && canvasState.lastPinchDist > 0) {
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            const diff = (dist - canvasState.lastPinchDist) * 0.004;
+            canvasState.lastPinchDist = dist;
+            window.zoomTree(diff);
+          }
+        },
+        { passive: true }
+      );
+
+      viewport.addEventListener('touchend', () => {
+        canvasState.isDragging = false;
+        canvasState.lastPinchDist = 0;
+      });
+
+      window.addEventListener('resize', () => {
+        if (activeTab === 'tree') renderVisibleTreeViewport(false);
+      });
+    }
+
+    // =========================================================================
+    // 6. MEMBER DETAIL DRAWER & LINEAGE FOCUS MODE
+    // =========================================================================
+    window.openMemberDrawer = function (memberId) {
+      const { map } = buildTreeStructure();
+      const node = map.get(memberId);
+      if (!node) return;
+
+      selectedMemberId = memberId;
+      if (activeTab === 'tree') renderVisibleTreeViewport(true);
+
+      const genMeta = getGenMeta(node.depth);
+      const ancestors = getAncestorChain(memberId, map);
+      const descendantCount = countAllDescendants(node);
+
+      const drawerContent = document.getElementById('memberDrawerContent');
+      const drawer = document.getElementById('memberDrawer');
+      const backdrop = document.getElementById('memberDrawerBackdrop');
+
+      drawerContent.innerHTML = `
+        <div class="px-5 py-4 ${genMeta.headerBg} flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider opacity-85">${escapeHtml(genMeta.title)}</div>
+            <h3 class="font-serif font-bold text-lg leading-snug mt-0.5">${escapeHtml(formatDisplayName(node.name, node.isDeceased))}</h3>
+          </div>
+          <button type="button" onclick="closeMemberDrawer()" class="p-2 rounded-xl bg-black/15 hover:bg-black/25 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-5 text-sm">
+          <!-- Ancestor Breadcrumb -->
+          <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-stone-400">Garis Leluhur ke Atas</div>
+            <div class="flex flex-wrap items-center gap-1 text-xs">
+              ${ancestors
+                .map(
+                  (a, idx) => `
+                  <button type="button" onclick="jumpToTreeNode('${a.id}')" class="px-2 py-0.5 rounded-md ${
+                    a.id === node.id ? 'bg-batik-indigo text-white font-bold' : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
+                  }">
+                    ${escapeHtml(a.name)}
+                  </button>
+                  ${idx < ancestors.length - 1 ? '<span class="text-stone-400">&rarr;</span>' : ''}
+                `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Core Identity Details -->
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200/70">
+                <div class="text-[11px] text-stone-400 font-semibold">Status Anggota</div>
+                <div class="text-xs font-bold text-stone-800 mt-0.5">${node.isDeceased ? 'Almarhum / Almarhumah' : 'Masih Hidup'}</div>
+              </div>
+              <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200/70">
+                <div class="text-[11px] text-stone-400 font-semibold">Urutan &amp; Jumlah Keturunan</div>
+                <div class="text-xs font-bold text-stone-800 mt-0.5">Anak ke-${node.order || 1} &bull; ${descendantCount} keturunan</div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/70 space-y-2 text-xs">
+              <div>
+                <span class="text-stone-400 font-semibold">Pasangan:</span>
+                ${
+                  node.spouseName && node.spouseName.trim()
+                    ? `<span class="font-bold text-stone-800 ml-1">${escapeHtml(formatDisplayName(node.spouseName, node.spouseDeceased))}</span>`
+                    : `<span class="italic text-stone-400 ml-1">Belum menikah / Tanpa pasangan</span>`
+                }
+              </div>
+              <div>
+                <span class="text-stone-400 font-semibold">Kelompok Cabang:</span>
+                <span class="font-semibold text-stone-800 ml-1">${escapeHtml(node.kelompok || 'Trah Tirtowiyanan')}</span>
+              </div>
+              <div>
+                <span class="text-stone-400 font-semibold">Domisili:</span>
+                <span class="font-semibold text-stone-800 ml-1">${escapeHtml(node.domicile || 'Belum dicantumkan')}</span>
+              </div>
+              ${
+                node.notes
+                  ? `<div class="pt-1 border-t border-stone-200/70 text-stone-600 leading-relaxed">${escapeHtml(node.notes)}</div>`
+                  : ''
+              }
+            </div>
+          </div>
+
+          <!-- Direct Children List -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold text-stone-700">Putra / Putri Langsung (${node.children.length})</div>
+              <button
+                type="button"
+                onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+                class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition"
+              >
+                + Tambah Anak
+              </button>
+            </div>
+            ${
+              node.children.length === 0
+                ? `<p class="text-xs text-stone-400 italic p-3 rounded-2xl bg-stone-50 border border-dashed border-stone-200">Belum ada data anak tercatat.</p>`
+                : `<div class="space-y-1.5">
+                    ${node.children
+                      .map(
+                        (c, i) => `
+                        <button
+                          type="button"
+                          onclick="openMemberDrawer('${c.id}')"
+                          class="w-full text-left p-2.5 rounded-xl border border-stone-200 hover:border-batik-indigo hover:bg-stone-50 transition flex items-center justify-between gap-2"
+                        >
+                          <div class="min-w-0">
+                            <div class="text-xs font-bold text-stone-800 truncate">${i + 1}. ${escapeHtml(formatDisplayName(c.name, c.isDeceased))}</div>
+                            <div class="text-[11px] text-stone-500 truncate">
+                              ${c.spouseName ? `+ ${escapeHtml(formatDisplayName(c.spouseName, c.spouseDeceased))}` : 'Belum menikah / Tanpa pasangan'}
+                            </div>
+                          </div>
+                          <span class="text-[11px] text-batik-indigo font-semibold shrink-0">${c.children.length} anak &rarr;</span>
+                        </button>
+                      `
+                      )
+                      .join('')}
+                  </div>`
+            }
+          </div>
+        </div>
+
+        <!-- Drawer Footer Actions -->
+        <div class="p-4 border-t border-stone-200 bg-stone-50 space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onclick="focusLineage('${node.id}')"
+              class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition"
+            >
+              Fokus Jalur Keluarga
+            </button>
+            <button
+              type="button"
+              onclick="openEditModal('${node.id}')"
+              class="px-3 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold transition"
+            >
+              Edit Data Anggota
+            </button>
+          </div>
+          ${
+            node.parentId
+              ? `<button
+                  type="button"
+                  onclick="confirmDeleteMember('${node.id}')"
+                  class="w-full py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-xs font-semibold transition"
+                >
+                  Hapus Anggota Ini
+                </button>`
+              : ''
+          }
+        </div>
+      `;
+
+      backdrop.classList.remove('hidden');
+      drawer.classList.remove('translate-x-full');
+    };
+
+    window.closeMemberDrawer = function () {
+      selectedMemberId = null;
+      const drawer = document.getElementById('memberDrawer');
+      const backdrop = document.getElementById('memberDrawerBackdrop');
+      if (drawer) drawer.classList.add('translate-x-full');
+      if (backdrop) backdrop.classList.add('hidden');
+      window.scrollTo(0, 0);
+      if (activeTab === 'tree') renderVisibleTreeViewport(true);
+    };
+
+    window.focusLineage = function (memberId) {
+      const { map } = buildTreeStructure();
+      const target = map.get(memberId);
+      if (!target) return;
+
+      const lineage = new Set();
+      getAncestorChain(memberId, map).forEach((a) => {
+        lineage.add(a.id);
+        collapsedIds.delete(a.id);
+      });
+      const collectDescendants = (n) => {
+        lineage.add(n.id);
+        collapsedIds.delete(n.id);
+        n.children.forEach(collectDescendants);
+      };
+      collectDescendants(target);
+
+      focusedLineageSet = lineage;
+      const clearBtn = document.getElementById('clearFocusBtn');
+      if (clearBtn) {
+        clearBtn.classList.remove('hidden');
+        clearBtn.classList.add('inline-flex');
+      }
+
+      closeMemberDrawer();
+      if (activeTab !== 'tree') switchTab('tree');
+      renderTreeView(false);
+      focusCanvasOnNode(memberId);
+      showToast(`Menyorot jalur keluarga ${target.name}`);
+    };
+
+    window.clearFocusLineage = function () {
+      focusedLineageSet = null;
+      const clearBtn = document.getElementById('clearFocusBtn');
+      if (clearBtn) {
+        clearBtn.classList.add('hidden');
+        clearBtn.classList.remove('inline-flex');
+      }
+      if (activeTab === 'tree') renderVisibleTreeViewport(true);
+    };
+
+    window.jumpToTreeNode = function (memberId) {
+      const { map } = buildTreeStructure();
+      if (!map.has(memberId)) return;
+
+      if (activeBranchId !== 'ALL') {
+        const branchIds = getBranchSubtreeIds(activeBranchId, map);
+        if (!branchIds.has(memberId)) {
+          const targetBranchId = findBranchHeadIdForMember(memberId, map);
+          activeBranchId = targetBranchId;
+          renderFamilyBranchTabs();
+        }
+      }
+
+      getAncestorChain(memberId, map).forEach((anc) => collapsedIds.delete(anc.id));
+      if (activeTab !== 'tree') switchTab('tree');
+      renderTreeView(false);
+      focusCanvasOnNode(memberId);
+      openMemberDrawer(memberId);
+    };
+
+    // =========================================================================
+    // 7. DIRECTORY, ANALYTICS & ACTIVITY LOG VIEWS (PROGRESSIVE CHUNKING)
+    // =========================================================================
+    function buildDirectoryRowHtml({ node, code, baseDepth }) {
+      const genMeta = getGenMeta(node.depth);
+      const relDepth = Math.max(0, node.depth - baseDepth);
+      const indentPx = Math.min(relDepth * 20, 80);
+      return `
+        <div class="p-3.5 sm:px-6 hover:bg-stone-50/90 transition flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-start gap-2.5 min-w-[240px]" style="padding-left: ${indentPx}px">
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${genMeta.badgeBg} shrink-0 mt-0.5">
+              ${code || 'Leluhur'}
+            </span>
+            <div>
+              <div class="font-bold text-sm text-stone-900">
+                ${escapeHtml(formatDisplayName(node.name, node.isDeceased))}
+                ${
+                  node.spouseName
+                    ? `<span class="font-normal text-stone-500"> + ${escapeHtml(formatDisplayName(node.spouseName, node.spouseDeceased))}</span>`
+                    : ''
+                }
+              </div>
+              <div class="text-xs text-stone-500 flex flex-wrap items-center gap-2 mt-0.5">
+                <span>${genMeta.short}</span>
+                ${node.kelompok ? `<span>&bull; ${escapeHtml(node.kelompok)}</span>` : ''}
+                ${node.domicile ? `<span>&bull; ${escapeHtml(node.domicile)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 ml-auto">
+            <button
+              type="button"
+              onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+              class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition"
+            >
+              + Anak
+            </button>
+            <button
+              type="button"
+              onclick="jumpToTreeNode('${node.id}')"
+              class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold transition"
+            >
+              Lihat di Pohon
+            </button>
+            <button
+              type="button"
+              onclick="openMemberDrawer('${node.id}')"
+              class="px-2.5 py-1.5 rounded-lg border border-stone-200 hover:bg-white text-stone-700 text-xs font-semibold transition"
+            >
+              Detail
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    window.loadMoreDirectoryRows = function () {
+      directoryVisibleLimit += DIRECTORY_PAGE_SIZE;
+      renderDirectoryView(false);
+    };
+
+    window.renderDirectoryView = function (resetPagination = true) {
+      const container = document.getElementById('directoryListContainer');
+      if (!container) return;
+
+      if (resetPagination) {
+        directoryVisibleLimit = DIRECTORY_PAGE_SIZE;
+        const genFilter = document.getElementById('genFilterSelect')?.value || 'ALL';
+        const statusFilter = document.getElementById('statusFilterSelect')?.value || 'ALL';
+        const queryText = (document.getElementById('globalSearchInput')?.value || '').trim().toLowerCase();
+
+        const { roots, map } = buildTreeStructure();
+        const allowedIds = getBranchSubtreeIds(activeBranchId, map);
+        const baseDepth = activeBranchId !== 'ALL' && map.has(activeBranchId) ? map.get(activeBranchId).depth : 0;
+
+        const flatOrdered = [];
+        const traverse = (node, codePrefix) => {
+          if (allowedIds.has(node.id)) {
+            flatOrdered.push({ node, code: codePrefix, baseDepth });
+          }
+          node.children.forEach((child, idx) => {
+            const nextCode =
+              node.id === activeBranchId
+                ? `${idx + 1}`
+                : codePrefix
+                ? `${codePrefix}.${idx + 1}`
+                : `${idx + 1}`;
+            traverse(child, nextCode);
+          });
+        };
+        roots.forEach((r) => traverse(r, ''));
+
+        directoryFilteredCache = flatOrdered.filter(({ node }) => {
+          if (genFilter !== 'ALL' && String(node.depth) !== genFilter) return false;
+          if (statusFilter === 'ALIVE' && node.isDeceased) return false;
+          if (statusFilter === 'DECEASED' && !node.isDeceased) return false;
+          if (queryText) {
+            const hay = `${node.name} ${node.spouseName || ''} ${node.kelompok || ''} ${node.domicile || ''}`.toLowerCase();
+            if (!hay.includes(queryText)) return false;
+          }
+          return true;
+        });
+      }
+
+      if (directoryFilteredCache.length === 0) {
+        container.innerHTML = `<div class="p-10 text-center text-sm text-stone-500">Tidak ada anggota keluarga yang cocok dengan filter saat ini.</div>`;
+        return;
+      }
+
+      const visibleSlice = directoryFilteredCache.slice(0, directoryVisibleLimit);
+      const remainingCount = directoryFilteredCache.length - visibleSlice.length;
+
+      let html = visibleSlice.map(buildDirectoryRowHtml).join('');
+      if (remainingCount > 0) {
+        html += `
+          <div class="p-4 bg-stone-50/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-500">
+            <span>Menampilkan <strong>${visibleSlice.length}</strong> dari <strong>${directoryFilteredCache.length}</strong> anggota</span>
+            <button
+              type="button"
+              onclick="loadMoreDirectoryRows()"
+              class="px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white font-semibold transition shadow-xs"
+            >
+              Muat ${Math.min(DIRECTORY_PAGE_SIZE, remainingCount)} Berikutnya (${remainingCount} tersisa)
+            </button>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    };
+
+    function renderStatsView() {
+      const { map } = buildTreeStructure();
+      const allowedIds = getBranchSubtreeIds(activeBranchId, map);
+      const allNodes = Array.from(map.values()).filter((n) => allowedIds.has(n.id));
+      const activeBranchNode = activeBranchId !== 'ALL' ? map.get(activeBranchId) : null;
+
+      const totalDescendants = allNodes.length;
+      const totalSpouses = allNodes.filter((n) => n.spouseName && n.spouseName.trim() !== '').length;
+      const totalAlive = allNodes.filter((n) => !n.isDeceased).length;
+      const totalDeceased = allNodes.filter((n) => n.isDeceased).length;
+
+      const summaryEl = document.getElementById('statsSummaryCards');
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div class="bg-white rounded-3xl border border-stone-200 p-4 sm:p-5 shadow-sm">
+            <div class="text-xs font-semibold text-stone-400">${activeBranchNode ? `Keturunan Kel. ${escapeHtml(activeBranchNode.name)}` : 'Total Garis Keturunan Gabungan'}</div>
+            <div class="text-2xl sm:text-3xl font-serif font-bold text-batik-indigo mt-1">${totalDescendants}</div>
+            <div class="text-[11px] text-stone-500 mt-1">${activeBranchNode ? escapeHtml(activeBranchNode.kelompok || '') : 'Dari Eyang hingga Canggah'}</div>
+          </div>
+          <div class="bg-white rounded-3xl border border-stone-200 p-4 sm:p-5 shadow-sm">
+            <div class="text-xs font-semibold text-stone-400">Total Jiwa (+ Menantu/Pasangan)</div>
+            <div class="text-2xl sm:text-3xl font-serif font-bold text-amber-600 mt-1">${totalDescendants + totalSpouses}</div>
+            <div class="text-[11px] text-stone-500 mt-1">Termasuk ${totalSpouses} pasangan tercatat</div>
+          </div>
+          <div class="bg-white rounded-3xl border border-stone-200 p-4 sm:p-5 shadow-sm">
+            <div class="text-xs font-semibold text-stone-400">Anggota Aktif / Masih Hidup</div>
+            <div class="text-2xl sm:text-3xl font-serif font-bold text-emerald-700 mt-1">${totalAlive}</div>
+            <div class="text-[11px] text-stone-500 mt-1">Generasi penerus keluarga</div>
+          </div>
+          <div class="bg-white rounded-3xl border border-stone-200 p-4 sm:p-5 shadow-sm">
+            <div class="text-xs font-semibold text-stone-400">Pendahulu (Almarhum/ah)</div>
+            <div class="text-2xl sm:text-3xl font-serif font-bold text-stone-600 mt-1">${totalDeceased}</div>
+            <div class="text-[11px] text-stone-500 mt-1">Sesepuh yang dikenang</div>
+          </div>
+        `;
+      }
+
+      const branchChartTitle = document.getElementById('branchChartTitle');
+      const branchChartSubtitle = document.getElementById('branchChartSubtitle');
+      const branchCounts = new Map();
+
+      if (activeBranchNode) {
+        if (branchChartTitle) branchChartTitle.textContent = `Sebaran Putra-Putri Kel. ${activeBranchNode.name}`;
+        if (branchChartSubtitle) branchChartSubtitle.textContent = 'Jumlah keturunan langsung pada masing-masing anak/cucu di cabang ini';
+        activeBranchNode.children.forEach((child, idx) => {
+          const count = 1 + countAllDescendants(child);
+          branchCounts.set(`${idx + 1}. Kel. ${child.name}`, count);
+        });
+      } else {
+        if (branchChartTitle) branchChartTitle.textContent = 'Sebaran 8 Kelompok Trah Tirtowiyanan';
+        if (branchChartSubtitle) branchChartSubtitle.textContent = 'Jumlah total keturunan berdasarkan cabang keluarga besar';
+        getBranchHeads(map).forEach((head, idx) => {
+          const count = 1 + countAllDescendants(head);
+          branchCounts.set(`${idx + 1}. Kel. ${head.name} (${head.domicile || head.kelompok || ''})`, count);
+        });
+      }
+
+      const sortedBranches = Array.from(branchCounts.entries());
+      const maxBranch = Math.max(1, ...sortedBranches.map((b) => b[1]));
+      const branchChartEl = document.getElementById('branchChartContainer');
+      if (branchChartEl) {
+        branchChartEl.innerHTML =
+          sortedBranches.length === 0
+            ? `<p class="text-xs text-stone-400">Belum ada sub-cabang keturunan tercatat.</p>`
+            : sortedBranches
+                .map(([label, count]) => {
+                  const pct = Math.round((count / maxBranch) * 100);
+                  return `
+                    <div>
+                      <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
+                        <span>${escapeHtml(label)}</span>
+                        <span class="text-batik-indigo">${count} jiwa</span>
+                      </div>
+                      <div class="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-batik-indigo to-amber-500 rounded-full" style="width:${pct}%"></div>
+                      </div>
+                    </div>
+                  `;
+                })
+                .join('');
+      }
+
+      const genCounts = new Map();
+      allNodes.forEach((n) => {
+        genCounts.set(n.depth, (genCounts.get(n.depth) || 0) + 1);
+      });
+      const sortedGens = Array.from(genCounts.entries()).sort((a, b) => a[0] - b[0]);
+      const maxGen = Math.max(1, ...sortedGens.map((g) => g[1]));
+      const genChartEl = document.getElementById('generationChartContainer');
+      if (genChartEl) {
+        genChartEl.innerHTML = sortedGens
+          .map(([depth, count]) => {
+            const meta = getGenMeta(depth);
+            const pct = Math.round((count / maxGen) * 100);
+            return `
+              <div>
+                <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
+                  <span>${escapeHtml(meta.title)}</span>
+                  <span class="text-emerald-700">${count} orang</span>
+                </div>
+                <div class="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-emerald-600 rounded-full" style="width:${pct}%"></div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+    }
+
+    function renderActivityLogs() {
+      const container = document.getElementById('activityLogList');
+      if (!container) return;
+      if (activityLogs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400">Belum ada riwayat pembaruan.</p>`;
+        return;
+      }
+      container.innerHTML = activityLogs
+        .map((log) => {
+          const dateStr = log.timestamp
+            ? new Date(log.timestamp).toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+            : '';
+          return `
+            <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200/70 space-y-1">
+              <div class="text-xs font-semibold text-stone-800 leading-snug">${escapeHtml(log.action)}</div>
+              <div class="flex items-center justify-between text-[11px] text-stone-500">
+                <span>Oleh: <strong>${escapeHtml(log.contributor || 'Anggota Trah')}</strong></span>
+                <span>${escapeHtml(dateStr)}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    // =========================================================================
+    // 8. ADD / EDIT / DELETE MEMBER MODALS
+    // =========================================================================
+    window.updateAutoGenPreview = function () {
+      const parentId = document.getElementById('formParentId')?.value;
+      const previewEl = document.getElementById('autoGenPreview');
+      if (!parentId || !previewEl) return;
+      const { map } = buildTreeStructure();
+      const parentNode = map.get(parentId);
+      if (parentNode) {
+        const nextGen = getGenMeta(parentNode.depth + 1);
+        previewEl.textContent = `Otomatis tercatat sebagai: ${nextGen.title}`;
+      }
+    };
+
+    window.onRelationTypeChange = function (val) {
+      const parentWrapper = document.getElementById('parentSelectWrapper');
+      if (!parentWrapper) return;
+      if (val === 'ancestor_above') {
+        parentWrapper.classList.add('hidden');
+      } else {
+        parentWrapper.classList.remove('hidden');
+      }
+    };
+
+    window.openAddModal = function ({ mode = 'descendant', parentId = null } = {}) {
+      const { roots, map } = buildTreeStructure();
+      const activeBranchNode = activeBranchId !== 'ALL' ? map.get(activeBranchId) : null;
+
+      document.getElementById('formMemberId').value = '';
+      document.getElementById('formMode').value = mode;
+      document.getElementById('formModalTitle').textContent = activeBranchNode
+        ? `Tambah Anggota • Kel. ${activeBranchNode.name}`
+        : 'Tambah Anggota Silsilah Baru';
+      document.getElementById('formModalSubtitle').textContent = activeBranchNode
+        ? `Pembaruan langsung pada cabang ${activeBranchNode.kelompok || activeBranchNode.name}`
+        : 'Dapat menambahkan Buyut, Mbah, Anak, Cucu, hingga Cicit';
+      document.getElementById('relationModeSelector').classList.remove('hidden');
+
+      const radioDesc = document.querySelector('input[name="addRelationType"][value="descendant"]');
+      if (radioDesc) radioDesc.checked = true;
+      onRelationTypeChange('descendant');
+
+      const parentSelect = document.getElementById('formParentId');
+      const options = [];
+      const walk = (n, relDepth = 0) => {
+        const genShort = getGenMeta(n.depth).short;
+        const prefix = '— '.repeat(relDepth);
+        options.push(`<option value="${n.id}">${prefix}${escapeHtml(n.name)} (${genShort})</option>`);
+        n.children.forEach((c) => walk(c, relDepth + 1));
+      };
+
+      if (activeBranchNode) {
+        walk(activeBranchNode, 0);
+      } else {
+        roots.forEach((r) => walk(r, r.depth));
+      }
+      parentSelect.innerHTML = options.join('');
+
+      const chosenParentId = parentId || (activeBranchNode ? activeBranchNode.id : roots[0] ? roots[0].id : '');
+      if (chosenParentId) {
+        parentSelect.value = chosenParentId;
+        const parentNode = map.get(chosenParentId);
+        if (parentNode) {
+          document.getElementById('formOrder').value = parentNode.children.length + 1;
+          document.getElementById('formKelompok').value =
+            parentNode.depth === 0 ? `${parentNode.children.length + 1}. Kelompok Baru` : parentNode.kelompok || '';
+        }
+      }
+
+      document.getElementById('formName').value = '';
+      document.getElementById('formGender').value = 'L';
+      document.getElementById('formIsDeceased').value = 'false';
+      document.getElementById('formSpouseName').value = '';
+      document.getElementById('formSpouseDeceased').value = 'false';
+      document.getElementById('formDomicile').value = '';
+      document.getElementById('formNotes').value = '';
+      updateAutoGenPreview();
+
+      document.getElementById('memberFormModal').classList.remove('hidden');
+    };
+
+    window.openEditModal = function (memberId) {
+      const { roots, map } = buildTreeStructure();
+      const node = map.get(memberId);
+      if (!node) return;
+
+      document.getElementById('formMemberId').value = node.id;
+      document.getElementById('formMode').value = 'edit';
+      document.getElementById('formModalTitle').textContent = `Edit Data: ${node.name}`;
+      document.getElementById('formModalSubtitle').textContent = 'Perbarui nama, pasangan, domisili, atau status anggota';
+      document.getElementById('relationModeSelector').classList.add('hidden');
+
+      const parentWrapper = document.getElementById('parentSelectWrapper');
+      const parentSelect = document.getElementById('formParentId');
+      if (!node.parentId) {
+        parentWrapper.classList.add('hidden');
+      } else {
+        parentWrapper.classList.remove('hidden');
+        const options = [];
+        const walk = (n, relDepth = 0) => {
+          if (n.id === node.id) return;
+          const prefix = '— '.repeat(relDepth);
+          options.push(`<option value="${n.id}">${prefix}${escapeHtml(n.name)}</option>`);
+          n.children.forEach((c) => walk(c, relDepth + 1));
+        };
+        roots.forEach((r) => walk(r, 0));
+        parentSelect.innerHTML = options.join('');
+        parentSelect.value = node.parentId;
+      }
+
+      document.getElementById('formName').value = node.name || '';
+      document.getElementById('formOrder').value = node.order || 1;
+      document.getElementById('formGender').value = node.gender || 'L';
+      document.getElementById('formIsDeceased').value = String(Boolean(node.isDeceased));
+      document.getElementById('formSpouseName').value = node.spouseName || '';
+      document.getElementById('formSpouseDeceased').value = String(Boolean(node.spouseDeceased));
+      document.getElementById('formKelompok').value = node.kelompok || '';
+      document.getElementById('formDomicile').value = node.domicile || '';
+      document.getElementById('formNotes').value = node.notes || '';
+      updateAutoGenPreview();
+
+      document.getElementById('memberFormModal').classList.remove('hidden');
+    };
+
+    window.closeFormModal = function () {
+      document.getElementById('memberFormModal').classList.add('hidden');
+      window.scrollTo(0, 0);
+    };
+
+    window.handleMemberFormSubmit = async function (event) {
+      event.preventDefault();
+      const memberId = document.getElementById('formMemberId').value;
+      const mode = document.getElementById('formMode').value;
+      const relationType = document.querySelector('input[name="addRelationType"]:checked')?.value || 'descendant';
+      const parentId = document.getElementById('formParentId').value;
+      const name = document.getElementById('formName').value.trim();
+      const order = parseInt(document.getElementById('formOrder').value, 10) || 1;
+      const gender = document.getElementById('formGender').value;
+      const isDeceased = document.getElementById('formIsDeceased').value === 'true';
+      const spouseName = document.getElementById('formSpouseName').value.trim();
+      const spouseDeceased = document.getElementById('formSpouseDeceased').value === 'true';
+      const kelompok = document.getElementById('formKelompok').value.trim();
+      const domicile = document.getElementById('formDomicile').value.trim();
+      const notes = document.getElementById('formNotes').value.trim();
+      const contributor = document.getElementById('formContributor').value.trim() || 'Anggota Keluarga';
+
+      if (!name) return;
+
+      if (mode === 'edit' && memberId) {
+        const existing = members.find((m) => m.id === memberId);
+        if (!existing) return;
+        const updated = {
+          ...existing,
+          parentId: existing.parentId ? parentId : null,
+          name,
+          order,
+          gender,
+          isDeceased,
+          spouseName,
+          spouseDeceased,
+          kelompok,
+          domicile,
+          notes,
+          updatedBy: contributor,
+          updatedAt: new Date().toISOString()
+        };
+        await persistMemberRecord(updated, false, `Memperbarui data "${name}" (${kelompok || 'Trah Tirtowiyanan'})`, contributor);
+        closeFormModal();
+        refreshAllViews(false);
+        if (selectedMemberId === memberId) openMemberDrawer(memberId);
+        showToast(`Data ${name} berhasil diperbarui`);
+        return;
+      }
+
+      // Adding new ancestor above current root
+      if (relationType === 'ancestor_above') {
+        const { roots } = buildTreeStructure();
+        const currentRoot = roots[0];
+        const newAncestorId = `ancestor_${Date.now()}`;
+        const newAncestor = {
+          id: newAncestorId,
+          parentId: null,
+          order: 1,
+          name,
+          gender,
+          isDeceased,
+          spouseName,
+          spouseDeceased,
+          kelompok: kelompok || 'Leluhur / Buyut Trah',
+          domicile,
+          notes,
+          updatedBy: contributor,
+          updatedAt: new Date().toISOString()
+        };
+        await persistMemberRecord(newAncestor, true, `Menambahkan leluhur/buyut di atas Eyang: "${name}"`, contributor);
+        if (currentRoot) {
+          const updatedOldRoot = { ...currentRoot, parentId: newAncestorId };
+          delete updatedOldRoot.children;
+          delete updatedOldRoot.depth;
+          delete updatedOldRoot.subtreeWidth;
+          delete updatedOldRoot.x;
+          delete updatedOldRoot.y;
+          await persistMemberRecord(updatedOldRoot, false, `Menghubungkan ${currentRoot.name} sebagai keturunan ${name}`, contributor);
+        }
+        activeBranchId = 'ALL';
+        closeFormModal();
+        refreshAllViews(true);
+        showToast(`Leluhur ${name} berhasil ditambahkan di puncak silsilah`);
+        return;
+      }
+
+      // Adding descendant
+      const newId = `mem_${Date.now()}`;
+      const newMember = {
+        id: newId,
+        parentId: parentId || 'root_tirtowiyono',
+        order,
+        name,
+        gender,
+        isDeceased,
+        spouseName,
+        spouseDeceased,
+        kelompok,
+        domicile,
+        notes,
+        updatedBy: contributor,
+        updatedAt: new Date().toISOString()
+      };
+
+      await persistMemberRecord(
+        newMember,
+        true,
+        `Menambahkan "${name}" pada ${kelompok || 'Silsilah Trah Tirtowiyanan'}`,
+        contributor
+      );
+
+      // Expand parent chain so new member is immediately visible
+      const { map } = buildTreeStructure();
+      getAncestorChain(newId, map).forEach((anc) => collapsedIds.delete(anc.id));
+
+      closeFormModal();
+      refreshAllViews(false);
+      focusCanvasOnNode(newId);
+      showToast(`${name} berhasil ditambahkan ke silsilah`);
+    };
+
+    window.confirmDeleteMember = function (memberId) {
+      const target = members.find((m) => m.id === memberId);
+      if (!target) return;
+      document.getElementById('confirmTitle').textContent = 'Hapus Anggota Silsilah?';
+      document.getElementById('confirmMessage').textContent = `Apakah Anda yakin ingin menghapus "${target.name}" dari daftar silsilah? Tindakan ini tidak dapat dibatalkan.`;
+      confirmCallback = async () => {
+        await removeMemberRecord(memberId, `Menghapus "${target.name}" dari silsilah`);
+        closeMemberDrawer();
+        refreshAllViews(false);
+        showToast(`Data ${target.name} telah dihapus`);
+      };
+      document.getElementById('confirmModal').classList.remove('hidden');
+    };
+
+    window.closeConfirmModal = function (confirmed) {
+      document.getElementById('confirmModal').classList.add('hidden');
+      if (confirmed && typeof confirmCallback === 'function') {
+        confirmCallback();
+      }
+      confirmCallback = null;
+    };
+
+    // =========================================================================
+    // 9. FAMILY TABS, SEARCH, NAVIGATION & BACKUP UTILITIES
+    // =========================================================================
+    function renderFamilyBranchTabs() {
+      const tabsContainer = document.getElementById('familyBranchTabs');
+      const datalistEl = document.getElementById('kelompokSuggestions');
+      if (!tabsContainer) return;
+
+      const { map } = buildTreeStructure();
+      const branchHeads = getBranchHeads(map);
+
+      const uniqueGroups = Array.from(
+        new Set(members.map((m) => m.kelompok).filter((k) => k && !k.startsWith('Leluhur')))
+      ).sort((a, b) => a.localeCompare(b));
+      if (datalistEl) {
+        datalistEl.innerHTML = uniqueGroups.map((g) => `<option value="${escapeHtml(g)}"></option>`).join('');
+      }
+
+      const isAllActive = activeBranchId === 'ALL';
+      let tabsHtml = `
+        <button
+          type="button"
+          onclick="selectFamilyBranchTab('ALL')"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shrink-0 border ${
+            isAllActive
+              ? 'bg-batik-indigo text-white border-batik-indigo shadow-sm'
+              : 'bg-amber-50/70 hover:bg-amber-100/80 text-batik-indigo border-amber-200/80'
+          }"
+        >
+          <svg class="w-3.5 h-3.5 ${isAllActive ? 'text-amber-300' : 'text-amber-600'}" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>Gabungan Trah Tirtowiyono</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] ${
+            isAllActive ? 'bg-white/20 text-white' : 'bg-amber-200/70 text-amber-950'
+          }">${members.length}</span>
+        </button>
+        <div class="h-5 w-px bg-stone-200 mx-0.5 shrink-0"></div>
+      `;
+
+      tabsHtml += branchHeads
+        .map((head, idx) => {
+          const isActive = activeBranchId === head.id;
+          const branchCount = 1 + countAllDescendants(head);
+          const tabLabel = getShortBranchTabLabel(head, idx);
+          return `
+            <button
+              type="button"
+              onclick="selectFamilyBranchTab('${head.id}')"
+              title="${escapeHtml(head.kelompok || head.name)}"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shrink-0 border ${
+                isActive
+                  ? 'bg-amber-500 text-stone-950 border-amber-500 font-bold shadow-sm'
+                  : 'bg-white hover:bg-stone-50 text-stone-700 border-stone-200'
+              }"
+            >
+              <span>${escapeHtml(tabLabel)}</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] ${
+                isActive ? 'bg-stone-950/15 text-stone-950' : 'bg-stone-100 text-stone-500'
+              }">${branchCount}</span>
+            </button>
+          `;
+        })
+        .join('');
+
+      tabsContainer.innerHTML = tabsHtml;
+
+      const badgeEl = document.getElementById('activeBranchBadge');
+      const titleEl = document.getElementById('activeBranchContextTitle');
+      const subEl = document.getElementById('activeBranchContextSub');
+      const addBtnLabel = document.getElementById('primaryAddBtnLabel');
+
+      if (activeBranchId === 'ALL' || !map.has(activeBranchId)) {
+        if (badgeEl) {
+          badgeEl.textContent = 'Tab Gabungan';
+          badgeEl.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-batik-indigo text-amber-200 shrink-0';
+        }
+        if (titleEl) titleEl.textContent = 'Gabungan Seluruh Keluarga Trah Tirtowiyono';
+        if (subEl) subEl.textContent = `• Menyatu dalam 1 pohon silsilah (${branchHeads.length} keluarga besar, ${members.length} keturunan)`;
+        if (addBtnLabel) addBtnLabel.textContent = 'Tambah Silsilah';
+      } else {
+        const branchNode = map.get(activeBranchId);
+        const branchTotal = 1 + countAllDescendants(branchNode);
+        const spouseTxt = branchNode.spouseName ? ` + ${formatDisplayName(branchNode.spouseName, branchNode.spouseDeceased)}` : '';
+        if (badgeEl) {
+          badgeEl.textContent = `Cabang Ke-${branchNode.order || ''}`;
+          badgeEl.className = 'px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shrink-0';
+        }
+        if (titleEl) titleEl.textContent = `Keluarga Besar ${formatDisplayName(branchNode.name, branchNode.isDeceased)}${spouseTxt}`;
+        if (subEl) subEl.textContent = `• ${branchNode.kelompok || ''} (${branchTotal} anggota keluarga)`;
+        if (addBtnLabel) {
+          const shortFirst = branchNode.name.split(/\s+/)[0];
+          addBtnLabel.textContent = `Tambah Kel. ${shortFirst}`;
+        }
+      }
+    }
+
+    window.selectFamilyBranchTab = function (branchId) {
+      activeBranchId = branchId;
+      clearFocusLineage();
+      const { map } = buildTreeStructure();
+
+      if (branchId !== 'ALL') {
+        const branchIds = getBranchSubtreeIds(branchId, map);
+        branchIds.forEach((id) => collapsedIds.delete(id));
+      } else {
+        collapseToDefault(false);
+      }
+
+      if (activeTab === 'heritage') {
+        switchTab('tree');
+      }
+      refreshAllViews(true);
+    };
+
+    window.switchTab = function (tabName) {
+      activeTab = tabName;
+      const isHeritage = tabName === 'heritage';
+
+      const topHeritageBtn = document.getElementById('topHeritageBtn');
+      const branchContextBar = document.getElementById('branchContextBar');
+      const heritageContextBar = document.getElementById('heritageContextBar');
+
+      if (topHeritageBtn) {
+        if (isHeritage) {
+          topHeritageBtn.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900', 'ring-2', 'ring-amber-200/70');
+          topHeritageBtn.classList.remove('bg-white', 'border-stone-200', 'text-stone-700');
+        } else {
+          topHeritageBtn.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-900', 'ring-2', 'ring-amber-200/70');
+          topHeritageBtn.classList.add('bg-white', 'border-stone-200', 'text-stone-700');
+        }
+      }
+
+      if (branchContextBar && heritageContextBar) {
+        if (isHeritage) {
+          branchContextBar.classList.add('hidden');
+          heritageContextBar.classList.remove('hidden');
+          heritageContextBar.classList.add('flex');
+        } else {
+          heritageContextBar.classList.add('hidden');
+          heritageContextBar.classList.remove('flex');
+          branchContextBar.classList.remove('hidden');
+        }
+      }
+
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        if (btn.dataset.tab === tabName) {
+          btn.classList.add('active', 'bg-white', 'text-batik-indigo', 'shadow-sm');
+          btn.classList.remove('text-stone-600');
+        } else {
+          btn.classList.remove('active', 'bg-white', 'text-batik-indigo', 'shadow-sm');
+          btn.classList.add('text-stone-600');
+        }
+      });
+
+      ['tree', 'directory', 'stats', 'heritage'].forEach((v) => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) {
+          if (v === tabName) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+
+      if (tabName === 'tree') renderTreeView(false);
+      if (tabName === 'directory') renderDirectoryView(true);
+      if (tabName === 'stats') renderStatsView();
+      if (tabName === 'heritage') renderActivityLogs();
+    };
+
+    function setupLiveSearch() {
+      const input = document.getElementById('globalSearchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      const dropdown = document.getElementById('searchResultsDropdown');
+      if (!input || !clearBtn || !dropdown) return;
+
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        if (!q) {
+          clearBtn.classList.add('hidden');
+          dropdown.classList.add('hidden');
+          if (activeTab === 'directory') renderDirectoryView(true);
+          return;
+        }
+        clearBtn.classList.remove('hidden');
+        if (activeTab === 'directory') renderDirectoryView(true);
+
+        const { map } = buildTreeStructure();
+        const matches = Array.from(map.values())
+          .filter((n) => {
+            const hay = `${n.name} ${n.spouseName || ''} ${n.kelompok || ''} ${n.domicile || ''}`.toLowerCase();
+            return hay.includes(q);
+          })
+          .slice(0, 12);
+
+        if (matches.length === 0) {
+          dropdown.innerHTML = `<div class="p-4 text-xs text-stone-500 text-center">Tidak ditemukan anggota bernama "<strong>${escapeHtml(input.value)}</strong>"</div>`;
+        } else {
+          dropdown.innerHTML = matches
+            .map((m) => {
+              const genMeta = getGenMeta(m.depth);
+              return `
+                <button
+                  type="button"
+                  onclick="dropdown.classList.add('hidden'); jumpToTreeNode('${m.id}')"
+                  class="w-full text-left px-4 py-2.5 hover:bg-stone-50 transition flex items-center justify-between gap-2"
+                >
+                  <div class="min-w-0">
+                    <div class="text-xs font-bold text-stone-900 truncate">
+                      ${escapeHtml(formatDisplayName(m.name, m.isDeceased))}
+                      ${m.spouseName ? `<span class="font-normal text-stone-500"> + ${escapeHtml(m.spouseName)}</span>` : ''}
+                    </div>
+                    <div class="text-[11px] text-stone-500 truncate">${escapeHtml(m.kelompok || genMeta.short)}</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${genMeta.badgeBg} shrink-0">${genMeta.short}</span>
+                </button>
+              `;
+            })
+            .join('');
+        }
+        dropdown.classList.remove('hidden');
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        dropdown.classList.add('hidden');
+        if (activeTab === 'directory') renderDirectoryView(true);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#globalSearchInput') && !e.target.closest('#searchResultsDropdown')) {
+          dropdown.classList.add('hidden');
+        }
+      });
+    }
+
+    window.openShareModal = function () {
+      const shareInput = document.getElementById('shareUrlInput');
+      if (shareInput) shareInput.value = window.location.href;
+      document.getElementById('shareModal').classList.remove('hidden');
+    };
+
+    window.closeShareModal = function () {
+      document.getElementById('shareModal').classList.add('hidden');
+    };
+
+    window.copyShareUrl = function () {
+      const shareInput = document.getElementById('shareUrlInput');
+      if (!shareInput) return;
+      shareInput.select();
+      shareInput.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        showToast('Tautan silsilah berhasil disalin ke clipboard');
+      } catch (e) {
+        showToast('Silakan salin tautan pada kotak di atas', 'error');
+      }
+    };
+
+    window.exportJsonBackup = function () {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        trah: 'Trah Tirtowiyanan',
+        members,
+        activityLogs
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `silsilah-trah-tirtowiyanan-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('File cadangan JSON berhasil diunduh');
+    };
+
+    window.importJsonBackup = function (event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const importedMembers = Array.isArray(parsed) ? parsed : parsed.members;
+          if (!Array.isArray(importedMembers) || importedMembers.length === 0) {
+            showToast('Format file JSON tidak valid', 'error');
+            return;
+          }
+          members = importedMembers;
+          invalidateTreeCache();
+          if (Array.isArray(parsed.activityLogs)) {
+            activityLogs = parsed.activityLogs;
+          }
+          saveToLocalStorage();
+          if (useCloudFirestore && db) {
+            const membersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+            const BATCH_CHUNK = 400;
+            for (let i = 0; i < members.length; i += BATCH_CHUNK) {
+              const batch = writeBatch(db);
+              members.slice(i, i + BATCH_CHUNK).forEach((m) => {
+                batch.set(doc(membersColRef, m.id), m);
+              });
+              await batch.commit();
+            }
+          }
+          closeShareModal();
+          refreshAllViews(true);
+          showToast(`Berhasil memuat ${members.length} anggota silsilah`);
+        } catch (err) {
+          showToast('Gagal membaca file JSON', 'error');
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    function refreshAllViews(shouldCenterTree = false) {
+      renderFamilyBranchTabs();
+      if (activeTab === 'tree') renderTreeView(shouldCenterTree);
+      if (activeTab === 'directory') renderDirectoryView(true);
+      if (activeTab === 'stats') renderStatsView();
+      if (activeTab === 'heritage') renderActivityLogs();
+    }
+
+    // Bootstrap Application
+    function bootstrapApp() {
+      setupCanvasPanAndZoom();
+      setupLiveSearch();
+      initDataLayer();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapApp);
+    } else {
+      bootstrapApp();
+    }
+  </script>
+</body>
+</html>
