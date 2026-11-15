@@ -88,6 +88,9 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; }
@@ -98,22 +101,22 @@
 
   <!-- ==================== TOP NAVIGATION BAR ==================== -->
   <header class="shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-sm no-print">
-    <div class="max-w-[1600px] mx-auto px-3 sm:px-6 pt-2.5 pb-2">
-      <div class="flex flex-wrap items-center justify-between gap-2.5">
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-6 pt-2 sm:pt-2.5 pb-1.5 sm:pb-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
         
         <!-- Brand & Heritage Emblem -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-batik-indigo to-batik-indigoDark text-amber-300 flex items-center justify-center shadow-sm border border-amber-400/30 shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-batik-indigo to-batik-indigoDark text-amber-300 flex items-center justify-center shadow-sm border border-amber-400/30 shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-14c-3.5 0-6 2-6 5m6-5c3.5 0 6 2 6 5m-6 4c-4.5 0-8 2-8 5m8-5c4.5 0 8 2 8 5" />
             </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="font-serif font-bold text-base sm:text-lg text-batik-indigo leading-tight">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <h1 class="font-serif font-bold text-sm sm:text-lg text-batik-indigo leading-tight truncate">
                 Trah Tirtowiyanan
               </h1>
-              <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="syncStatusText">Siap &amp; Tersimpan</span>
               </span>
@@ -124,8 +127,8 @@
           </div>
         </div>
 
-        <!-- Global Search Bar -->
-        <div class="relative flex-1 max-w-md order-3 lg:order-2 w-full lg:w-auto">
+        <!-- Global Search Bar (Collapsible on Mobile, Always Visible on Desktop) -->
+        <div id="mobileSearchContainer" class="hidden lg:block relative flex-1 max-w-md order-3 lg:order-2 w-full lg:w-auto mt-1 lg:mt-0">
           <div class="relative">
             <svg class="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
@@ -133,27 +136,39 @@
             <input
               id="globalSearchInput"
               type="text"
-              placeholder="Cari nama anggota, pasangan, kelompok, atau kota..."
-              class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-stone-100/80 hover:bg-stone-100 focus:bg-white border border-stone-200 focus:border-batik-indigo rounded-xl outline-none transition"
+              placeholder="Cari nama anggota, pasangan, atau kota..."
+              class="w-full pl-9 pr-9 py-2 text-base sm:text-sm bg-stone-100/90 hover:bg-stone-100 focus:bg-white border border-stone-200 focus:border-batik-indigo rounded-xl outline-none transition"
               autocomplete="off"
             />
-            <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-0.5">
+            <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
           <!-- Live Search Dropdown -->
-          <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 mt-1.5 bg-white rounded-2xl shadow-xl border border-stone-200 max-h-80 overflow-y-auto z-50 divide-y divide-stone-100">
+          <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 mt-1.5 bg-white rounded-2xl shadow-xl border border-stone-200 max-h-72 sm:max-h-80 overflow-y-auto z-50 divide-y divide-stone-100">
           </div>
         </div>
 
         <!-- Primary Actions -->
-        <div class="flex items-center gap-2 order-2 lg:order-3">
+        <div class="flex items-center gap-1.5 sm:gap-2 order-2 lg:order-3">
+          <!-- Mobile Search Toggle Button -->
+          <button
+            type="button"
+            onclick="toggleMobileSearch()"
+            title="Cari Anggota Keluarga"
+            class="lg:hidden p-2 rounded-xl border border-stone-200 bg-white active:bg-stone-100 text-stone-700 transition"
+          >
+            <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
+            </svg>
+          </button>
+
           <button
             id="topHeritageBtn"
             type="button"
             onclick="switchTab('heritage')"
             title="Sejarah, Visi Misi &amp; Log Pembaruan Trah"
-            class="px-2.5 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition"
+            class="hidden md:flex px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold items-center gap-1.5 transition"
           >
             <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
@@ -176,29 +191,29 @@
           <button
             type="button"
             onclick="openAddModal({ mode: 'descendant' })"
-            class="px-3 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-1.5 transition"
+            class="px-2.5 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-1 sm:gap-1.5 transition"
           >
             <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
-            <span id="primaryAddBtnLabel">Tambah Silsilah</span>
+            <span id="primaryAddBtnLabel" class="truncate max-w-[105px] sm:max-w-none">Tambah</span>
           </button>
         </div>
 
       </div>
 
       <!-- Primary Family Branch Tabs (Gabungan + Per Keluarga Besar) -->
-      <div class="mt-2.5 pt-2 border-t border-stone-100">
-        <div id="familyBranchTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+      <div class="mt-2 pt-1.5 border-t border-stone-100">
+        <div id="familyBranchTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           <!-- Rendered dynamically: Gabungan Trah Tirtowiyono + 8 Keluarga Besar -->
         </div>
       </div>
 
-      <!-- Active Tab Context & View Mode Switcher -->
-      <div id="branchContextBar" class="flex flex-wrap items-center justify-between gap-2 mt-1.5 pt-2 border-t border-stone-100/90">
+      <!-- Active Tab Context & Desktop View Mode Switcher -->
+      <div id="branchContextBar" class="flex items-center justify-between gap-2 mt-1.5 pt-1.5 border-t border-stone-100/90">
         <!-- Active Branch Context Info -->
-        <div class="flex items-center gap-2 min-w-0">
-          <span id="activeBranchBadge" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span id="activeBranchBadge" class="px-1.5 sm:px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 shrink-0">
             Gabungan
           </span>
           <div class="truncate">
@@ -211,17 +226,17 @@
           </div>
         </div>
 
-        <!-- View Switcher (Per Cabang / Gabungan) -->
-        <nav class="flex items-center gap-1 bg-stone-100 p-1 rounded-xl overflow-x-auto max-w-full">
-          <button type="button" data-tab="tree" onclick="switchTab('tree')" class="tab-btn active px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap bg-white text-batik-indigo shadow-sm">
+        <!-- View Switcher (Desktop Only — Mobile uses Bottom Tab Bar) -->
+        <nav class="hidden md:flex items-center gap-1 bg-stone-100 p-1 rounded-xl shrink-0">
+          <button type="button" data-tab="tree" onclick="switchTab('tree')" class="tab-btn active px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap bg-white text-batik-indigo shadow-sm">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11v2a2 2 0 002 2h6a2 2 0 002-2v-2M12 7v8m0-8a2 2 0 100-4 2 2 0 000 4zm-5 12a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
             Bagan Pohon
           </button>
-          <button type="button" data-tab="directory" onclick="switchTab('directory')" class="tab-btn px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
+          <button type="button" data-tab="directory" onclick="switchTab('directory')" class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
             Direktori
           </button>
-          <button type="button" data-tab="stats" onclick="switchTab('stats')" class="tab-btn px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
+          <button type="button" data-tab="stats" onclick="switchTab('stats')" class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap text-stone-600 hover:text-stone-900">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             Statistik
           </button>
@@ -229,17 +244,17 @@
       </div>
 
       <!-- Global Heritage Context Bar (Shown when viewing Kisah & Log) -->
-      <div id="heritageContextBar" class="hidden flex-wrap items-center justify-between gap-2 mt-1.5 pt-2 border-t border-stone-100/90">
+      <div id="heritageContextBar" class="hidden flex-wrap items-center justify-between gap-2 mt-1.5 pt-1.5 border-t border-stone-100/90">
         <div class="flex items-center gap-2 min-w-0">
           <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
             Arsip Trah
           </span>
           <span class="text-xs sm:text-sm font-bold text-stone-800 truncate">
-            Sejarah Leluhur, Visi Misi Paguyuban &amp; Log Pembaruan Data
+            Sejarah Leluhur, Visi Misi &amp; Log Pembaruan
           </span>
         </div>
         <button type="button" onclick="switchTab('tree')" class="px-3 py-1 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-semibold flex items-center gap-1.5 transition">
-          <span>&larr; Kembali ke Bagan Pohon</span>
+          <span>&larr; Kembali ke Pohon</span>
         </button>
       </div>
     </div>
@@ -252,28 +267,28 @@
     <section id="view-tree" class="flex-1 min-h-0 flex flex-col relative">
       
       <!-- Dedicated Non-Overlapping Tree Toolbar (Legend & Branch Controls) -->
-      <div class="shrink-0 z-20 px-3 sm:px-6 py-2 bg-batik-cream/95 backdrop-blur-xs border-b border-stone-200/75 flex flex-wrap items-center justify-between gap-2 no-print">
+      <div class="shrink-0 z-20 px-3 sm:px-6 py-1.5 sm:py-2 bg-batik-cream/95 backdrop-blur-xs border-b border-stone-200/75 flex items-center justify-between gap-2 no-print">
         <!-- Generation Legend -->
-        <div class="flex items-center gap-2.5 px-3 py-1 rounded-xl bg-white border border-stone-200/90 shadow-2xs text-[11px] font-medium text-stone-600 overflow-x-auto no-scrollbar max-w-full">
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-batik-indigo"></span>Eyang/Buyut</span>
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-amber-500"></span>Putra-Putri</span>
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-600"></span>Cucu</span>
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-sky-600"></span>Cicit</span>
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-purple-600"></span>Canggah</span>
-          <span class="inline-flex items-center gap-1.5 shrink-0"><span class="w-2.5 h-2.5 rounded-xs bg-rose-600"></span>Wareng</span>
+        <div class="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-1 rounded-xl bg-white border border-stone-200/90 shadow-2xs text-[10px] sm:text-[11px] font-medium text-stone-600 overflow-x-auto no-scrollbar">
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-batik-indigo"></span>Eyang</span>
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-amber-500"></span>Putra</span>
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-emerald-600"></span>Cucu</span>
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-sky-600"></span>Cicit</span>
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-purple-600"></span>Canggah</span>
+          <span class="inline-flex items-center gap-1 shrink-0"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-xs bg-rose-600"></span>Wareng</span>
         </div>
 
         <!-- Expand / Collapse & Focus Indicator -->
         <div class="flex items-center gap-1.5 ml-auto shrink-0">
-          <button type="button" id="clearFocusBtn" onclick="clearFocusLineage()" class="hidden px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs items-center gap-1 transition">
-            <span>Matikan Mode Fokus</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          <button type="button" id="clearFocusBtn" onclick="clearFocusLineage()" class="hidden px-2.5 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] sm:text-xs font-semibold shadow-2xs items-center gap-1 transition">
+            <span>Reset Fokus</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
-          <button type="button" onclick="expandAllNodes()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 text-xs font-semibold shadow-2xs transition">
+          <button type="button" onclick="expandAllNodes()" class="px-2 sm:px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 active:bg-stone-100 border border-stone-200 text-stone-700 text-[11px] sm:text-xs font-semibold shadow-2xs transition">
             Buka Semua
           </button>
-          <button type="button" onclick="collapseToDefault()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 text-xs font-semibold shadow-2xs transition">
-            Ringkas Cabang
+          <button type="button" onclick="collapseToDefault()" class="px-2 sm:px-2.5 py-1 rounded-xl bg-white hover:bg-stone-50 active:bg-stone-100 border border-stone-200 text-stone-700 text-[11px] sm:text-xs font-semibold shadow-2xs transition">
+            Ringkas
           </button>
         </div>
       </div>
@@ -287,24 +302,25 @@
       </div>
 
       <!-- Bottom-Right Zoom & Navigation Controls -->
-      <div class="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 bg-white/95 backdrop-blur p-1.5 rounded-2xl border border-stone-200 shadow-lg no-print">
-        <button type="button" onclick="zoomTree(0.15)" title="Perbesar (Zoom In)" class="p-2 rounded-xl hover:bg-stone-100 text-stone-700 transition">
+      <div class="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 z-20 flex flex-col gap-1 sm:gap-1.5 bg-white/95 backdrop-blur p-1.5 rounded-2xl border border-stone-200 shadow-lg no-print">
+        <button type="button" onclick="zoomTree(0.15)" title="Perbesar (Zoom In)" class="p-2.5 sm:p-2 rounded-xl hover:bg-stone-100 active:bg-stone-200 text-stone-700 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14m7-7H5"/></svg>
         </button>
         <div id="zoomLevelLabel" class="text-[10px] font-bold text-center text-stone-500 select-none">85%</div>
-        <button type="button" onclick="zoomTree(-0.15)" title="Perkecil (Zoom Out)" class="p-2 rounded-xl hover:bg-stone-100 text-stone-700 transition">
+        <button type="button" onclick="zoomTree(-0.15)" title="Perkecil (Zoom Out)" class="p-2.5 sm:p-2 rounded-xl hover:bg-stone-100 active:bg-stone-200 text-stone-700 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M5 12h14"/></svg>
         </button>
         <div class="h-px bg-stone-200 my-0.5"></div>
-        <button type="button" onclick="centerOnRoot()" title="Pusatkan ke Leluhur Utama" class="p-2 rounded-xl hover:bg-stone-100 text-batik-indigo transition">
+        <button type="button" onclick="centerOnRoot()" title="Pusatkan ke Leluhur Utama" class="p-2.5 sm:p-2 rounded-xl hover:bg-stone-100 active:bg-stone-200 text-batik-indigo transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
         </button>
       </div>
 
       <!-- Bottom-Left Helper Tip & Viewport Render Counter -->
-      <div class="hidden sm:flex absolute bottom-4 left-4 z-20 items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur border border-stone-200/80 text-[11px] text-stone-500 shadow-sm pointer-events-none no-print">
-        <span>Geser kanvas untuk menjelajah &bull; Klik kartu anggota untuk detail, edit, atau tambah anak/cucu/cicit</span>
-        <span id="viewportRenderBadge" class="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 font-semibold"></span>
+      <div class="flex absolute bottom-3 sm:bottom-4 left-3 sm:left-4 z-20 items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur border border-stone-200/80 text-[10px] sm:text-[11px] text-stone-500 shadow-sm pointer-events-none no-print">
+        <span class="hidden sm:inline">Geser kanvas untuk menjelajah &bull; Klik kartu anggota untuk detail, edit, atau tambah anak/cucu/cicit</span>
+        <span class="sm:hidden">Geser &amp; cubit layar &bull; Ketuk kartu</span>
+        <span id="viewportRenderBadge" class="px-1.5 sm:px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 font-semibold"></span>
       </div>
     </section>
 
@@ -437,6 +453,28 @@
 
   </main>
 
+  <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
+  <nav class="md:hidden shrink-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200 px-2 pt-1.5 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.03)] no-print">
+    <div class="grid grid-cols-4 gap-1 pb-1">
+      <button type="button" data-mobile-tab="tree" onclick="switchTab('tree')" class="mobile-tab-btn active flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-batik-indigo bg-amber-50/90 font-bold transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11v2a2 2 0 002 2h6a2 2 0 002-2v-2M12 7v8m0-8a2 2 0 100-4 2 2 0 000 4zm-5 12a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+        <span class="text-[10px] leading-none">Pohon</span>
+      </button>
+      <button type="button" data-mobile-tab="directory" onclick="switchTab('directory')" class="mobile-tab-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-stone-500 hover:text-stone-900 font-medium transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span class="text-[10px] leading-none">Direktori</span>
+      </button>
+      <button type="button" data-mobile-tab="stats" onclick="switchTab('stats')" class="mobile-tab-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-stone-500 hover:text-stone-900 font-medium transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span class="text-[10px] leading-none">Statistik</span>
+      </button>
+      <button type="button" data-mobile-tab="heritage" onclick="switchTab('heritage')" class="mobile-tab-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-stone-500 hover:text-stone-900 font-medium transition">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span class="text-[10px] leading-none">Kisah &amp; Log</span>
+      </button>
+    </div>
+  </nav>
+
   <!-- ==================== SLIDE-OVER MEMBER DETAIL DRAWER ==================== -->
   <div id="memberDrawerBackdrop" onclick="closeMemberDrawer()" class="hidden fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-40 transition-opacity no-print"></div>
   <aside id="memberDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl border-l border-stone-200 z-50 transform translate-x-full transition-transform duration-300 flex flex-col no-print">
@@ -480,7 +518,7 @@
           <label for="formParentId" class="block text-xs font-semibold text-stone-700 mb-1">
             Orang Tua (Jalur Trah) <span class="text-red-500">*</span>
           </label>
-          <select id="formParentId" onchange="updateAutoGenPreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-xs sm:text-sm focus:border-batik-indigo outline-none">
+          <select id="formParentId" onchange="updateAutoGenPreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
           </select>
           <p id="autoGenPreview" class="text-[11px] text-batik-indigo font-medium mt-1"></p>
         </div>
@@ -491,11 +529,70 @@
             <label for="formName" class="block text-xs font-semibold text-stone-700 mb-1">
               Nama Lengkap Anggota Trah <span class="text-red-500">*</span>
             </label>
-            <input id="formName" type="text" required placeholder="Contoh: R. Bagus Prakoso" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+            <input id="formName" type="text" required placeholder="Contoh: R. Bagus Prakoso" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
           </div>
           <div>
             <label for="formOrder" class="block text-xs font-semibold text-stone-700 mb-1">Anak Ke-</label>
-            <input id="formOrder" type="number" min="1" max="30" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
+            <input id="formOrder" type="number" min="1" max="30" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <!-- Gender & Living Status -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formGender" class="block text-xs font-semibold text-stone-700 mb-1">Jenis Kelamin</label>
+            <select id="formGender" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label for="formIsDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Anggota</label>
+            <select id="formIsDeceased" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+              <option value="false">Masih Hidup</option>
+              <option value="true">Almarhum / Almarhumah (Alm.)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Spouse Section -->
+        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/90 space-y-3">
+          <div class="text-xs font-bold text-stone-700">Data Pasangan (Suami / Istri) — Opsional</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input id="formSpouseName" type="text" placeholder="Nama lengkap pasangan (jika sudah menikah)" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-base sm:text-sm" />
+            </div>
+            <div>
+              <select id="formSpouseDeceased" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-base sm:text-sm">
+                <option value="false">Pasangan Hidup</option>
+                <option value="true">Pasangan Alm.</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kelompok & Domicile -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formKelompok" class="block text-xs font-semibold text-stone-700 mb-1">Kelompok / Cabang Trah</label>
+            <input id="formKelompok" list="kelompokSuggestions" type="text" placeholder="Contoh: 4. Kelompok Sorogenen - Boyolali" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+            <datalist id="kelompokSuggestions"></datalist>
+          </div>
+          <div>
+            <label for="formDomicile" class="block text-xs font-semibold text-stone-700 mb-1">Domisili / Kota Tinggal</label>
+            <input id="formDomicile" type="text" placeholder="Contoh: Boyolali / Semarang / Bandung" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <!-- Additional Notes & Contributor Name -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="formNotes" class="block text-xs font-semibold text-stone-700 mb-1">Catatan / Tahun Lahir / Wafat</label>
+            <input id="formNotes" type="text" placeholder="Misal: Lahir 1995, atau keterangan keluarga" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="formContributor" class="block text-xs font-semibold text-stone-700 mb-1">Nama Pengisi / Pengupdate</label>
+            <input id="formContributor" type="text" placeholder="Nama Anda (agar tercatat di log)" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
           </div>
         </div>
 
@@ -590,6 +687,19 @@
           </p>
           <div class="pt-1 text-[11px] font-mono text-emerald-800 break-all">
             Mode Penyimpanan: <span id="displayFullUserId">Tersimpan Lokal &amp; Cloud</span>
+          </div>
+        </div>
+
+        <!-- Diagnostik Koneksi Real-Time -->
+        <div id="cloudDiagnosticBox" class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-stone-800">Status Diagnostik Real-Time</span>
+            <button type="button" onclick="runCloudConnectionTest()" class="px-2.5 py-1 rounded-lg bg-batik-indigo hover:bg-batik-indigoDark text-white text-[11px] font-semibold transition">
+              Tes Koneksi
+            </button>
+          </div>
+          <div id="cloudDiagnosticDetails" class="text-[11px] text-stone-600 space-y-1 leading-relaxed">
+            Memeriksa konfigurasi...
           </div>
         </div>
 
@@ -854,6 +964,12 @@
     let currentUser = null;
     let useCloudFirestore = false;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'trah-tirtowiyanan-public';
+    const cloudDiagnostic = {
+      configSource: 'Belum dikonfigurasi',
+      authStatus: 'Belum terhubung',
+      firestoreStatus: 'Menunggu koneksi',
+      errorHint: ''
+    };
 
     // Pan, Zoom & Virtualized Viewport State
     const canvasState = {
@@ -972,9 +1088,8 @@
     }
 
     // =========================================================================
-    // KONFIGURASI FIREBASE UNTUK DEPLOY GITHUB PAGES / VERCEL (OPSIONAL)
-    // Isi objek di bawah ini jika ingin seluruh pengunjung link publik langsung
-    // terhubung ke database cloud keluarga secara otomatis.
+    // KONFIGURASI FIREBASE UNTUK DEPLOY GITHUB PAGES / VERCEL
+    // Terhubung ke proyek Firebase: silsilah-trah-tirtowiyanan
     // =========================================================================
     const STANDALONE_FIREBASE_CONFIG = {
       apiKey: "AIzaSyDh8B2HL8MgG4wsasq-zOizh6QtYiGj_NY",
@@ -993,7 +1108,6 @@
         const parsed = JSON.parse(rawText);
         if (parsed && parsed.apiKey && parsed.projectId) return parsed;
       } catch (_) {
-        // Ekstrak pasangan key: "value" dari potongan kode JS Firebase Console
         const extracted = {};
         const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
         keys.forEach((k) => {
@@ -1007,17 +1121,64 @@
 
     function resolveFirebaseConfig() {
       if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+        cloudDiagnostic.configSource = 'Environment Bawaan';
         return JSON.parse(__firebase_config);
       }
       if (STANDALONE_FIREBASE_CONFIG.apiKey && STANDALONE_FIREBASE_CONFIG.projectId) {
+        cloudDiagnostic.configSource = `STANDALONE_FIREBASE_CONFIG (${STANDALONE_FIREBASE_CONFIG.projectId})`;
         return STANDALONE_FIREBASE_CONFIG;
       }
       try {
         const saved = localStorage.getItem(LOCAL_STORAGE_FB_CONFIG_KEY);
-        if (saved) return parseFirebaseConfigInput(saved);
+        if (saved) {
+          const parsed = parseFirebaseConfigInput(saved);
+          if (parsed) {
+            cloudDiagnostic.configSource = `Pengaturan Browser Lokal (${parsed.projectId})`;
+            return parsed;
+          }
+        }
       } catch (_) {}
+      cloudDiagnostic.configSource = 'Kosong (STANDALONE_FIREBASE_CONFIG belum diisi di index.html)';
       return null;
     }
+
+    function updateDiagnosticUI() {
+      const detailsEl = document.getElementById('cloudDiagnosticDetails');
+      if (!detailsEl) return;
+      const host = window.location.hostname || 'localhost';
+      detailsEl.innerHTML = `
+        <div>&bull; <strong>Domain Aktif:</strong> <code class="px-1 py-0.5 rounded bg-stone-200/70">${escapeHtml(host)}</code></div>
+        <div>&bull; <strong>Config Firebase:</strong> ${escapeHtml(cloudDiagnostic.configSource)}</div>
+        <div>&bull; <strong>Autentikasi:</strong> ${escapeHtml(cloudDiagnostic.authStatus)}</div>
+        <div>&bull; <strong>Database Live:</strong> ${escapeHtml(cloudDiagnostic.firestoreStatus)}</div>
+        ${
+          cloudDiagnostic.errorHint
+            ? `<div class="mt-1.5 p-2 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 font-medium">${escapeHtml(cloudDiagnostic.errorHint)}</div>`
+            : ''
+        }
+      `;
+    }
+
+    window.runCloudConnectionTest = async function () {
+      updateDiagnosticUI();
+      if (!useCloudFirestore || !db) {
+        showToast(cloudDiagnostic.errorHint || 'Belum terhubung ke Firebase Cloud', 'error');
+        return;
+      }
+      try {
+        const testCol = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+        const snap = await getDocs(testCol);
+        cloudDiagnostic.firestoreStatus = `Aktif & Real-Time (${snap.size} data tersinkron)`;
+        cloudDiagnostic.errorHint = '';
+        updateDiagnosticUI();
+        showToast(`Koneksi Real-Time Berhasil! (${snap.size} anggota di cloud)`);
+      } catch (err) {
+        cloudDiagnostic.firestoreStatus = `Gagal Akses (${err.code || 'error'})`;
+        cloudDiagnostic.errorHint = 'Firestore Rules menolak akses. Pastikan Rules sudah di-Publish untuk path /artifacts/trah-tirtowiyanan-public/public/data/{document=**}';
+        updateDiagnosticUI();
+        showToast('Gagal membaca Firestore: cek Security Rules', 'error');
+      }
+    };
 
     window.saveCustomFirebaseConfig = function () {
       const raw = document.getElementById('customFirebaseConfigInput')?.value || '';
@@ -1040,6 +1201,7 @@
     async function initDataLayer() {
       const statusTextEl = document.getElementById('syncStatusText');
       const userIdDisplayEl = document.getElementById('displayFullUserId');
+      const host = window.location.hostname || 'localhost';
 
       try {
         const firebaseConfig = resolveFirebaseConfig();
@@ -1058,69 +1220,118 @@
             if (!user) return;
             currentUser = user;
             useCloudFirestore = true;
+            cloudDiagnostic.authStatus = `Terautentikasi Anonim (${user.uid.slice(0, 8)}...)`;
             if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
             if (userIdDisplayEl) userIdDisplayEl.textContent = `Cloud ID: ${user.uid}`;
+            updateDiagnosticUI();
 
             const membersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
             const logsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
 
-            const existingSnap = await getDocs(membersColRef);
-            if (existingSnap.empty) {
-              loadFromLocalStorage();
-              // Commit initial records using Firestore writeBatch (400 docs/batch) for fast bulk upload
-              const BATCH_CHUNK = 400;
-              for (let i = 0; i < members.length; i += BATCH_CHUNK) {
-                const batch = writeBatch(db);
-                members.slice(i, i + BATCH_CHUNK).forEach((m) => {
-                  batch.set(doc(membersColRef, m.id), m);
+            try {
+              const existingSnap = await getDocs(membersColRef);
+              if (existingSnap.empty) {
+                loadFromLocalStorage();
+                const BATCH_CHUNK = 400;
+                for (let i = 0; i < members.length; i += BATCH_CHUNK) {
+                  const batch = writeBatch(db);
+                  members.slice(i, i + BATCH_CHUNK).forEach((m) => {
+                    batch.set(doc(membersColRef, m.id), m);
+                  });
+                  await batch.commit();
+                }
+                await addDoc(logsColRef, {
+                  action: 'Inisialisasi basis data publik Trah Tirtowiyanan',
+                  contributor: 'Paguyuban Trah Tirtowiyanan',
+                  timestamp: new Date().toISOString()
                 });
-                await batch.commit();
               }
-              await addDoc(logsColRef, {
-                action: 'Inisialisasi basis data publik Trah Tirtowiyanan',
-                contributor: 'Paguyuban Trah Tirtowiyanan',
-                timestamp: new Date().toISOString()
-              });
+            } catch (seedErr) {
+              cloudDiagnostic.firestoreStatus = `Ditolak Firestore (${seedErr.code || 'permission-denied'})`;
+              cloudDiagnostic.errorHint = 'Periksa tab Rules di Firestore Database Firebase Console dan pastikan sudah klik Publish.';
+              if (statusTextEl) statusTextEl.textContent = 'Cloud Ditolak (Cek Rules)';
+              updateDiagnosticUI();
             }
 
+            let isInitialCloudLoad = true;
             let snapshotDebounceTimer = null;
-            onSnapshot(membersColRef, (snapshot) => {
-              const cloudMembers = [];
-              snapshot.forEach((docSnap) => {
-                cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
-              });
-              if (cloudMembers.length > 0) {
-                clearTimeout(snapshotDebounceTimer);
-                snapshotDebounceTimer = setTimeout(() => {
-                  members = cloudMembers;
-                  invalidateTreeCache();
-                  saveToLocalStorage();
-                  refreshAllViews(false);
-                }, 80);
-              }
-            });
+            onSnapshot(
+              membersColRef,
+              (snapshot) => {
+                const cloudMembers = [];
+                snapshot.forEach((docSnap) => {
+                  cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                cloudDiagnostic.firestoreStatus = `Aktif & Real-Time (${cloudMembers.length} anggota)`;
+                cloudDiagnostic.errorHint = '';
+                if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
+                updateDiagnosticUI();
 
-            onSnapshot(logsColRef, (snapshot) => {
-              const cloudLogs = [];
-              snapshot.forEach((docSnap) => {
-                cloudLogs.push({ id: docSnap.id, ...docSnap.data() });
-              });
-              cloudLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-              activityLogs = cloudLogs.slice(0, 60);
-              saveToLocalStorage();
-              if (activeTab === 'heritage') renderActivityLogs();
-            });
+                if (cloudMembers.length > 0) {
+                  clearTimeout(snapshotDebounceTimer);
+                  snapshotDebounceTimer = setTimeout(() => {
+                    members = cloudMembers;
+                    invalidateTreeCache();
+                    saveToLocalStorage();
+                    if (isInitialCloudLoad) {
+                      isInitialCloudLoad = false;
+                      collapseToDefault(false);
+                      refreshAllViews(true);
+                    } else {
+                      refreshAllViews(false);
+                    }
+                  }, 60);
+                }
+              },
+              (err) => {
+                console.error('Firestore members listener error:', err);
+                useCloudFirestore = false;
+                cloudDiagnostic.firestoreStatus = `Gagal Listener (${err.code || 'error'})`;
+                cloudDiagnostic.errorHint = 'Firestore Rules belum mengizinkan baca/tulis pada path /artifacts/trah-tirtowiyanan-public/public/data/{document=**}';
+                if (statusTextEl) statusTextEl.textContent = 'Gagal Live (Cek Rules)';
+                updateDiagnosticUI();
+              }
+            );
+
+            onSnapshot(
+              logsColRef,
+              (snapshot) => {
+                const cloudLogs = [];
+                snapshot.forEach((docSnap) => {
+                  cloudLogs.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                cloudLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+                activityLogs = cloudLogs.slice(0, 60);
+                saveToLocalStorage();
+                if (activeTab === 'heritage') renderActivityLogs();
+              },
+              (err) => {
+                console.warn('Firestore logs listener warning:', err);
+              }
+            );
           });
           return;
+        } else {
+          cloudDiagnostic.errorHint = 'Isi objek STANDALONE_FIREBASE_CONFIG di dalam file index.html pada GitHub Anda, lalu tunggu Vercel selesai deploy ulang.';
         }
       } catch (err) {
         console.warn('Cloud sync fallback to local browser storage:', err);
+        const code = err?.code || '';
+        cloudDiagnostic.authStatus = `Gagal (${code || 'error'})`;
+        if (code === 'auth/unauthorized-domain') {
+          cloudDiagnostic.errorHint = `Domain "${host}" belum didaftarkan! Buka Firebase Console -> Authentication -> Settings -> Authorized domains -> Add domain: ${host}`;
+        } else if (code === 'auth/operation-not-allowed') {
+          cloudDiagnostic.errorHint = 'Metode login Anonymous belum diaktifkan! Buka Firebase Console -> Authentication -> Sign-in method -> aktifkan Anonymous.';
+        } else {
+          cloudDiagnostic.errorHint = `Error Firebase (${code || err.message}). Periksa apiKey & projectId di STANDALONE_FIREBASE_CONFIG.`;
+        }
       }
 
       // Standalone / Offline-ready LocalStorage Mode
       loadFromLocalStorage();
       if (statusTextEl) statusTextEl.textContent = 'Tersimpan di Perangkat';
-      if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser + Ekspor/Impor JSON';
+      if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser (Belum Live Cloud)';
+      updateDiagnosticUI();
       collapseToDefault(false);
       refreshAllViews(true);
     }
@@ -1338,7 +1549,7 @@
               type="button"
               onclick="event.stopPropagation(); openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
               title="Tambah Anak / Keturunan"
-              class="px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-[10px] font-bold transition"
+              class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 border border-emerald-200/80 text-[11px] sm:text-[10px] font-bold transition"
             >
               + Anak
             </button>
@@ -1349,7 +1560,7 @@
                     type="button"
                     onclick="event.stopPropagation(); toggleNodeCollapse('${node.id}')"
                     title="${isCollapsed ? 'Tampilkan keturunan' : 'Sembunyikan keturunan'}"
-                    class="px-2 py-0.5 rounded-md bg-stone-200/80 hover:bg-stone-300 text-stone-800 text-[10px] font-bold transition flex items-center gap-1"
+                    class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-stone-200/80 hover:bg-stone-300 active:bg-stone-400 text-stone-800 text-[11px] sm:text-[10px] font-bold transition flex items-center gap-1"
                   >
                     <span>${isCollapsed ? `+ ${descendantCount} keturunan` : `− (${node.children.length})`}</span>
                   </button>`
@@ -1371,13 +1582,11 @@
       const viewH = rect.height || window.innerHeight || 700;
       const scale = canvasState.scale || 0.85;
 
-      // Convert viewport rectangle into unscaled tree canvas coordinates with overscan
       const minX = (-canvasState.panX - VIEWPORT_OVERSCAN_PX) / scale;
       const maxX = (-canvasState.panX + viewW + VIEWPORT_OVERSCAN_PX) / scale;
       const minY = (-canvasState.panY - VIEWPORT_OVERSCAN_PX) / scale;
       const maxY = (-canvasState.panY + viewH + VIEWPORT_OVERSCAN_PX) / scale;
 
-      // Quantize culling bucket (120px grid) so tiny mouse movements don't rebuild DOM
       const bucketSize = 120 / scale;
       const cullKey = `${Math.floor(minX / bucketSize)}:${Math.floor(minY / bucketSize)}:${Math.ceil(maxX / bucketSize)}:${Math.ceil(maxY / bucketSize)}:${canvasState.layoutNodes.length}:${selectedMemberId || ''}:${focusedLineageSet ? focusedLineageSet.size : 0}`;
       if (!force && cullKey === canvasState.lastCullKey) {
@@ -1385,7 +1594,6 @@
       }
       canvasState.lastCullKey = cullKey;
 
-      // Filter only cards intersecting the visible viewport
       const visibleNodes = [];
       for (let i = 0; i < canvasState.layoutNodes.length; i++) {
         const n = canvasState.layoutNodes[i];
@@ -1395,7 +1603,6 @@
       }
       containerEl.innerHTML = visibleNodes.map(buildSingleCardHtml).join('');
 
-      // Batch all visible orthogonal connector lines into at most 3 SVG <path> elements
       const normalSegments = [];
       const dimmedSegments = [];
       const highlightedSegments = [];
@@ -1444,7 +1651,6 @@
         displayRoots = [map.get(activeBranchId)];
       }
 
-      // Compute subtree widths recursively
       const computeWidth = (node) => {
         const isCollapsed = collapsedIds.has(node.id);
         if (isCollapsed || node.children.length === 0) {
@@ -1582,9 +1788,12 @@
       const pos = canvasState.nodePositions.get(targetId) || Array.from(canvasState.nodePositions.values())[0];
       if (!pos) return;
 
-      canvasState.scale = activeBranchId !== 'ALL' ? 0.9 : 0.78;
+      const isMobile = window.innerWidth < 640;
+      canvasState.scale = isMobile
+        ? (activeBranchId !== 'ALL' ? 0.78 : 0.68)
+        : (activeBranchId !== 'ALL' ? 0.9 : 0.78);
       canvasState.panX = rect.width / 2 - (pos.x + CARD_WIDTH / 2) * canvasState.scale;
-      canvasState.panY = 36 - pos.y * canvasState.scale;
+      canvasState.panY = (isMobile ? 24 : 36) - pos.y * canvasState.scale;
       applyCanvasTransform(true);
     };
 
@@ -1658,7 +1867,6 @@
         { passive: false }
       );
 
-      // Touch drag & pinch zoom
       viewport.addEventListener(
         'touchstart',
         (e) => {
@@ -1690,7 +1898,18 @@
             const dist = Math.hypot(dx, dy);
             const diff = (dist - canvasState.lastPinchDist) * 0.004;
             canvasState.lastPinchDist = dist;
-            window.zoomTree(diff);
+
+            const rect = viewport.getBoundingClientRect();
+            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+            const oldScale = canvasState.scale;
+            const newScale = Math.min(1.6, Math.max(0.28, oldScale + diff));
+            const ratio = newScale / oldScale;
+
+            canvasState.panX = midX - (midX - canvasState.panX) * ratio;
+            canvasState.panY = midY - (midY - canvasState.panY) * ratio;
+            canvasState.scale = newScale;
+            applyCanvasTransform(false);
           }
         },
         { passive: true }
@@ -2388,7 +2607,6 @@
         return;
       }
 
-      // Adding new ancestor above current root
       if (relationType === 'ancestor_above') {
         const { roots } = buildTreeStructure();
         const currentRoot = roots[0];
@@ -2425,7 +2643,6 @@
         return;
       }
 
-      // Adding descendant
       const newId = `mem_${Date.now()}`;
       const newMember = {
         id: newId,
@@ -2450,7 +2667,6 @@
         contributor
       );
 
-      // Expand parent chain so new member is immediately visible
       const { map } = buildTreeStructure();
       getAncestorChain(newId, map).forEach((anc) => collapsedIds.delete(anc.id));
 
@@ -2637,6 +2853,16 @@
         }
       });
 
+      document.querySelectorAll('.mobile-tab-btn').forEach((btn) => {
+        if (btn.dataset.mobileTab === tabName) {
+          btn.classList.add('active', 'text-batik-indigo', 'bg-amber-50/90', 'font-bold');
+          btn.classList.remove('text-stone-500', 'font-medium');
+        } else {
+          btn.classList.remove('active', 'text-batik-indigo', 'bg-amber-50/90', 'font-bold');
+          btn.classList.add('text-stone-500', 'font-medium');
+        }
+      });
+
       ['tree', 'directory', 'stats', 'heritage'].forEach((v) => {
         const el = document.getElementById(`view-${v}`);
         if (el) {
@@ -2649,6 +2875,19 @@
       if (tabName === 'directory') renderDirectoryView(true);
       if (tabName === 'stats') renderStatsView();
       if (tabName === 'heritage') renderActivityLogs();
+    };
+
+    window.toggleMobileSearch = function () {
+      const container = document.getElementById('mobileSearchContainer');
+      const input = document.getElementById('globalSearchInput');
+      if (!container) return;
+      const isHidden = container.classList.contains('hidden');
+      if (isHidden) {
+        container.classList.remove('hidden');
+        if (input) setTimeout(() => input.focus(), 50);
+      } else {
+        container.classList.add('hidden');
+      }
     };
 
     function setupLiveSearch() {
@@ -2685,7 +2924,7 @@
               return `
                 <button
                   type="button"
-                  onclick="dropdown.classList.add('hidden'); jumpToTreeNode('${m.id}')"
+                  onclick="dropdown.classList.add('hidden'); if (window.innerWidth < 1024) document.getElementById('mobileSearchContainer')?.classList.add('hidden'); jumpToTreeNode('${m.id}')"
                   class="w-full text-left px-4 py-2.5 hover:bg-stone-50 transition flex items-center justify-between gap-2"
                 >
                   <div class="min-w-0">
@@ -2721,6 +2960,7 @@
     window.openShareModal = function () {
       const shareInput = document.getElementById('shareUrlInput');
       if (shareInput) shareInput.value = window.location.href;
+      updateDiagnosticUI();
       document.getElementById('shareModal').classList.remove('hidden');
     };
 
