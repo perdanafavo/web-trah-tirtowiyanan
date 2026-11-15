@@ -59,10 +59,24 @@
     .tree-canvas-layer {
       transform-origin: 0 0;
       will-change: transform;
+      backface-visibility: hidden;
     }
     .node-card {
       contain: layout style paint;
+      backface-visibility: hidden;
       transition: box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.2s ease;
+    }
+    .smooth-scroll-y {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+    }
+    .smooth-scroll-x {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x;
     }
     .node-card:hover {
       transform: translateY(-2px);
@@ -168,12 +182,12 @@
             type="button"
             onclick="switchTab('heritage')"
             title="Sejarah, Visi Misi &amp; Log Pembaruan Trah"
-            class="hidden md:flex px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold items-center gap-1.5 transition"
+            class="flex px-2 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-700 text-xs font-semibold items-center gap-1 sm:gap-1.5 transition shrink-0"
           >
             <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
             </svg>
-            <span>Kisah &amp; Log</span>
+            <span class="text-[11px] sm:text-xs">Kisah<span class="hidden sm:inline"> &amp; Log</span></span>
           </button>
 
           <button
@@ -204,7 +218,7 @@
 
       <!-- Primary Family Branch Tabs (Gabungan + Per Keluarga Besar) -->
       <div class="mt-2 pt-1.5 border-t border-stone-100">
-        <div id="familyBranchTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+        <div id="familyBranchTabs" class="smooth-scroll-x flex items-center gap-1.5 no-scrollbar pb-0.5">
           <!-- Rendered dynamically: Gabungan Trah Tirtowiyono + 8 Keluarga Besar -->
         </div>
       </div>
@@ -325,7 +339,7 @@
     </section>
 
     <!-- VIEW 2: DIRECTORY & STRUCTURED OUTLINE VIEW -->
-    <section id="view-directory" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto">
+    <section id="view-directory" class="smooth-scroll-y hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-20 md:pb-6">
       <div class="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
         <div class="p-4 sm:p-6 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-stone-50/70">
           <div>
@@ -358,7 +372,7 @@
     </section>
 
     <!-- VIEW 3: ANALYTICS & DEMOGRAPHICS VIEW -->
-    <section id="view-stats" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto space-y-6">
+    <section id="view-stats" class="smooth-scroll-y hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-20 md:pb-6 space-y-6">
       <div id="statsSummaryCards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-sm">
@@ -375,7 +389,7 @@
     </section>
 
     <!-- VIEW 4: HERITAGE STORY, VISI MISI & LIVE ACTIVITY LOG -->
-    <section id="view-heritage" class="hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 overflow-y-auto">
+    <section id="view-heritage" class="smooth-scroll-y hidden flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-20 md:pb-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Narrative Column -->
         <div class="lg:col-span-2 space-y-6">
@@ -593,65 +607,6 @@
           <div>
             <label for="formContributor" class="block text-xs font-semibold text-stone-700 mb-1">Nama Pengisi / Pengupdate</label>
             <input id="formContributor" type="text" placeholder="Nama Anda (agar tercatat di log)" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
-          </div>
-        </div>
-
-        <!-- Gender & Living Status -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="formGender" class="block text-xs font-semibold text-stone-700 mb-1">Jenis Kelamin</label>
-            <select id="formGender" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none">
-              <option value="L">Laki-laki</option>
-              <option value="P">Perempuan</option>
-            </select>
-          </div>
-          <div>
-            <label for="formIsDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Anggota</label>
-            <select id="formIsDeceased" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none">
-              <option value="false">Masih Hidup</option>
-              <option value="true">Almarhum / Almarhumah (Alm.)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Spouse Section -->
-        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/90 space-y-3">
-          <div class="text-xs font-bold text-stone-700">Data Pasangan (Suami / Istri) — Opsional</div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="sm:col-span-2">
-              <input id="formSpouseName" type="text" placeholder="Nama lengkap pasangan (jika sudah menikah)" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-xs sm:text-sm" />
-            </div>
-            <div>
-              <select id="formSpouseDeceased" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white focus:border-batik-indigo outline-none text-xs sm:text-sm">
-                <option value="false">Pasangan Hidup</option>
-                <option value="true">Pasangan Alm.</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kelompok & Domicile -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="formKelompok" class="block text-xs font-semibold text-stone-700 mb-1">Kelompok / Cabang Trah</label>
-            <input id="formKelompok" list="kelompokSuggestions" type="text" placeholder="Contoh: 4. Kelompok Sorogenen - Boyolali" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
-            <datalist id="kelompokSuggestions"></datalist>
-          </div>
-          <div>
-            <label for="formDomicile" class="block text-xs font-semibold text-stone-700 mb-1">Domisili / Kota Tinggal</label>
-            <input id="formDomicile" type="text" placeholder="Contoh: Boyolali / Semarang / Bandung" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
-          </div>
-        </div>
-
-        <!-- Additional Notes & Contributor Name -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="formNotes" class="block text-xs font-semibold text-stone-700 mb-1">Catatan / Tahun Lahir / Wafat</label>
-            <input id="formNotes" type="text" placeholder="Misal: Lahir 1995, atau keterangan keluarga" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
-          </div>
-          <div>
-            <label for="formContributor" class="block text-xs font-semibold text-stone-700 mb-1">Nama Pengisi / Pengupdate</label>
-            <input id="formContributor" type="text" placeholder="Nama Anda (agar tercatat di log)" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-batik-indigo outline-none" />
           </div>
         </div>
 
@@ -983,7 +938,9 @@
       nodePositions: new Map(),
       layoutNodes: [],
       layoutConnectors: [],
+      mountedCardEls: new Map(),
       rafPending: false,
+      cullDebounceTimer: null,
       lastCullKey: ''
     };
 
@@ -1497,7 +1454,13 @@
     const CARD_HEIGHT = 118;
     const H_GAP = 28;
     const V_GAP = 64;
-    const VIEWPORT_OVERSCAN_PX = 320;
+    const VIEWPORT_OVERSCAN_PX = 640;
+
+    function createCardElement(node) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = buildSingleCardHtml(node).trim();
+      return wrapper.firstElementChild;
+    }
 
     function buildSingleCardHtml(node) {
       const genMeta = getGenMeta(node.depth);
@@ -1587,21 +1550,43 @@
       const minY = (-canvasState.panY - VIEWPORT_OVERSCAN_PX) / scale;
       const maxY = (-canvasState.panY + viewH + VIEWPORT_OVERSCAN_PX) / scale;
 
-      const bucketSize = 120 / scale;
+      const bucketSize = 260 / scale;
       const cullKey = `${Math.floor(minX / bucketSize)}:${Math.floor(minY / bucketSize)}:${Math.ceil(maxX / bucketSize)}:${Math.ceil(maxY / bucketSize)}:${canvasState.layoutNodes.length}:${selectedMemberId || ''}:${focusedLineageSet ? focusedLineageSet.size : 0}`;
       if (!force && cullKey === canvasState.lastCullKey) {
         return;
       }
       canvasState.lastCullKey = cullKey;
 
-      const visibleNodes = [];
+      if (force) {
+        containerEl.innerHTML = '';
+        canvasState.mountedCardEls.clear();
+      }
+
+      const nextVisibleIds = new Set();
+      const fragment = document.createDocumentFragment();
+
       for (let i = 0; i < canvasState.layoutNodes.length; i++) {
         const n = canvasState.layoutNodes[i];
         if (n.x + CARD_WIDTH >= minX && n.x <= maxX && n.y + CARD_HEIGHT >= minY && n.y <= maxY) {
-          visibleNodes.push(n);
+          nextVisibleIds.add(n.id);
+          if (!canvasState.mountedCardEls.has(n.id)) {
+            const el = createCardElement(n);
+            canvasState.mountedCardEls.set(n.id, el);
+            fragment.appendChild(el);
+          }
         }
       }
-      containerEl.innerHTML = visibleNodes.map(buildSingleCardHtml).join('');
+
+      canvasState.mountedCardEls.forEach((el, id) => {
+        if (!nextVisibleIds.has(id)) {
+          el.remove();
+          canvasState.mountedCardEls.delete(id);
+        }
+      });
+
+      if (fragment.childNodes.length > 0) {
+        containerEl.appendChild(fragment);
+      }
 
       const normalSegments = [];
       const dimmedSegments = [];
@@ -1636,7 +1621,7 @@
 
       const badgeEl = document.getElementById('viewportRenderBadge');
       if (badgeEl) {
-        badgeEl.textContent = `Menampilkan ${visibleNodes.length} / ${canvasState.layoutNodes.length} kartu`;
+        badgeEl.textContent = `Menampilkan ${nextVisibleIds.size} / ${canvasState.layoutNodes.length} kartu`;
       }
     }
 
@@ -1753,7 +1738,14 @@
         zoomLabel.textContent = `${Math.round(canvasState.scale * 100)}%`;
       }
       if (forceCull) {
+        clearTimeout(canvasState.cullDebounceTimer);
         renderVisibleTreeViewport(true);
+      } else if (canvasState.isDragging) {
+        // Defer DOM recycling during active finger drag so touchmove stays locked at 60fps
+        clearTimeout(canvasState.cullDebounceTimer);
+        canvasState.cullDebounceTimer = setTimeout(() => {
+          renderVisibleTreeViewport(false);
+        }, 140);
       } else if (!canvasState.rafPending) {
         canvasState.rafPending = true;
         requestAnimationFrame(() => {
@@ -1918,6 +1910,8 @@
       viewport.addEventListener('touchend', () => {
         canvasState.isDragging = false;
         canvasState.lastPinchDist = 0;
+        clearTimeout(canvasState.cullDebounceTimer);
+        renderVisibleTreeViewport(false);
       });
 
       window.addEventListener('resize', () => {
@@ -2924,7 +2918,7 @@
               return `
                 <button
                   type="button"
-                  onclick="dropdown.classList.add('hidden'); if (window.innerWidth < 1024) document.getElementById('mobileSearchContainer')?.classList.add('hidden'); jumpToTreeNode('${m.id}')"
+                  onclick="document.getElementById('searchResultsDropdown')?.classList.add('hidden'); if (window.innerWidth < 1024) document.getElementById('mobileSearchContainer')?.classList.add('hidden'); jumpToTreeNode('${m.id}')"
                   class="w-full text-left px-4 py-2.5 hover:bg-stone-50 transition flex items-center justify-between gap-2"
                 >
                   <div class="min-w-0">
