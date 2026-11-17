@@ -300,10 +300,41 @@
       </div>
 
       <!-- Primary Family Branch Tabs (Gabungan + Per Keluarga Besar) -->
-      <div class="mt-2 pt-1.5 border-t border-stone-100">
-        <div id="familyBranchTabs" class="smooth-scroll-x flex items-center gap-1.5 no-scrollbar pb-0.5">
+      <div class="mt-2 pt-1.5 border-t border-stone-100 relative flex items-center gap-1">
+        <!-- Left Scroll Button (Desktop & Tablet) -->
+        <button
+          id="branchTabsScrollLeftBtn"
+          type="button"
+          onclick="scrollFamilyBranchTabs(-1)"
+          title="Geser daftar cabang ke kiri"
+          aria-label="Geser daftar cabang ke kiri"
+          class="hidden shrink-0 w-7 h-7 rounded-xl bg-white hover:bg-amber-50 active:bg-amber-100 border border-stone-200 hover:border-amber-300 text-batik-indigo shadow-xs items-center justify-center transition z-10 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <div
+          id="familyBranchTabs"
+          class="smooth-scroll-x flex items-center gap-1.5 no-scrollbar pb-0.5 flex-1 min-w-0 select-none"
+        >
           <!-- Rendered dynamically: Gabungan Trah Tirtowiyono + 8 Keluarga Besar -->
         </div>
+
+        <!-- Right Scroll Button (Desktop & Tablet) -->
+        <button
+          id="branchTabsScrollRightBtn"
+          type="button"
+          onclick="scrollFamilyBranchTabs(1)"
+          title="Geser daftar cabang ke kanan"
+          aria-label="Geser daftar cabang ke kanan"
+          class="hidden shrink-0 w-7 h-7 rounded-xl bg-white hover:bg-amber-50 active:bg-amber-100 border border-stone-200 hover:border-amber-300 text-batik-indigo shadow-xs items-center justify-center transition z-10 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
       </div>
 
       <!-- Active Tab Context & Desktop View Mode Switcher -->
@@ -4506,6 +4537,108 @@
     // =========================================================================
     // 10. FAMILY TABS, SEARCH, NAVIGATION & BACKUP UTILITIES
     // =========================================================================
+    function updateBranchTabsScrollButtons() {
+      const tabsEl = document.getElementById('familyBranchTabs');
+      const leftBtn = document.getElementById('branchTabsScrollLeftBtn');
+      const rightBtn = document.getElementById('branchTabsScrollRightBtn');
+      if (!tabsEl || !leftBtn || !rightBtn) return;
+
+      const maxScrollLeft = tabsEl.scrollWidth - tabsEl.clientWidth;
+      const canScrollLeft = tabsEl.scrollLeft > 4;
+      const canScrollRight = maxScrollLeft > 4 && tabsEl.scrollLeft < maxScrollLeft - 4;
+
+      if (canScrollLeft) {
+        leftBtn.classList.remove('hidden');
+        leftBtn.classList.add('flex');
+      } else {
+        leftBtn.classList.add('hidden');
+        leftBtn.classList.remove('flex');
+      }
+
+      if (canScrollRight) {
+        rightBtn.classList.remove('hidden');
+        rightBtn.classList.add('flex');
+      } else {
+        rightBtn.classList.add('hidden');
+        rightBtn.classList.remove('flex');
+      }
+    }
+
+    window.scrollFamilyBranchTabs = function (direction) {
+      const tabsEl = document.getElementById('familyBranchTabs');
+      if (!tabsEl) return;
+      const step = Math.max(220, Math.round(tabsEl.clientWidth * 0.55));
+      tabsEl.scrollBy({
+        left: direction * step,
+        behavior: 'smooth'
+      });
+    };
+
+    function setupBranchTabsDesktopScroll() {
+      const tabsEl = document.getElementById('familyBranchTabs');
+      if (!tabsEl) return;
+
+      // 1. Update chevron visibility on scroll & window resize
+      tabsEl.addEventListener('scroll', updateBranchTabsScrollButtons, { passive: true });
+      window.addEventListener('resize', updateBranchTabsScrollButtons, { passive: true });
+
+      // 2. Convert vertical mouse-wheel scrolling over the tab bar into smooth horizontal scroll
+      tabsEl.addEventListener(
+        'wheel',
+        (e) => {
+          if (tabsEl.scrollWidth <= tabsEl.clientWidth) return;
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            tabsEl.scrollLeft += e.deltaY;
+          }
+        },
+        { passive: false }
+      );
+
+      // 3. Support mouse click-and-drag horizontal scrolling on desktop
+      let isMouseDown = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+      let hasDragged = false;
+
+      tabsEl.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        hasDragged = false;
+        startX = e.pageX;
+        startScrollLeft = tabsEl.scrollLeft;
+        tabsEl.classList.add('cursor-grabbing');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        const dx = e.pageX - startX;
+        if (Math.abs(dx) > 6) {
+          hasDragged = true;
+          tabsEl.scrollLeft = startScrollLeft - dx;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        tabsEl.classList.remove('cursor-grabbing');
+      });
+
+      // Prevent accidental tab activation if the user just dragged to scroll
+      tabsEl.addEventListener(
+        'click',
+        (e) => {
+          if (hasDragged) {
+            e.stopPropagation();
+            e.preventDefault();
+            hasDragged = false;
+          }
+        },
+        true
+      );
+    }
+
     function renderFamilyBranchTabs() {
       const tabsContainer = document.getElementById('familyBranchTabs');
       const datalistEl = document.getElementById('kelompokSuggestions');
@@ -4525,6 +4658,7 @@
       let tabsHtml = `
         <button
           type="button"
+          ${isAllActive ? 'data-active-branch-tab="true"' : ''}
           onclick="selectFamilyBranchTab('ALL')"
           class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shrink-0 border ${
             isAllActive
@@ -4551,6 +4685,7 @@
           return `
             <button
               type="button"
+              ${isActive ? 'data-active-branch-tab="true"' : ''}
               onclick="selectFamilyBranchTab('${head.id}')"
               title="${escapeHtml(head.kelompok || head.name)}"
               class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shrink-0 border ${
@@ -4569,6 +4704,14 @@
         .join('');
 
       tabsContainer.innerHTML = tabsHtml;
+
+      requestAnimationFrame(() => {
+        updateBranchTabsScrollButtons();
+        const activeBtn = tabsContainer.querySelector('[data-active-branch-tab="true"]');
+        if (activeBtn) {
+          activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
+      });
 
       const badgeEl = document.getElementById('activeBranchBadge');
       const titleEl = document.getElementById('activeBranchContextTitle');
@@ -4864,6 +5007,7 @@
     function bootstrapApp() {
       setupCanvasPanAndZoom();
       setupLiveSearch();
+      setupBranchTabsDesktopScroll();
       initDataLayer();
     }
 
