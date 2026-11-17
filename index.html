@@ -134,9 +134,12 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="syncStatusText">Siap &amp; Tersimpan</span>
               </span>
+              <span id="roleStatusBadge" class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
+                Mode Publik
+              </span>
             </div>
             <p class="text-[11px] sm:text-xs text-stone-500 hidden sm:block">
-              Eyang Kakung Suprapto Tirtowiyono &amp; Eyang Putri Sumiyati &bull; Silsilah Digital Publik
+              Eyang Kakung Tirtowiyono &amp; Eyang Putri Sumiyati &bull; Silsilah Digital Publik
             </p>
           </div>
         </div>
@@ -193,19 +196,63 @@
           <button
             type="button"
             onclick="openShareModal()"
-            title="Bagikan Akses Publik Keluarga"
+            title="Bagikan Akses Publik &amp; Cadangan Data"
             class="p-2 sm:px-3 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition"
           >
             <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
             </svg>
-            <span class="hidden md:inline">Akses Publik</span>
+            <span class="hidden xl:inline">Bagikan</span>
           </button>
 
+          <!-- Moderation Inbox Button (Visible to Super Admin & Branch Coordinators) -->
           <button
+            id="moderationInboxBtn"
+            type="button"
+            onclick="openModerationModal()"
+            title="Kotak Masuk Usulan Pembaruan Data Keluarga"
+            class="hidden px-2.5 sm:px-3 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-950 text-xs font-bold items-center gap-1.5 transition shrink-0"
+          >
+            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <span class="hidden sm:inline">Usulan</span>
+            <span id="pendingSuggestionsBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-600 text-white font-extrabold">0</span>
+          </button>
+
+          <!-- Admin / Pengurus Login & Role Manager Button -->
+          <button
+            id="adminAuthBtn"
+            type="button"
+            onclick="openAdminModal()"
+            title="Login Pengurus &amp; Pengaturan Hak Akses"
+            class="px-2.5 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition shrink-0"
+          >
+            <svg class="w-4 h-4 text-batik-indigo shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span id="adminAuthBtnLabel" class="text-[11px] sm:text-xs">Login Pengurus</span>
+          </button>
+
+          <!-- Public Suggestion Button (Shown when in Public Read-Only Mode) -->
+          <button
+            id="publicSuggestHeaderBtn"
+            type="button"
+            onclick="openSuggestionModal()"
+            class="px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs sm:text-sm font-bold shadow-sm flex items-center gap-1 sm:gap-1.5 transition shrink-0"
+          >
+            <svg class="w-4 h-4 text-stone-900 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span class="truncate max-w-[95px] sm:max-w-none">Usulkan Data</span>
+          </button>
+
+          <!-- Direct Add Button (Shown ONLY to Super Admin / Authorized Branch Coordinator) -->
+          <button
+            id="primaryAddHeaderBtn"
             type="button"
             onclick="openAddModal({ mode: 'descendant' })"
-            class="px-2.5 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-1 sm:gap-1.5 transition"
+            class="hidden px-2.5 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm items-center gap-1 sm:gap-1.5 transition shrink-0"
           >
             <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
@@ -235,7 +282,7 @@
               Seluruh Keluarga Trah Tirtowiyono
             </span>
             <span id="activeBranchContextSub" class="text-[11px] text-stone-500 hidden md:inline ml-1.5">
-              &bull; Menampilkan gabungan 8 keluarga besar dari Eyang Suprapto Tirtowiyono &amp; Eyang Sumiyati
+              &bull; Menampilkan gabungan 8 keluarga besar dari Eyang Tirtowiyono &amp; Eyang Sumiyati
             </span>
           </div>
         </div>
@@ -268,7 +315,7 @@
           </span>
         </div>
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button type="button" onclick="openHeritageEditModal('story')" class="px-2.5 sm:px-3 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-950 border border-amber-300 text-xs font-bold flex items-center gap-1.5 transition">
+          <button id="heritageTopEditBtn" type="button" onclick="openHeritageEditModal('story')" class="hidden px-2.5 sm:px-3 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-950 border border-amber-300 text-xs font-bold items-center gap-1.5 transition">
             <svg class="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
             </svg>
@@ -701,7 +748,7 @@
             Kolaborasi Keluarga Terbuka
           </div>
           <p class="text-xs leading-relaxed">
-            Setiap anggota keluarga dapat membuka tab cabangnya masing-masing untuk menambahkan kelahiran anak/cucu/cicit baru maupun memperbarui data pasangan dan domisili, dan seluruh data langsung tergabung otomatis pada tab <strong>Gabungan Trah Tirtowiyono</strong>.
+            Setiap anggota keluarga dapat membuka tab cabangnya masing-masing untuk mengusulkan atau memperbarui data kelahiran anak/cucu/cicit maupun pasangan dan domisili, dan seluruh data langsung tergabung otomatis pada tab <strong>Gabungan Trah Tirtowiyono</strong>.
           </p>
           <div class="pt-1 text-[11px] font-mono text-emerald-800 break-all">
             Mode Penyimpanan: <span id="displayFullUserId">Tersimpan Lokal &amp; Cloud</span>
@@ -761,8 +808,8 @@
           <button type="button" onclick="exportJsonBackup()" class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700">
             Ekspor Backup JSON
           </button>
-          <label class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700 cursor-pointer">
-            Impor JSON
+          <label id="importJsonLabelBtn" class="hidden px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-xs font-semibold text-amber-900 cursor-pointer">
+            Impor JSON (Super Admin)
             <input type="file" accept=".json" onchange="importJsonBackup(event)" class="hidden" />
           </label>
           <button type="button" onclick="window.print()" class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700">
@@ -770,6 +817,254 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN LOGIN & ROLE MANAGEMENT MODAL ==================== -->
+  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/80 shrink-0">
+        <div>
+          <h3 class="font-serif font-bold text-lg text-batik-indigo">Akses Pengurus &amp; Hak Kelola Trah</h3>
+          <p class="text-xs text-stone-500">Website terbuka untuk dibaca publik; pengeditan khusus pengurus terdaftar</p>
+        </div>
+        <button type="button" onclick="closeAdminModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="smooth-scroll-y p-5 space-y-5 text-xs sm:text-sm flex-1 min-h-0">
+        <!-- State A: Not Logged In -->
+        <div id="adminLoginSection" class="space-y-4">
+          <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-xs leading-relaxed">
+            <strong>Info untuk Keluarga:</strong> Anda tidak perlu login untuk melihat silsilah maupun mengirimkan usulan data. Login di bawah ini khusus untuk <strong>Ketua/Sekretaris Paguyuban (Super Admin)</strong> dan <strong>Koordinator 8 Cabang Keluarga</strong>.
+          </div>
+
+          <button
+            type="button"
+            onclick="loginAdminWithGoogle()"
+            class="w-full py-3 px-4 rounded-2xl bg-white hover:bg-stone-50 active:bg-stone-100 border-2 border-stone-300 text-stone-800 font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-2.5 transition"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
+              <path fill="#FBBC05" d="M5.3 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.8z"/>
+              <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 21.4 7.4 24 12 24z"/>
+            </svg>
+            <span>Masuk dengan Akun Google (Gmail)</span>
+          </button>
+
+          <div class="relative flex py-1 items-center">
+            <div class="grow border-t border-stone-200"></div>
+            <span class="shrink mx-3 text-[11px] text-stone-400 font-semibold">atau masuk dengan Email &amp; Kata Sandi</span>
+            <div class="grow border-t border-stone-200"></div>
+          </div>
+
+          <form onsubmit="loginAdminWithEmail(event)" class="space-y-3">
+            <div>
+              <label for="adminLoginEmail" class="block text-xs font-semibold text-stone-700 mb-1">Email Pengurus</label>
+              <input id="adminLoginEmail" type="email" required placeholder="nama@email.com" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+            </div>
+            <div>
+              <label for="adminLoginPassword" class="block text-xs font-semibold text-stone-700 mb-1">Kata Sandi</label>
+              <input id="adminLoginPassword" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white font-bold text-xs sm:text-sm shadow-sm transition">
+              Masuk sebagai Pengurus
+            </button>
+          </form>
+        </div>
+
+        <!-- State B: Logged In Profile & Role Info -->
+        <div id="adminProfileSection" class="hidden space-y-5">
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex flex-wrap items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-[11px] font-semibold text-stone-400">Akun Pengurus Aktif</div>
+              <div id="loggedInEmailText" class="font-bold text-sm text-stone-900 truncate"></div>
+              <div id="loggedInRoleDesc" class="text-xs text-batik-indigo font-semibold mt-0.5"></div>
+            </div>
+            <button type="button" onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold transition">
+              Keluar (Logout)
+            </button>
+          </div>
+
+          <!-- First-Time Super Admin Bootstrap Banner -->
+          <div id="bootstrapSuperAdminBox" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 space-y-2.5">
+            <div class="font-bold text-amber-950 text-xs sm:text-sm">Belum Ada Super Admin Terdaftar</div>
+            <p class="text-xs text-amber-900 leading-relaxed">
+              Karena daftar Super Admin masih kosong, Anda dapat mendaftarkan akun email ini sebagai <strong>Super Admin Pertama</strong> untuk mengelola seluruh silsilah dan menunjuk Koordinator 8 Cabang.
+            </p>
+            <button type="button" onclick="claimFirstSuperAdmin()" class="px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold shadow-sm transition">
+              Daftarkan Akun Saya sebagai Super Admin
+            </button>
+          </div>
+
+          <!-- Unregistered Email Notice -->
+          <div id="unregisteredEmailBox" class="hidden p-4 rounded-2xl bg-stone-100 border border-stone-300 text-xs text-stone-700 space-y-1.5">
+            <div class="font-bold text-stone-900">Email Anda Belum Terdaftar sebagai Pengurus</div>
+            <p class="leading-relaxed">
+              Akun Anda saat ini hanya memiliki akses baca publik. Silakan hubungi <strong>Super Admin Paguyuban Trah Tirtowiyanan</strong> untuk menambahkan email Anda ke daftar Super Admin atau Koordinator Cabang.
+            </p>
+          </div>
+
+          <!-- Super Admin Role Manager (Visible ONLY to Super Admin) -->
+          <div id="superAdminManagerBox" class="hidden space-y-5 pt-2 border-t border-stone-200">
+            <!-- 1. Super Admins List -->
+            <div class="space-y-2.5">
+              <div class="font-serif font-bold text-base text-batik-indigo">1. Daftar Super Admin (Akses Penuh Semua Cabang)</div>
+              <div id="superAdminsListContainer" class="space-y-1.5"></div>
+              <div class="flex gap-2">
+                <input id="newSuperAdminEmailInput" type="email" placeholder="Tambah email Gmail Super Admin baru..." class="flex-1 px-3 py-2 rounded-xl border border-stone-300 text-base sm:text-xs focus:border-batik-indigo outline-none" />
+                <button type="button" onclick="addSuperAdminEmail()" class="px-3.5 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold shrink-0">
+                  + Tambah
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Branch Coordinators List -->
+            <div class="space-y-2.5 pt-3 border-t border-stone-100">
+              <div class="font-serif font-bold text-base text-batik-indigo">2. Daftar Koordinator per 8 Cabang Keluarga</div>
+              <p class="text-[11px] text-stone-500">Koordinator cabang hanya dapat menambah, mengedit, dan menyetujui usulan pada cabang keluarganya masing-masing.</p>
+              <div id="coordinatorsListContainer" class="space-y-1.5"></div>
+              <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-1">
+                <input id="newCoordEmailInput" type="email" placeholder="Email Gmail koordinator..." class="sm:col-span-2 px-3 py-2 rounded-xl border border-stone-300 text-base sm:text-xs focus:border-batik-indigo outline-none" />
+                <select id="newCoordBranchSelect" class="sm:col-span-2 px-3 py-2 rounded-xl border border-stone-300 bg-white text-base sm:text-xs focus:border-batik-indigo outline-none"></select>
+                <button type="button" onclick="addBranchCoordinator()" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">
+                  + Tugaskan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PUBLIC SUGGESTION ("USULKAN DATA / KOREKSI") MODAL ==================== -->
+  <div id="suggestionFormModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-amber-50/70 shrink-0">
+        <div>
+          <h3 class="font-serif font-bold text-lg text-batik-indigo">Usulkan Penambahan / Koreksi Silsilah</h3>
+          <p class="text-xs text-stone-600">Usulan Anda akan ditinjau &amp; disetujui oleh Pengurus / Koordinator Cabang</p>
+        </div>
+        <button type="button" onclick="closeSuggestionModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="suggestionForm" onsubmit="handleSuggestionFormSubmit(event)" class="smooth-scroll-y p-5 space-y-4 text-sm flex-1 min-h-0">
+        <!-- Suggestion Type -->
+        <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+          <label class="block text-xs font-bold text-stone-700 uppercase tracking-wide">Jenis Usulan</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+              <input type="radio" name="suggestionType" value="add_child" checked onchange="onSuggestionTypeChange(this.value)" class="accent-batik-indigo" />
+              <span class="text-xs font-semibold text-stone-800">Tambah Anak / Cucu / Cicit Baru</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer">
+              <input type="radio" name="suggestionType" value="edit_member" onchange="onSuggestionTypeChange(this.value)" class="accent-batik-indigo" />
+              <span class="text-xs font-semibold text-stone-800">Koreksi Data Anggota Ada</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Parent or Target Member Selector -->
+        <div>
+          <label id="sugTargetLabel" for="sugTargetMemberId" class="block text-xs font-semibold text-stone-700 mb-1">
+            Orang Tua (Jalur Trah) <span class="text-red-500">*</span>
+          </label>
+          <select id="sugTargetMemberId" onchange="onSuggestionTargetSelect()" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none"></select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div class="sm:col-span-3">
+            <label for="sugName" class="block text-xs font-semibold text-stone-700 mb-1">
+              Nama Lengkap Anggota <span class="text-red-500">*</span>
+            </label>
+            <input id="sugName" type="text" required placeholder="Nama lengkap sesuai silsilah" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="sugOrder" class="block text-xs font-semibold text-stone-700 mb-1">Anak Ke-</label>
+            <input id="sugOrder" type="number" min="1" max="30" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="sugGender" class="block text-xs font-semibold text-stone-700 mb-1">Jenis Kelamin</label>
+            <select id="sugGender" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label for="sugIsDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Anggota</label>
+            <select id="sugIsDeceased" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+              <option value="false">Masih Hidup</option>
+              <option value="true">Almarhum / Almarhumah (Alm.)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label for="sugSpouseName" class="block text-xs font-semibold text-stone-700 mb-1">Nama Pasangan (Opsional)</label>
+            <input id="sugSpouseName" type="text" placeholder="Kosongkan jika belum menikah" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="sugSpouseDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Pasangan</label>
+            <select id="sugSpouseDeceased" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+              <option value="false">Hidup</option>
+              <option value="true">Alm.</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="sugDomicile" class="block text-xs font-semibold text-stone-700 mb-1">Domisili / Kota</label>
+            <input id="sugDomicile" type="text" placeholder="Contoh: Semarang / Boyolali" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+          <div>
+            <label for="sugNotes" class="block text-xs font-semibold text-stone-700 mb-1">Keterangan / Tahun Lahir</label>
+            <input id="sugNotes" type="text" placeholder="Misal: Lahir 12 Mei 2025" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2.5">
+          <div class="text-xs font-bold text-amber-950">Identitas Pengusul (Untuk Verifikasi Pengurus)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <input id="sugSubmittedBy" type="text" required placeholder="Nama Anda (Pengusul) *" class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-base sm:text-xs focus:border-batik-indigo outline-none" />
+            <input id="sugContact" type="text" placeholder="No. WhatsApp / Keterangan Hubungan" class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-base sm:text-xs focus:border-batik-indigo outline-none" />
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-stone-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeSuggestionModal()" class="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold text-xs sm:text-sm hover:bg-stone-50">
+            Batal
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-sm">
+            Kirim Usulan ke Pengurus
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODERATION INBOX MODAL (FOR ADMINS & COORDINATORS) ==================== -->
+  <div id="moderationInboxModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/80 shrink-0">
+        <div>
+          <h3 class="font-serif font-bold text-lg text-batik-indigo">Kotak Masuk Usulan Pembaruan Data</h3>
+          <p id="moderationSubtitle" class="text-xs text-stone-500">Tinjau dan setujui usulan penambahan atau koreksi data dari anggota keluarga</p>
+        </div>
+        <button type="button" onclick="closeModerationModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="moderationListContainer" class="smooth-scroll-y p-5 space-y-3 flex-1 min-h-0"></div>
     </div>
   </div>
 
@@ -791,7 +1086,14 @@
   <!-- ==================== APPLICATION LOGIC ==================== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, addDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // =========================================================================
@@ -803,7 +1105,7 @@
         id: "root_tirtowiyono",
         parentId: null,
         order: 1,
-        name: "Eyang Kakung Suprapto Tirtowiyono",
+        name: "Eyang Kakung Tirtowiyono",
         gender: "L",
         isDeceased: true,
         spouseName: "Eyang Putri Sumiyati",
@@ -956,13 +1258,13 @@
 
     const DEFAULT_HERITAGE_DATA = {
       storyBadge: 'Arsip Sejarah Paguyuban Trah Tirtowiyanan',
-      storyTitle: 'Sepenggal Kisah Eyang Kakung Suprapto Tirtowiyono & Eyang Putri Sumiyati',
+      storyTitle: 'Sepenggal Kisah Eyang Kakung Tirtowiyono & Eyang Putri Sumiyati',
       storyParagraphs: [
-        'Di Desa Rejoso, Kelurahan Sambon, Kecamatan Banyudono, Boyolali, hiduplah pasangan panutan keluarga: Eyang Kakung Suprapto Tirtowiyono dan Eyang Putri Sumiyati. Beliau berdua dikaruniai delapan (8) orang putra-putri yang terdiri dari enam (6) putra dan dua (2) putri, yang kini berkembang menjadi 8 Kelompok Trah Tirtowiyanan di berbagai kota.',
-        'Eyang Putri Sumiyati dikenal sebagai pedagang beras yang ulet dan sukses—mengirimkan beras terbaik menggunakan truk hingga Kabupaten Salatiga dan Kota Semarang—didampingi penuh kasih sayang dan kebijaksanaan oleh Eyang Kakung Suprapto Tirtowiyono. Beliau juga dikenal gemar kuliner tradisional Jawa seperti ubi, gembili, dan buah duku.',
+        'Di Desa Rejoso, Kelurahan Sambon, Kecamatan Banyudono, Boyolali, hiduplah pasangan panutan keluarga: Eyang Kakung Tirtowiyono dan Eyang Putri Sumiyati. Beliau berdua dikaruniai delapan (8) orang putra-putri yang terdiri dari enam (6) putra dan dua (2) putri, yang kini berkembang menjadi 8 Kelompok Trah Tirtowiyanan di berbagai kota.',
+        'Eyang Putri Sumiyati dikenal sebagai pedagang beras yang ulet dan sukses—mengirimkan beras terbaik menggunakan truk hingga Kabupaten Salatiga dan Kota Semarang—didampingi penuh kasih sayang dan kebijaksanaan oleh Eyang Kakung Tirtowiyono. Beliau juga dikenal gemar kuliner tradisional Jawa seperti ubi, gembili, dan buah duku.',
         'Lebih dari sekadar kesuksesan materi, keduanya dikenang karena kedermawanan kepada warga sekitar serta keteguhan iman yang luar biasa—setiap Minggu pagi berjalan kaki bersama menuju gereja dengan penuh syukur.'
       ],
-      kakungLabel: 'Eyang Kakung Suprapto Tirtowiyono',
+      kakungLabel: 'Eyang Kakung Tirtowiyono',
       kakungWafat: 'Wafat: Selasa Kliwon, 31 Maret 1998',
       kakungUsia: 'Dalam usia 97 tahun',
       putriLabel: 'Eyang Putri Sumiyati',
@@ -970,9 +1272,9 @@
       putriUsia: 'Dalam usia 93 tahun',
       visiMisiTitle: 'Visi & Misi Paguyuban Trah Tirtowiyanan',
       visiMisiIntro: 'Berawal dari pertemuan pertama di Semarang (kediaman Bapak Hartono / Mbak Yayuk) pada Januari 2004, berlanjut hingga Periode Kedua & Penyusunan Buku Silsilah oleh Ketua Pengurus Ambang Wibana, S.Psi., M.Si.',
-      visiText: 'Memperkuat ikatan silaturahmi di antara seluruh anggota keluarga keturunan Almarhum Eyang Kakung Suprapto Tirtowiyono serta memberikan kontribusi nyata bagi kesejahteraan dan kemajuan keluarga Trah Tirtowiyanan.',
+      visiText: 'Memperkuat ikatan silaturahmi di antara seluruh anggota keluarga keturunan Almarhum Eyang Kakung Tirtowiyono serta memberikan kontribusi nyata bagi kesejahteraan dan kemajuan keluarga Trah Tirtowiyanan.',
       misiItems: [
-        'Mewujudkan solidaritas dan kebersamaan di antara seluruh keturunan Almarhum Eyang Kakung Suprapto Tirtowiyono.',
+        'Mewujudkan solidaritas dan kebersamaan di antara seluruh keturunan Almarhum Eyang Kakung Tirtowiyono.',
         'Menjaga dan mengembangkan nilai-nilai kearifan lokal serta teladan kebaikan para leluhur.',
         'Memberikan bantuan dan dukungan moral maupun finansial kepada anggota keluarga yang membutuhkan.',
         'Menciptakan lingkungan yang kondusif bagi pertumbuhan dan perkembangan generasi penerus trah.'
@@ -987,10 +1289,20 @@
     const LOCAL_STORAGE_MEMBERS_KEY = 'trah_tirtowiyanan_members_v2';
     const LOCAL_STORAGE_LOGS_KEY = 'trah_tirtowiyanan_logs_v2';
     const LOCAL_STORAGE_HERITAGE_KEY = 'trah_tirtowiyanan_heritage_v1';
+    const LOCAL_STORAGE_ACCESS_KEY = 'trah_tirtowiyanan_access_v1';
+    const LOCAL_STORAGE_SUGGESTIONS_KEY = 'trah_tirtowiyanan_suggestions_v1';
 
     let members = [];
     let activityLogs = [];
     let heritageData = JSON.parse(JSON.stringify(DEFAULT_HERITAGE_DATA));
+    let accessConfig = {
+      superAdmins: [],
+      coordinators: [],
+      coordinatorEmails: [],
+      updatedBy: '',
+      updatedAt: ''
+    };
+    let suggestionsList = [];
     let activeTab = 'tree';
     let activeBranchId = 'ALL'; // 'ALL' = Gabungan Trah Tirtowiyono, or branch head ID ('b1'..'b8')
     let selectedMemberId = null;
@@ -1097,6 +1409,8 @@
         localStorage.setItem(LOCAL_STORAGE_MEMBERS_KEY, JSON.stringify(members));
         localStorage.setItem(LOCAL_STORAGE_LOGS_KEY, JSON.stringify(activityLogs));
         localStorage.setItem(LOCAL_STORAGE_HERITAGE_KEY, JSON.stringify(heritageData));
+        localStorage.setItem(LOCAL_STORAGE_ACCESS_KEY, JSON.stringify(accessConfig));
+        localStorage.setItem(LOCAL_STORAGE_SUGGESTIONS_KEY, JSON.stringify(suggestionsList));
       } catch (e) {
         console.warn('LocalStorage save warning:', e);
       }
@@ -1107,6 +1421,8 @@
         const rawMembers = localStorage.getItem(LOCAL_STORAGE_MEMBERS_KEY);
         const rawLogs = localStorage.getItem(LOCAL_STORAGE_LOGS_KEY);
         const rawHeritage = localStorage.getItem(LOCAL_STORAGE_HERITAGE_KEY);
+        const rawAccess = localStorage.getItem(LOCAL_STORAGE_ACCESS_KEY);
+        const rawSuggestions = localStorage.getItem(LOCAL_STORAGE_SUGGESTIONS_KEY);
         if (rawMembers) {
           const parsed = JSON.parse(rawMembers);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -1123,6 +1439,27 @@
           const parsedHeritage = JSON.parse(rawHeritage);
           if (parsedHeritage && parsedHeritage.storyTitle) {
             heritageData = { ...JSON.parse(JSON.stringify(DEFAULT_HERITAGE_DATA)), ...parsedHeritage };
+          }
+        }
+        if (rawAccess) {
+          const parsedAccess = JSON.parse(rawAccess);
+          if (parsedAccess && Array.isArray(parsedAccess.superAdmins)) {
+            const coords = Array.isArray(parsedAccess.coordinators) ? parsedAccess.coordinators : [];
+            accessConfig = {
+              superAdmins: parsedAccess.superAdmins || [],
+              coordinators: coords,
+              coordinatorEmails: Array.isArray(parsedAccess.coordinatorEmails)
+                ? parsedAccess.coordinatorEmails
+                : coords.map((c) => String(c.email || '').toLowerCase().trim()).filter(Boolean),
+              updatedBy: parsedAccess.updatedBy || '',
+              updatedAt: parsedAccess.updatedAt || ''
+            };
+          }
+        }
+        if (rawSuggestions) {
+          const parsedSug = JSON.parse(rawSuggestions);
+          if (Array.isArray(parsedSug)) {
+            suggestionsList = parsedSug;
           }
         }
       } catch (e) {
@@ -1258,9 +1595,9 @@
     async function initDataLayer() {
       const statusTextEl = document.getElementById('syncStatusText');
       const userIdDisplayEl = document.getElementById('displayFullUserId');
-      const host = window.location.hostname || 'localhost';
 
       loadFromLocalStorage();
+      applyRolePermissionsToUI();
 
       try {
         const firebaseConfig = resolveFirebaseConfig();
@@ -1268,126 +1605,183 @@
           const app = initializeApp(firebaseConfig);
           auth = getAuth(app);
           db = getFirestore(app);
+          useCloudFirestore = true;
 
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
-          }
+          cloudDiagnostic.authStatus = 'Mode Publik Aktif (Siap Login Pengurus)';
+          if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
+          if (userIdDisplayEl) userIdDisplayEl.textContent = 'Publik Read-Only (Login Pengurus untuk Edit)';
+          updateDiagnosticUI();
 
+          const membersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+          const logsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+          const suggestionsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'suggestions');
+          const heritageDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'heritage');
+          const accessDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'access');
+
+          // Track Authenticated Pengurus (Google / Email)
           onAuthStateChanged(auth, async (user) => {
-            if (!user) return;
-            currentUser = user;
-            useCloudFirestore = true;
-            cloudDiagnostic.authStatus = `Terautentikasi Anonim (${user.uid.slice(0, 8)}...)`;
-            if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
-            if (userIdDisplayEl) userIdDisplayEl.textContent = `Cloud ID: ${user.uid}`;
-            updateDiagnosticUI();
+            currentUser = user && !user.isAnonymous ? user : null;
+            const roleInfo = getUserRoleInfo();
+            if (currentUser) {
+              cloudDiagnostic.authStatus = `Login: ${currentUser.email} (${roleInfo.roleLabel})`;
+              if (userIdDisplayEl) userIdDisplayEl.textContent = `${currentUser.email} • ${roleInfo.roleLabel}`;
 
-            const membersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
-            const logsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
-            const heritageDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'heritage');
-
-            try {
-              const existingSnap = await getDocs(membersColRef);
-              if (existingSnap.empty) {
-                const BATCH_CHUNK = 400;
-                for (let i = 0; i < members.length; i += BATCH_CHUNK) {
-                  const batch = writeBatch(db);
-                  members.slice(i, i + BATCH_CHUNK).forEach((m) => {
-                    batch.set(doc(membersColRef, m.id), m);
-                  });
-                  await batch.commit();
-                }
-                await setDoc(heritageDocRef, heritageData);
-                await addDoc(logsColRef, {
-                  action: 'Inisialisasi basis data publik Trah Tirtowiyanan',
-                  contributor: 'Paguyuban Trah Tirtowiyanan',
-                  timestamp: new Date().toISOString()
-                });
+              // If Firestore members collection is empty and a Super Admin logs in, seed initial book data
+              if (roleInfo.isSuperAdmin) {
+                try {
+                  const existingSnap = await getDocs(membersColRef);
+                  if (existingSnap.empty) {
+                    const BATCH_CHUNK = 400;
+                    for (let i = 0; i < members.length; i += BATCH_CHUNK) {
+                      const batch = writeBatch(db);
+                      members.slice(i, i + BATCH_CHUNK).forEach((m) => {
+                        batch.set(doc(membersColRef, m.id), m);
+                      });
+                      await batch.commit();
+                    }
+                    await setDoc(heritageDocRef, heritageData);
+                  }
+                } catch (_) {}
               }
-            } catch (seedErr) {
-              cloudDiagnostic.firestoreStatus = `Ditolak Firestore (${seedErr.code || 'permission-denied'})`;
-              cloudDiagnostic.errorHint = 'Periksa tab Rules di Firestore Database Firebase Console dan pastikan sudah klik Publish.';
-              if (statusTextEl) statusTextEl.textContent = 'Cloud Ditolak (Cek Rules)';
+            } else {
+              cloudDiagnostic.authStatus = 'Pengunjung Publik (Baca Saja)';
+              if (userIdDisplayEl) userIdDisplayEl.textContent = 'Publik Read-Only (Login Pengurus untuk Edit)';
+            }
+            updateDiagnosticUI();
+            applyRolePermissionsToUI();
+            renderAdminModalContent();
+            refreshAllViews(false);
+          });
+
+          // Public Real-Time Listener: Members
+          let isInitialCloudLoad = true;
+          let snapshotDebounceTimer = null;
+          onSnapshot(
+            membersColRef,
+            (snapshot) => {
+              const cloudMembers = [];
+              snapshot.forEach((docSnap) => {
+                cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              cloudDiagnostic.firestoreStatus = `Aktif & Real-Time (${cloudMembers.length} anggota)`;
+              cloudDiagnostic.errorHint = '';
+              if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
+              updateDiagnosticUI();
+
+              if (cloudMembers.length > 0) {
+                clearTimeout(snapshotDebounceTimer);
+                snapshotDebounceTimer = setTimeout(() => {
+                  members = cloudMembers;
+                  invalidateTreeCache();
+                  saveToLocalStorage();
+                  if (isInitialCloudLoad) {
+                    isInitialCloudLoad = false;
+                    collapseToDefault(false);
+                    refreshAllViews(true);
+                  } else {
+                    refreshAllViews(false);
+                  }
+                }, 60);
+              } else if (isInitialCloudLoad) {
+                isInitialCloudLoad = false;
+                collapseToDefault(false);
+                refreshAllViews(true);
+              }
+            },
+            (err) => {
+              console.error('Firestore members listener error:', err);
+              cloudDiagnostic.firestoreStatus = `Gagal Listener (${err.code || 'error'})`;
+              cloudDiagnostic.errorHint = 'Pastikan Firestore Rules mengizinkan "allow read: if true;" pada path /artifacts/trah-tirtowiyanan-public/public/data/{document=**}';
+              if (statusTextEl) statusTextEl.textContent = 'Cek Firestore Rules';
               updateDiagnosticUI();
             }
+          );
 
-            let isInitialCloudLoad = true;
-            let snapshotDebounceTimer = null;
-            onSnapshot(
-              membersColRef,
-              (snapshot) => {
-                const cloudMembers = [];
-                snapshot.forEach((docSnap) => {
-                  cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                cloudDiagnostic.firestoreStatus = `Aktif & Real-Time (${cloudMembers.length} anggota)`;
-                cloudDiagnostic.errorHint = '';
-                if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
-                updateDiagnosticUI();
+          // Public Real-Time Listener: Access Config (Super Admins & Branch Coordinators)
+          onSnapshot(
+            accessDocRef,
+            (docSnap) => {
+              if (docSnap.exists()) {
+                const data = docSnap.data();
+                const coords = Array.isArray(data.coordinators) ? data.coordinators : [];
+                accessConfig = {
+                  superAdmins: Array.isArray(data.superAdmins) ? data.superAdmins : [],
+                  coordinators: coords,
+                  coordinatorEmails: Array.isArray(data.coordinatorEmails)
+                    ? data.coordinatorEmails
+                    : coords.map((c) => String(c.email || '').toLowerCase().trim()).filter(Boolean),
+                  updatedBy: data.updatedBy || '',
+                  updatedAt: data.updatedAt || ''
+                };
+              } else {
+                accessConfig = { superAdmins: [], coordinators: [], coordinatorEmails: [], updatedBy: '', updatedAt: '' };
+              }
+              saveToLocalStorage();
+              applyRolePermissionsToUI();
+              renderAdminModalContent();
+              refreshAllViews(false);
+            },
+            (err) => {
+              console.warn('Firestore access config listener warning:', err);
+            }
+          );
 
-                if (cloudMembers.length > 0) {
-                  clearTimeout(snapshotDebounceTimer);
-                  snapshotDebounceTimer = setTimeout(() => {
-                    members = cloudMembers;
-                    invalidateTreeCache();
-                    saveToLocalStorage();
-                    if (isInitialCloudLoad) {
-                      isInitialCloudLoad = false;
-                      collapseToDefault(false);
-                      refreshAllViews(true);
-                    } else {
-                      refreshAllViews(false);
-                    }
-                  }, 60);
+          // Public Real-Time Listener: Family Suggestions / Corrections
+          onSnapshot(
+            suggestionsColRef,
+            (snapshot) => {
+              const items = [];
+              snapshot.forEach((docSnap) => {
+                items.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              items.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+              suggestionsList = items;
+              saveToLocalStorage();
+              applyRolePermissionsToUI();
+              if (!document.getElementById('moderationInboxModal')?.classList.contains('hidden')) {
+                renderModerationList();
+              }
+            },
+            (err) => {
+              console.warn('Firestore suggestions listener warning:', err);
+            }
+          );
+
+          // Public Real-Time Listener: Arsip Sejarah & Visi Misi
+          onSnapshot(
+            heritageDocRef,
+            (docSnap) => {
+              if (docSnap.exists()) {
+                const cloudHeritage = docSnap.data();
+                if (cloudHeritage && cloudHeritage.storyTitle) {
+                  heritageData = { ...JSON.parse(JSON.stringify(DEFAULT_HERITAGE_DATA)), ...cloudHeritage };
+                  saveToLocalStorage();
+                  if (activeTab === 'heritage') renderHeritageView();
                 }
-              },
-              (err) => {
-                console.error('Firestore members listener error:', err);
-                useCloudFirestore = false;
-                cloudDiagnostic.firestoreStatus = `Gagal Listener (${err.code || 'error'})`;
-                cloudDiagnostic.errorHint = 'Firestore Rules belum mengizinkan baca/tulis pada path /artifacts/trah-tirtowiyanan-public/public/data/{document=**}';
-                if (statusTextEl) statusTextEl.textContent = 'Gagal Live (Cek Rules)';
-                updateDiagnosticUI();
               }
-            );
+            },
+            (err) => {
+              console.warn('Firestore heritage listener warning:', err);
+            }
+          );
 
-            // Real-time listener for Arsip Sejarah & Visi Misi
-            onSnapshot(
-              heritageDocRef,
-              (docSnap) => {
-                if (docSnap.exists()) {
-                  const cloudHeritage = docSnap.data();
-                  if (cloudHeritage && cloudHeritage.storyTitle) {
-                    heritageData = { ...JSON.parse(JSON.stringify(DEFAULT_HERITAGE_DATA)), ...cloudHeritage };
-                    saveToLocalStorage();
-                    if (activeTab === 'heritage') renderHeritageView();
-                  }
-                }
-              },
-              (err) => {
-                console.warn('Firestore heritage listener warning:', err);
-              }
-            );
-
-            onSnapshot(
-              logsColRef,
-              (snapshot) => {
-                const cloudLogs = [];
-                snapshot.forEach((docSnap) => {
-                  cloudLogs.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                cloudLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-                activityLogs = cloudLogs.slice(0, 60);
-                saveToLocalStorage();
-                if (activeTab === 'heritage') renderActivityLogs();
-              },
-              (err) => {
-                console.warn('Firestore logs listener warning:', err);
-              }
-            );
-          });
+          // Public Real-Time Listener: Activity Audit Logs
+          onSnapshot(
+            logsColRef,
+            (snapshot) => {
+              const cloudLogs = [];
+              snapshot.forEach((docSnap) => {
+                cloudLogs.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              cloudLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+              activityLogs = cloudLogs.slice(0, 80);
+              saveToLocalStorage();
+              if (activeTab === 'heritage') renderActivityLogs();
+            },
+            (err) => {
+              console.warn('Firestore logs listener warning:', err);
+            }
+          );
           return;
         } else {
           cloudDiagnostic.errorHint = 'Isi objek STANDALONE_FIREBASE_CONFIG di dalam file index.html pada GitHub Anda, lalu tunggu Vercel selesai deploy ulang.';
@@ -1396,18 +1790,12 @@
         console.warn('Cloud sync fallback to local browser storage:', err);
         const code = err?.code || '';
         cloudDiagnostic.authStatus = `Gagal (${code || 'error'})`;
-        if (code === 'auth/unauthorized-domain') {
-          cloudDiagnostic.errorHint = `Domain "${host}" belum didaftarkan! Buka Firebase Console -> Authentication -> Settings -> Authorized domains -> Add domain: ${host}`;
-        } else if (code === 'auth/operation-not-allowed') {
-          cloudDiagnostic.errorHint = 'Metode login Anonymous belum diaktifkan! Buka Firebase Console -> Authentication -> Sign-in method -> aktifkan Anonymous.';
-        } else {
-          cloudDiagnostic.errorHint = `Error Firebase (${code || err.message}). Periksa apiKey & projectId di STANDALONE_FIREBASE_CONFIG.`;
-        }
+        cloudDiagnostic.errorHint = `Error Firebase (${code || err.message}). Periksa apiKey & projectId di STANDALONE_FIREBASE_CONFIG.`;
       }
 
-      // Standalone / Offline-ready LocalStorage Mode
+      // Offline / Local Browser Storage Fallback
       if (statusTextEl) statusTextEl.textContent = 'Tersimpan di Perangkat';
-      if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser (Belum Live Cloud)';
+      if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser';
       updateDiagnosticUI();
       collapseToDefault(false);
       refreshAllViews(true);
@@ -1422,10 +1810,11 @@
       }
       invalidateTreeCache();
 
+      const actorIdentity = getAuditContributorLabel(contributorName);
       const logEntry = {
         id: `log_${Date.now()}`,
         action: logMessage,
-        contributor: contributorName || 'Anggota Keluarga',
+        contributor: actorIdentity,
         timestamp: new Date().toISOString()
       };
       activityLogs.unshift(logEntry);
@@ -1439,16 +1828,18 @@
           await addDoc(logsColRef, logEntry);
         } catch (e) {
           console.warn('Cloud write warning:', e);
+          showToast('Gagal menyimpan ke server: pastikan akun Anda terdaftar & Firestore Rules sudah di-Publish', 'error');
         }
       }
     }
 
     async function persistHeritageData(updatedHeritage, logMessage, contributorName) {
       heritageData = updatedHeritage;
+      const actorIdentity = getAuditContributorLabel(contributorName);
       const logEntry = {
         id: `log_${Date.now()}`,
         action: logMessage,
-        contributor: contributorName || 'Pengurus / Anggota Keluarga',
+        contributor: actorIdentity,
         timestamp: new Date().toISOString()
       };
       activityLogs.unshift(logEntry);
@@ -1462,6 +1853,7 @@
           await addDoc(logsColRef, logEntry);
         } catch (e) {
           console.warn('Cloud heritage write warning:', e);
+          showToast('Gagal menyimpan arsip ke cloud: khusus Super Admin', 'error');
         }
       }
     }
@@ -1469,10 +1861,11 @@
     async function removeMemberRecord(memberId, logMessage) {
       members = members.filter((m) => m.id !== memberId);
       invalidateTreeCache();
+      const actorIdentity = getAuditContributorLabel('Pengurus Trah');
       const logEntry = {
         id: `log_${Date.now()}`,
         action: logMessage,
-        contributor: 'Pengurus / Anggota Keluarga',
+        contributor: actorIdentity,
         timestamp: new Date().toISOString()
       };
       activityLogs.unshift(logEntry);
@@ -1484,9 +1877,811 @@
           await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), logEntry);
         } catch (e) {
           console.warn('Cloud delete warning:', e);
+          showToast('Gagal menghapus di server: periksa hak akses pengurus', 'error');
         }
       }
     }
+
+    // =========================================================================
+    // 3B. PAKET LENGKAP: ROLE-BASED ACCESS CONTROL, AUTH & MODERATION
+    // =========================================================================
+    function getUserRoleInfo() {
+      const isLoggedIn = Boolean(currentUser && currentUser.email);
+      const email = isLoggedIn ? currentUser.email.toLowerCase().trim() : '';
+      const superList = (accessConfig.superAdmins || []).map((e) => String(e).toLowerCase().trim());
+      const coordList = Array.isArray(accessConfig.coordinators) ? accessConfig.coordinators : [];
+
+      const isSuperAdmin = isLoggedIn && superList.includes(email);
+      const assignedCoords = isLoggedIn
+        ? coordList.filter((c) => String(c.email || '').toLowerCase().trim() === email)
+        : [];
+      const coordinatorBranchIds = assignedCoords.map((c) => c.branchId);
+      const isCoordinator = !isSuperAdmin && coordinatorBranchIds.length > 0;
+      const isAnyEditor = isSuperAdmin || isCoordinator;
+
+      let roleLabel = 'Mode Publik (Baca Saja)';
+      if (isSuperAdmin) {
+        roleLabel = 'Super Admin';
+      } else if (isCoordinator) {
+        const firstLabel = assignedCoords[0]?.label || 'Cabang';
+        roleLabel = `Koord. ${firstLabel.replace(/^\d+\.\s*/, '')}`;
+      } else if (isLoggedIn) {
+        roleLabel = 'Tamu Login (Belum Terdaftar)';
+      }
+
+      return {
+        isLoggedIn,
+        email,
+        isSuperAdmin,
+        isCoordinator,
+        isAnyEditor,
+        coordinatorBranchIds,
+        roleLabel
+      };
+    }
+
+    function getAuditContributorLabel(manualName) {
+      const role = getUserRoleInfo();
+      const baseName = (manualName || '').trim();
+      if (role.isLoggedIn) {
+        return baseName ? `${baseName} (${role.email} • ${role.roleLabel})` : `${role.email} (${role.roleLabel})`;
+      }
+      return baseName || 'Anggota Keluarga';
+    }
+
+    function canEditMember(memberId) {
+      const role = getUserRoleInfo();
+      if (role.isSuperAdmin) return true;
+      if (!role.isCoordinator) return false;
+      const { map } = buildTreeStructure();
+      for (const bId of role.coordinatorBranchIds) {
+        const subtree = getBranchSubtreeIds(bId, map);
+        if (subtree.has(memberId)) return true;
+      }
+      return false;
+    }
+
+    function canAddChildToParent(parentId) {
+      const role = getUserRoleInfo();
+      if (role.isSuperAdmin) return true;
+      if (!role.isCoordinator) return false;
+      const { map } = buildTreeStructure();
+      for (const bId of role.coordinatorBranchIds) {
+        const subtree = getBranchSubtreeIds(bId, map);
+        if (subtree.has(parentId)) return true;
+      }
+      return false;
+    }
+
+    function canEditHeritage() {
+      return getUserRoleInfo().isSuperAdmin;
+    }
+
+    function canImportJson() {
+      return getUserRoleInfo().isSuperAdmin;
+    }
+
+    function getPendingSuggestionsForCurrentUser() {
+      const role = getUserRoleInfo();
+      if (!role.isAnyEditor) return [];
+      const pending = suggestionsList.filter((s) => (s.status || 'pending') === 'pending');
+      if (role.isSuperAdmin) return pending;
+      return pending.filter((s) => role.coordinatorBranchIds.includes(s.branchId));
+    }
+
+    function applyRolePermissionsToUI() {
+      const role = getUserRoleInfo();
+      const roleBadge = document.getElementById('roleStatusBadge');
+      const authBtn = document.getElementById('adminAuthBtn');
+      const authBtnLabel = document.getElementById('adminAuthBtnLabel');
+      const publicSuggestBtn = document.getElementById('publicSuggestHeaderBtn');
+      const primaryAddBtn = document.getElementById('primaryAddHeaderBtn');
+      const moderationBtn = document.getElementById('moderationInboxBtn');
+      const pendingBadge = document.getElementById('pendingSuggestionsBadge');
+      const heritageTopEditBtn = document.getElementById('heritageTopEditBtn');
+      const importJsonLabelBtn = document.getElementById('importJsonLabelBtn');
+
+      if (roleBadge) {
+        roleBadge.textContent = role.roleLabel;
+        if (role.isSuperAdmin) {
+          roleBadge.className = 'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-batik-indigo border border-indigo-200 shrink-0';
+        } else if (role.isCoordinator) {
+          roleBadge.className = 'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0';
+        } else {
+          roleBadge.className = 'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 border border-stone-200 shrink-0';
+        }
+      }
+
+      if (authBtn && authBtnLabel) {
+        if (role.isLoggedIn) {
+          authBtnLabel.textContent = role.isSuperAdmin ? 'Kelola Admin' : 'Akun Pengurus';
+          authBtn.classList.add('border-indigo-200', 'bg-indigo-50/70', 'text-batik-indigo');
+          authBtn.classList.remove('border-stone-200', 'bg-white', 'text-stone-700');
+        } else {
+          authBtnLabel.textContent = 'Login Pengurus';
+          authBtn.classList.remove('border-indigo-200', 'bg-indigo-50/70', 'text-batik-indigo');
+          authBtn.classList.add('border-stone-200', 'bg-white', 'text-stone-700');
+        }
+      }
+
+      // Show "Usulkan Data" for public visitors, and "+ Tambah" for authorized editors
+      if (role.isAnyEditor) {
+        publicSuggestBtn?.classList.add('hidden');
+        publicSuggestBtn?.classList.remove('flex');
+
+        const canAddInCurrentBranch =
+          role.isSuperAdmin ||
+          activeBranchId === 'ALL' ||
+          role.coordinatorBranchIds.includes(activeBranchId);
+
+        if (primaryAddBtn) {
+          if (canAddInCurrentBranch) {
+            primaryAddBtn.classList.remove('hidden');
+            primaryAddBtn.classList.add('flex');
+          } else {
+            primaryAddBtn.classList.add('hidden');
+            primaryAddBtn.classList.remove('flex');
+          }
+        }
+
+        const pendingItems = getPendingSuggestionsForCurrentUser();
+        if (moderationBtn) {
+          moderationBtn.classList.remove('hidden');
+          moderationBtn.classList.add('flex');
+        }
+        if (pendingBadge) {
+          pendingBadge.textContent = String(pendingItems.length);
+        }
+      } else {
+        publicSuggestBtn?.classList.remove('hidden');
+        publicSuggestBtn?.classList.add('flex');
+        primaryAddBtn?.classList.add('hidden');
+        primaryAddBtn?.classList.remove('flex');
+        moderationBtn?.classList.add('hidden');
+        moderationBtn?.classList.remove('flex');
+      }
+
+      // Heritage Edit & JSON Import restricted strictly to Super Admin
+      if (heritageTopEditBtn) {
+        if (canEditHeritage()) {
+          heritageTopEditBtn.classList.remove('hidden');
+          heritageTopEditBtn.classList.add('flex');
+        } else {
+          heritageTopEditBtn.classList.add('hidden');
+          heritageTopEditBtn.classList.remove('flex');
+        }
+      }
+
+      if (importJsonLabelBtn) {
+        if (canImportJson()) {
+          importJsonLabelBtn.classList.remove('hidden');
+        } else {
+          importJsonLabelBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    // --- Admin Auth & Role Management Modal ---
+    window.openAdminModal = function () {
+      renderAdminModalContent();
+      document.getElementById('adminAuthModal').classList.remove('hidden');
+    };
+
+    window.closeAdminModal = function () {
+      document.getElementById('adminAuthModal').classList.add('hidden');
+    };
+
+    window.loginAdminWithGoogle = async function () {
+      if (!auth) {
+        showToast('Konfigurasi Firebase belum aktif di halaman ini', 'error');
+        return;
+      }
+      try {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        await signInWithPopup(auth, provider);
+        showToast('Berhasil masuk dengan Akun Google');
+      } catch (err) {
+        const code = err?.code || '';
+        if (code === 'auth/unauthorized-domain') {
+          showToast(`Daftarkan domain "${window.location.hostname}" di Firebase Authentication -> Authorized domains`, 'error');
+        } else if (code === 'auth/operation-not-allowed') {
+          showToast('Aktifkan metode login Google di Firebase Console -> Authentication -> Sign-in method', 'error');
+        } else if (code === 'auth/popup-blocked') {
+          showToast('Popup login diblokir browser. Izinkan popup untuk situs ini lalu coba lagi.', 'error');
+        } else if (code !== 'auth/popup-closed-by-user') {
+          showToast(`Gagal login Google: ${err.message}`, 'error');
+        }
+      }
+    };
+
+    window.loginAdminWithEmail = async function (event) {
+      event.preventDefault();
+      if (!auth) {
+        showToast('Konfigurasi Firebase belum aktif', 'error');
+        return;
+      }
+      const email = document.getElementById('adminLoginEmail')?.value.trim();
+      const password = document.getElementById('adminLoginPassword')?.value;
+      if (!email || !password) return;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast('Berhasil masuk sebagai pengurus');
+      } catch (err) {
+        showToast('Email atau kata sandi tidak cocok. Pastikan akun sudah dibuat di Firebase Authentication.', 'error');
+      }
+    };
+
+    window.logoutAdmin = async function () {
+      if (auth) {
+        try {
+          await signOut(auth);
+        } catch (_) {}
+      }
+      currentUser = null;
+      applyRolePermissionsToUI();
+      renderAdminModalContent();
+      refreshAllViews(false);
+      showToast('Berhasil keluar. Kembali ke Mode Publik (Baca Saja).');
+    };
+
+    function renderAdminModalContent() {
+      const loginSec = document.getElementById('adminLoginSection');
+      const profileSec = document.getElementById('adminProfileSection');
+      if (!loginSec || !profileSec) return;
+
+      const role = getUserRoleInfo();
+      if (!role.isLoggedIn) {
+        loginSec.classList.remove('hidden');
+        profileSec.classList.add('hidden');
+        return;
+      }
+
+      loginSec.classList.add('hidden');
+      profileSec.classList.remove('hidden');
+
+      document.getElementById('loggedInEmailText').textContent = role.email;
+      document.getElementById('loggedInRoleDesc').textContent = `Peran: ${role.roleLabel}`;
+
+      const bootstrapBox = document.getElementById('bootstrapSuperAdminBox');
+      const unregBox = document.getElementById('unregisteredEmailBox');
+      const managerBox = document.getElementById('superAdminManagerBox');
+
+      const hasNoSuperAdmins = (accessConfig.superAdmins || []).length === 0;
+
+      if (hasNoSuperAdmins) {
+        bootstrapBox.classList.remove('hidden');
+        unregBox.classList.add('hidden');
+        managerBox.classList.add('hidden');
+      } else if (role.isSuperAdmin) {
+        bootstrapBox.classList.add('hidden');
+        unregBox.classList.add('hidden');
+        managerBox.classList.remove('hidden');
+        renderRoleManagerLists();
+      } else if (role.isCoordinator) {
+        bootstrapBox.classList.add('hidden');
+        unregBox.classList.add('hidden');
+        managerBox.classList.add('hidden');
+      } else {
+        bootstrapBox.classList.add('hidden');
+        unregBox.classList.remove('hidden');
+        managerBox.classList.add('hidden');
+      }
+    }
+
+    function renderRoleManagerLists() {
+      const superContainer = document.getElementById('superAdminsListContainer');
+      const coordContainer = document.getElementById('coordinatorsListContainer');
+      const branchSelect = document.getElementById('newCoordBranchSelect');
+
+      if (superContainer) {
+        superContainer.innerHTML = (accessConfig.superAdmins || [])
+          .map(
+            (em) => `
+            <div class="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between gap-2 text-xs">
+              <span class="font-semibold text-stone-800 truncate">${escapeHtml(em)}</span>
+              <button type="button" onclick="removeSuperAdminEmail('${escapeHtml(em)}')" class="text-red-600 hover:underline font-semibold shrink-0">Hapus</button>
+            </div>
+          `
+          )
+          .join('');
+      }
+
+      if (coordContainer) {
+        const coords = accessConfig.coordinators || [];
+        coordContainer.innerHTML =
+          coords.length === 0
+            ? `<p class="text-xs text-stone-400 italic">Belum ada koordinator cabang yang ditugaskan.</p>`
+            : coords
+                .map(
+                  (c, idx) => `
+                  <div class="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between gap-2 text-xs">
+                    <div class="min-w-0">
+                      <div class="font-bold text-stone-800 truncate">${escapeHtml(c.email)}</div>
+                      <div class="text-[11px] text-emerald-700 font-semibold">${escapeHtml(c.label || c.branchId)}</div>
+                    </div>
+                    <button type="button" onclick="removeBranchCoordinator(${idx})" class="text-red-600 hover:underline font-semibold shrink-0">Cabut</button>
+                  </div>
+                `
+                )
+                .join('');
+      }
+
+      if (branchSelect) {
+        const { map } = buildTreeStructure();
+        const heads = getBranchHeads(map);
+        branchSelect.innerHTML = heads
+          .map((h, i) => `<option value="${h.id}">${escapeHtml(getShortBranchTabLabel(h, i))} (${escapeHtml(h.domicile || '')})</option>`)
+          .join('');
+      }
+    }
+
+    async function saveAccessConfigToCloud(nextConfig, logActionText) {
+      const normalizedSuperAdmins = Array.from(
+        new Set((nextConfig.superAdmins || []).map((e) => String(e).toLowerCase().trim()).filter(Boolean))
+      );
+      const normalizedCoords = (nextConfig.coordinators || []).map((c) => ({
+        ...c,
+        email: String(c.email || '').toLowerCase().trim()
+      }));
+      const coordinatorEmails = Array.from(new Set(normalizedCoords.map((c) => c.email).filter(Boolean)));
+
+      accessConfig = {
+        superAdmins: normalizedSuperAdmins,
+        coordinators: normalizedCoords,
+        coordinatorEmails,
+        updatedBy: getUserRoleInfo().email || 'Super Admin',
+        updatedAt: new Date().toISOString()
+      };
+      saveToLocalStorage();
+      applyRolePermissionsToUI();
+      renderAdminModalContent();
+      refreshAllViews(false);
+
+      if (useCloudFirestore && db) {
+        try {
+          const accessDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'access');
+          await setDoc(accessDocRef, accessConfig);
+          if (logActionText) {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), {
+              action: logActionText,
+              contributor: getAuditContributorLabel('Super Admin'),
+              timestamp: new Date().toISOString()
+            });
+          }
+        } catch (err) {
+          showToast('Gagal menyimpan pengaturan hak akses ke Firestore. Periksa Firestore Rules.', 'error');
+        }
+      }
+    }
+
+    window.claimFirstSuperAdmin = async function () {
+      const role = getUserRoleInfo();
+      if (!role.isLoggedIn) return;
+      if ((accessConfig.superAdmins || []).length > 0) {
+        showToast('Super Admin sudah terdaftar sebelumnya', 'error');
+        return;
+      }
+      await saveAccessConfigToCloud(
+        {
+          superAdmins: [role.email],
+          coordinators: accessConfig.coordinators || []
+        },
+        `Mendaftarkan ${role.email} sebagai Super Admin pertama`
+      );
+      showToast('Selamat! Anda kini terdaftar sebagai Super Admin Trah Tirtowiyanan.');
+    };
+
+    window.addSuperAdminEmail = async function () {
+      if (!getUserRoleInfo().isSuperAdmin) return;
+      const input = document.getElementById('newSuperAdminEmailInput');
+      const newEmail = (input?.value || '').toLowerCase().trim();
+      if (!newEmail || !newEmail.includes('@')) {
+        showToast('Masukkan alamat email Gmail/pengurus yang valid', 'error');
+        return;
+      }
+      const list = Array.from(new Set([...(accessConfig.superAdmins || []), newEmail]));
+      await saveAccessConfigToCloud(
+        { ...accessConfig, superAdmins: list },
+        `Menambahkan ${newEmail} sebagai Super Admin`
+      );
+      if (input) input.value = '';
+      showToast(`${newEmail} ditambahkan sebagai Super Admin`);
+    };
+
+    window.removeSuperAdminEmail = async function (emailToRemove) {
+      if (!getUserRoleInfo().isSuperAdmin) return;
+      const currentList = accessConfig.superAdmins || [];
+      if (currentList.length <= 1) {
+        showToast('Minimal harus tersisa 1 Super Admin aktif', 'error');
+        return;
+      }
+      const filtered = currentList.filter((e) => e.toLowerCase() !== emailToRemove.toLowerCase());
+      await saveAccessConfigToCloud(
+        { ...accessConfig, superAdmins: filtered },
+        `Menghapus ${emailToRemove} dari daftar Super Admin`
+      );
+      showToast(`${emailToRemove} dihapus dari Super Admin`);
+    };
+
+    window.addBranchCoordinator = async function () {
+      if (!getUserRoleInfo().isSuperAdmin) return;
+      const emailInput = document.getElementById('newCoordEmailInput');
+      const branchSelect = document.getElementById('newCoordBranchSelect');
+      const email = (emailInput?.value || '').toLowerCase().trim();
+      const branchId = branchSelect?.value;
+      const label = branchSelect?.options[branchSelect.selectedIndex]?.text || branchId;
+
+      if (!email || !email.includes('@') || !branchId) {
+        showToast('Lengkapi email dan pilihan cabang keluarga', 'error');
+        return;
+      }
+      const nextCoords = [
+        ...(accessConfig.coordinators || []).filter((c) => !(c.email === email && c.branchId === branchId)),
+        { email, branchId, label }
+      ];
+      await saveAccessConfigToCloud(
+        { ...accessConfig, coordinators: nextCoords },
+        `Menugaskan ${email} sebagai Koordinator ${label}`
+      );
+      if (emailInput) emailInput.value = '';
+      showToast(`Koordinator cabang berhasil ditambahkan`);
+    };
+
+    window.removeBranchCoordinator = async function (index) {
+      if (!getUserRoleInfo().isSuperAdmin) return;
+      const coords = [...(accessConfig.coordinators || [])];
+      const removed = coords.splice(index, 1)[0];
+      await saveAccessConfigToCloud(
+        { ...accessConfig, coordinators: coords },
+        `Mencabut akses koordinator ${removed?.email || ''}`
+      );
+      showToast('Akses koordinator cabang dicabut');
+    };
+
+    // --- Public Suggestion Modal ("Usulkan Data / Koreksi") ---
+    window.openSuggestionModal = function ({ type = 'add_child', targetMemberId = null } = {}) {
+      const { roots, map } = buildTreeStructure();
+      const activeBranchNode = activeBranchId !== 'ALL' ? map.get(activeBranchId) : null;
+
+      const radio = document.querySelector(`input[name="suggestionType"][value="${type}"]`);
+      if (radio) radio.checked = true;
+      onSuggestionTypeChange(type);
+
+      const selectEl = document.getElementById('sugTargetMemberId');
+      const options = [];
+      const walk = (n, relDepth = 0) => {
+        const genShort = getGenMeta(n.depth).short;
+        const prefix = '— '.repeat(relDepth);
+        options.push(`<option value="${n.id}">${prefix}${escapeHtml(n.name)} (${genShort})</option>`);
+        n.children.forEach((c) => walk(c, relDepth + 1));
+      };
+      if (activeBranchNode) {
+        walk(activeBranchNode, 0);
+      } else {
+        roots.forEach((r) => walk(r, r.depth));
+      }
+      selectEl.innerHTML = options.join('');
+
+      if (targetMemberId && map.has(targetMemberId)) {
+        selectEl.value = targetMemberId;
+      } else if (activeBranchNode) {
+        selectEl.value = activeBranchNode.id;
+      }
+
+      onSuggestionTargetSelect();
+      document.getElementById('sugSubmittedBy').value = '';
+      document.getElementById('sugContact').value = '';
+      document.getElementById('suggestionFormModal').classList.remove('hidden');
+    };
+
+    window.closeSuggestionModal = function () {
+      document.getElementById('suggestionFormModal').classList.add('hidden');
+      window.scrollTo(0, 0);
+    };
+
+    window.onSuggestionTypeChange = function (val) {
+      const label = document.getElementById('sugTargetLabel');
+      if (label) {
+        label.innerHTML =
+          val === 'edit_member'
+            ? 'Pilih Anggota yang Akan Dikoreksi <span class="text-red-500">*</span>'
+            : 'Orang Tua (Jalur Trah) <span class="text-red-500">*</span>';
+      }
+      onSuggestionTargetSelect();
+    };
+
+    window.onSuggestionTargetSelect = function () {
+      const type = document.querySelector('input[name="suggestionType"]:checked')?.value || 'add_child';
+      const targetId = document.getElementById('sugTargetMemberId')?.value;
+      const { map } = buildTreeStructure();
+      const targetNode = map.get(targetId);
+      if (!targetNode) return;
+
+      if (type === 'edit_member') {
+        document.getElementById('sugName').value = targetNode.name || '';
+        document.getElementById('sugOrder').value = targetNode.order || 1;
+        document.getElementById('sugGender').value = targetNode.gender || 'L';
+        document.getElementById('sugIsDeceased').value = String(Boolean(targetNode.isDeceased));
+        document.getElementById('sugSpouseName').value = targetNode.spouseName || '';
+        document.getElementById('sugSpouseDeceased').value = String(Boolean(targetNode.spouseDeceased));
+        document.getElementById('sugDomicile').value = targetNode.domicile || '';
+        document.getElementById('sugNotes').value = targetNode.notes || '';
+      } else {
+        document.getElementById('sugName').value = '';
+        document.getElementById('sugOrder').value = targetNode.children.length + 1;
+        document.getElementById('sugGender').value = 'L';
+        document.getElementById('sugIsDeceased').value = 'false';
+        document.getElementById('sugSpouseName').value = '';
+        document.getElementById('sugSpouseDeceased').value = 'false';
+        document.getElementById('sugDomicile').value = targetNode.domicile || '';
+        document.getElementById('sugNotes').value = '';
+      }
+    };
+
+    window.handleSuggestionFormSubmit = async function (event) {
+      event.preventDefault();
+      const type = document.querySelector('input[name="suggestionType"]:checked')?.value || 'add_child';
+      const targetMemberId = document.getElementById('sugTargetMemberId').value;
+      const name = document.getElementById('sugName').value.trim();
+      const order = parseInt(document.getElementById('sugOrder').value, 10) || 1;
+      const gender = document.getElementById('sugGender').value;
+      const isDeceased = document.getElementById('sugIsDeceased').value === 'true';
+      const spouseName = document.getElementById('sugSpouseName').value.trim();
+      const spouseDeceased = document.getElementById('sugSpouseDeceased').value === 'true';
+      const domicile = document.getElementById('sugDomicile').value.trim();
+      const notes = document.getElementById('sugNotes').value.trim();
+      const submittedBy = document.getElementById('sugSubmittedBy').value.trim();
+      const contact = document.getElementById('sugContact').value.trim();
+
+      if (!name || !submittedBy || !targetMemberId) return;
+
+      const { map } = buildTreeStructure();
+      const targetNode = map.get(targetMemberId);
+      const branchId = findBranchHeadIdForMember(targetMemberId, map);
+
+      const suggestionRecord = {
+        id: `sug_${Date.now()}`,
+        status: 'pending',
+        type,
+        branchId,
+        targetMemberId,
+        targetMemberName: targetNode ? targetNode.name : '',
+        kelompok: targetNode ? targetNode.kelompok : '',
+        proposedData: {
+          name,
+          order,
+          gender,
+          isDeceased,
+          spouseName,
+          spouseDeceased,
+          domicile,
+          notes
+        },
+        submittedBy,
+        contact,
+        submittedAt: new Date().toISOString()
+      };
+
+      suggestionsList.unshift(suggestionRecord);
+      saveToLocalStorage();
+
+      if (useCloudFirestore && db) {
+        try {
+          await setDoc(
+            doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', suggestionRecord.id),
+            suggestionRecord
+          );
+        } catch (err) {
+          console.warn('Suggestion cloud submit warning:', err);
+          showToast('Gagal mengirim usulan ke server. Pastikan Firestore Rules sudah diperbarui.', 'error');
+          return;
+        }
+      }
+
+      closeSuggestionModal();
+      showToast('Terima kasih! Usulan Anda telah terkirim dan menunggu persetujuan pengurus.');
+    };
+
+    // --- Moderation Inbox for Admins & Branch Coordinators ---
+    window.openModerationModal = function () {
+      renderModerationList();
+      document.getElementById('moderationInboxModal').classList.remove('hidden');
+    };
+
+    window.closeModerationModal = function () {
+      document.getElementById('moderationInboxModal').classList.add('hidden');
+    };
+
+    function renderModerationList() {
+      const container = document.getElementById('moderationListContainer');
+      const subtitle = document.getElementById('moderationSubtitle');
+      if (!container) return;
+
+      const role = getUserRoleInfo();
+      const pending = getPendingSuggestionsForCurrentUser();
+
+      if (subtitle) {
+        subtitle.textContent = role.isSuperAdmin
+          ? `Menampilkan ${pending.length} usulan menunggu persetujuan dari seluruh 8 cabang`
+          : `Menampilkan ${pending.length} usulan pada cabang keluarga yang Anda kelola`;
+      }
+
+      if (pending.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center rounded-2xl bg-stone-50 border border-dashed border-stone-200 text-xs sm:text-sm text-stone-500">
+            Tidak ada usulan pembaruan data yang menunggu moderasi saat ini.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pending
+        .map((sug) => {
+          const p = sug.proposedData || {};
+          const isAdd = sug.type === 'add_child';
+          const dateStr = sug.submittedAt
+            ? new Date(sug.submittedAt).toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+            : '';
+          return `
+            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5 text-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                  isAdd ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'
+                }">
+                  ${isAdd ? '+ Usul Tambah Keturunan' : '✎ Usul Koreksi Data'}
+                </span>
+                <span class="text-[11px] text-stone-400">${escapeHtml(dateStr)}</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-white border border-stone-200/80 space-y-1">
+                <div class="text-[11px] text-stone-500">
+                  ${isAdd ? 'Orang Tua:' : 'Target Koreksi:'} <strong>${escapeHtml(sug.targetMemberName)}</strong>
+                  ${sug.kelompok ? `(${escapeHtml(sug.kelompok)})` : ''}
+                </div>
+                <div class="font-bold text-sm text-stone-900">
+                  ${escapeHtml(formatDisplayName(p.name, p.isDeceased))}
+                  ${p.spouseName ? `<span class="font-normal text-stone-600"> + ${escapeHtml(formatDisplayName(p.spouseName, p.spouseDeceased))}</span>` : ''}
+                </div>
+                <div class="text-[11px] text-stone-600">
+                  Anak ke-${p.order || 1} &bull; ${p.gender === 'P' ? 'Perempuan' : 'Laki-laki'}
+                  ${p.domicile ? ` &bull; Domisili: ${escapeHtml(p.domicile)}` : ''}
+                </div>
+                ${p.notes ? `<div class="text-[11px] text-stone-500 italic">"${escapeHtml(p.notes)}"</div>` : ''}
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div class="text-[11px] text-stone-600">
+                  Pengusul: <strong>${escapeHtml(sug.submittedBy)}</strong>
+                  ${sug.contact ? `(${escapeHtml(sug.contact)})` : ''}
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onclick="rejectSuggestion('${sug.id}')"
+                    class="px-3 py-1.5 rounded-xl border border-red-200 bg-white hover:bg-red-50 text-red-700 font-bold transition"
+                  >
+                    Tolak
+                  </button>
+                  <button
+                    type="button"
+                    onclick="approveSuggestion('${sug.id}')"
+                    class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs transition"
+                  >
+                    Setujui &amp; Terapkan
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    window.approveSuggestion = async function (sugId) {
+      const sug = suggestionsList.find((s) => s.id === sugId);
+      if (!sug) return;
+      const p = sug.proposedData || {};
+      const role = getUserRoleInfo();
+
+      if (sug.type === 'edit_member') {
+        if (!canEditMember(sug.targetMemberId)) {
+          showToast('Anda tidak memiliki izin mengelola cabang ini', 'error');
+          return;
+        }
+        const existing = members.find((m) => m.id === sug.targetMemberId);
+        if (existing) {
+          const updated = {
+            ...existing,
+            name: p.name || existing.name,
+            order: p.order || existing.order,
+            gender: p.gender || existing.gender,
+            isDeceased: Boolean(p.isDeceased),
+            spouseName: p.spouseName ?? existing.spouseName,
+            spouseDeceased: Boolean(p.spouseDeceased),
+            domicile: p.domicile ?? existing.domicile,
+            notes: p.notes ?? existing.notes,
+            updatedBy: getAuditContributorLabel(`Usulan ${sug.submittedBy}`),
+            updatedAt: new Date().toISOString()
+          };
+          await persistMemberRecord(
+            updated,
+            false,
+            `Menyetujui usulan koreksi "${updated.name}" (diusulkan oleh ${sug.submittedBy})`,
+            `Usulan ${sug.submittedBy}`
+          );
+        }
+      } else {
+        if (!canAddChildToParent(sug.targetMemberId)) {
+          showToast('Anda tidak memiliki izin menambah di cabang ini', 'error');
+          return;
+        }
+        const newId = `mem_${Date.now()}`;
+        const newRecord = {
+          id: newId,
+          parentId: sug.targetMemberId,
+          order: p.order || 1,
+          name: p.name,
+          gender: p.gender || 'L',
+          isDeceased: Boolean(p.isDeceased),
+          spouseName: p.spouseName || '',
+          spouseDeceased: Boolean(p.spouseDeceased),
+          kelompok: sug.kelompok || '',
+          domicile: p.domicile || '',
+          notes: p.notes || '',
+          updatedBy: getAuditContributorLabel(`Usulan ${sug.submittedBy}`),
+          updatedAt: new Date().toISOString()
+        };
+        await persistMemberRecord(
+          newRecord,
+          true,
+          `Menyetujui usulan penambahan "${newRecord.name}" (diusulkan oleh ${sug.submittedBy})`,
+          `Usulan ${sug.submittedBy}`
+        );
+      }
+
+      sug.status = 'approved';
+      sug.reviewedBy = role.email;
+      sug.reviewedAt = new Date().toISOString();
+      saveToLocalStorage();
+
+      if (useCloudFirestore && db) {
+        try {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', sug.id), sug);
+        } catch (_) {}
+      }
+
+      applyRolePermissionsToUI();
+      renderModerationList();
+      refreshAllViews(false);
+      showToast(`Usulan "${p.name}" disetujui & diterapkan ke pohon silsilah`);
+    };
+
+    window.rejectSuggestion = async function (sugId) {
+      const sug = suggestionsList.find((s) => s.id === sugId);
+      if (!sug) return;
+      const role = getUserRoleInfo();
+      sug.status = 'rejected';
+      sug.reviewedBy = role.email;
+      sug.reviewedAt = new Date().toISOString();
+      saveToLocalStorage();
+
+      if (useCloudFirestore && db) {
+        try {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', sug.id), sug);
+        } catch (_) {}
+      }
+
+      applyRolePermissionsToUI();
+      renderModerationList();
+      showToast('Usulan ditolak');
+    };
 
     // =========================================================================
     // 4. TREE HIERARCHY & BRANCH HELPERS (MEMOIZED FOR LARGE TREES)
@@ -1612,6 +2807,7 @@
       const hasChildren = node.children.length > 0;
       const isDimmed = focusedLineageSet && !focusedLineageSet.has(node.id);
       const isSelected = selectedMemberId === node.id;
+      const canAddHere = canAddChildToParent(node.id);
 
       return `
         <div
@@ -1651,14 +2847,18 @@
 
           <!-- Card Footer Actions -->
           <div class="px-2.5 py-1 bg-stone-50 border-t border-stone-100 flex items-center justify-between gap-1">
-            <button
-              type="button"
-              onclick="event.stopPropagation(); openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
-              title="Tambah Anak / Keturunan"
-              class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 border border-emerald-200/80 text-[11px] sm:text-[10px] font-bold transition"
-            >
-              + Anak
-            </button>
+            ${
+              canAddHere
+                ? `<button
+                    type="button"
+                    onclick="event.stopPropagation(); openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+                    title="Tambah Anak / Keturunan"
+                    class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 border border-emerald-200/80 text-[11px] sm:text-[10px] font-bold transition"
+                  >
+                    + Anak
+                  </button>`
+                : `<span class="text-[10px] text-stone-400 font-medium px-1">Detail &rarr;</span>`
+            }
 
             ${
               hasChildren
@@ -1666,11 +2866,13 @@
                     type="button"
                     onclick="event.stopPropagation(); toggleNodeCollapse('${node.id}')"
                     title="${isCollapsed ? 'Tampilkan keturunan' : 'Sembunyikan keturunan'}"
-                    class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-stone-200/80 hover:bg-stone-300 active:bg-stone-400 text-stone-800 text-[11px] sm:text-[10px] font-bold transition flex items-center gap-1"
+                    class="px-2.5 py-1 sm:py-0.5 rounded-lg bg-stone-200/80 hover:bg-stone-300 active:bg-stone-400 text-stone-800 text-[11px] sm:text-[10px] font-bold transition flex items-center gap-1 ml-auto"
                   >
                     <span>${isCollapsed ? `+ ${descendantCount} keturunan` : `− (${node.children.length})`}</span>
                   </button>`
-                : `<span class="text-[10px] text-stone-400 px-1">Detail &rarr;</span>`
+                : canAddHere
+                ? `<span class="text-[10px] text-stone-400 px-1">Detail &rarr;</span>`
+                : ''
             }
           </div>
         </div>
@@ -2153,13 +3355,17 @@
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <div class="text-xs font-bold text-stone-700">Putra / Putri Langsung (${node.children.length})</div>
-              <button
-                type="button"
-                onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
-                class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition"
-              >
-                + Tambah Anak
-              </button>
+              ${
+                canAddChildToParent(node.id)
+                  ? `<button
+                      type="button"
+                      onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+                      class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition"
+                    >
+                      + Tambah Anak
+                    </button>`
+                  : ''
+              }
             </div>
             ${
               node.children.length === 0
@@ -2191,32 +3397,51 @@
 
         <!-- Drawer Footer Actions -->
         <div class="p-4 border-t border-stone-200 bg-stone-50 space-y-2">
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onclick="focusLineage('${node.id}')"
-              class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition"
-            >
-              Fokus Jalur Keluarga
-            </button>
-            <button
-              type="button"
-              onclick="openEditModal('${node.id}')"
-              class="px-3 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold transition"
-            >
-              Edit Data Anggota
-            </button>
-          </div>
           ${
-            node.parentId
-              ? `<button
-                  type="button"
-                  onclick="confirmDeleteMember('${node.id}')"
-                  class="w-full py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-xs font-semibold transition"
-                >
-                  Hapus Anggota Ini
-                </button>`
-              : ''
+            canEditMember(node.id)
+              ? `<div class="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onclick="focusLineage('${node.id}')"
+                    class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition"
+                  >
+                    Fokus Jalur Keluarga
+                  </button>
+                  <button
+                    type="button"
+                    onclick="openEditModal('${node.id}')"
+                    class="px-3 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold transition"
+                  >
+                    Edit Data Anggota
+                  </button>
+                </div>
+                ${
+                  node.parentId
+                    ? `<button
+                        type="button"
+                        onclick="confirmDeleteMember('${node.id}')"
+                        class="w-full py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-xs font-semibold transition"
+                      >
+                        Hapus Anggota Ini
+                      </button>`
+                    : ''
+                }`
+              : `<div class="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onclick="focusLineage('${node.id}')"
+                    class="px-3 py-2 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-800 text-xs font-bold transition"
+                  >
+                    Fokus Jalur Keluarga
+                  </button>
+                  <button
+                    type="button"
+                    onclick="closeMemberDrawer(); openSuggestionModal({ type: 'edit_member', targetMemberId: '${node.id}' })"
+                    class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold transition"
+                  >
+                    Usul Koreksi / Anak
+                  </button>
+                </div>`
           }
         </div>
       `;
@@ -2327,13 +3552,23 @@
           </div>
 
           <div class="flex items-center gap-1.5 ml-auto">
-            <button
-              type="button"
-              onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
-              class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition"
-            >
-              + Anak
-            </button>
+            ${
+              canAddChildToParent(node.id)
+                ? `<button
+                    type="button"
+                    onclick="openAddModal({ mode: 'descendant', parentId: '${node.id}' })"
+                    class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition"
+                  >
+                    + Anak
+                  </button>`
+                : `<button
+                    type="button"
+                    onclick="openSuggestionModal({ type: 'edit_member', targetMemberId: '${node.id}' })"
+                    class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold transition"
+                  >
+                    Usul Koreksi
+                  </button>`
+            }
             <button
               type="button"
               onclick="jumpToTreeNode('${node.id}')"
@@ -2551,16 +3786,20 @@
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-semibold">
               ${escapeHtml(heritageData.storyBadge || 'Arsip Sejarah Paguyuban Trah Tirtowiyanan')}
             </div>
-            <button
-              type="button"
-              onclick="openHeritageEditModal('story')"
-              class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-amber-50 active:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition"
-            >
-              <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-              </svg>
-              <span>Edit Sejarah</span>
-            </button>
+            ${
+              canEditHeritage()
+                ? `<button
+                    type="button"
+                    onclick="openHeritageEditModal('story')"
+                    class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-amber-50 active:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                  >
+                    <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span>Edit Sejarah</span>
+                  </button>`
+                : ''
+            }
           </div>
 
           <h2 class="font-serif font-bold text-xl sm:text-2xl text-batik-indigo mb-3">
@@ -2592,16 +3831,20 @@
             <h3 class="font-serif font-bold text-lg sm:text-xl text-batik-indigo">
               ${escapeHtml(heritageData.visiMisiTitle)}
             </h3>
-            <button
-              type="button"
-              onclick="openHeritageEditModal('visimisi')"
-              class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-amber-50 active:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition"
-            >
-              <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-              </svg>
-              <span>Edit Visi &amp; Misi</span>
-            </button>
+            ${
+              canEditHeritage()
+                ? `<button
+                    type="button"
+                    onclick="openHeritageEditModal('visimisi')"
+                    class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-amber-50 active:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                  >
+                    <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span>Edit Visi &amp; Misi</span>
+                  </button>`
+                : ''
+            }
           </div>
 
           ${
@@ -2731,6 +3974,10 @@
     };
 
     window.openHeritageEditModal = function (focusSection = 'story') {
+      if (!canEditHeritage()) {
+        showToast('Hanya Super Admin yang dapat mengedit Arsip Sejarah & Visi Misi', 'error');
+        return;
+      }
       document.getElementById('editStoryBadge').value = heritageData.storyBadge || '';
       document.getElementById('editStoryTitle').value = heritageData.storyTitle || '';
       const paragraphsText = Array.isArray(heritageData.storyParagraphs)
@@ -2879,6 +4126,16 @@
     };
 
     window.openAddModal = function ({ mode = 'descendant', parentId = null } = {}) {
+      const role = getUserRoleInfo();
+      if (!role.isAnyEditor) {
+        openSuggestionModal({ type: 'add_child', targetMemberId: parentId });
+        return;
+      }
+      if (parentId && !canAddChildToParent(parentId)) {
+        showToast('Anda hanya dapat menambahkan data pada cabang keluarga yang Anda kelola', 'error');
+        return;
+      }
+
       const { roots, map } = buildTreeStructure();
       const activeBranchNode = activeBranchId !== 'ALL' ? map.get(activeBranchId) : null;
 
@@ -2890,7 +4147,11 @@
       document.getElementById('formModalSubtitle').textContent = activeBranchNode
         ? `Pembaruan langsung pada cabang ${activeBranchNode.kelompok || activeBranchNode.name}`
         : 'Dapat menambahkan Buyut, Mbah, Anak, Cucu, hingga Cicit';
-      document.getElementById('relationModeSelector').classList.remove('hidden');
+      if (role.isSuperAdmin) {
+        document.getElementById('relationModeSelector').classList.remove('hidden');
+      } else {
+        document.getElementById('relationModeSelector').classList.add('hidden');
+      }
 
       const radioDesc = document.querySelector('input[name="addRelationType"][value="descendant"]');
       if (radioDesc) radioDesc.checked = true;
@@ -2907,12 +4168,20 @@
 
       if (activeBranchNode) {
         walk(activeBranchNode, 0);
+      } else if (!role.isSuperAdmin && role.coordinatorBranchIds.length > 0) {
+        role.coordinatorBranchIds.forEach((bId) => {
+          const bNode = map.get(bId);
+          if (bNode) walk(bNode, 0);
+        });
       } else {
         roots.forEach((r) => walk(r, r.depth));
       }
       parentSelect.innerHTML = options.join('');
 
-      const chosenParentId = parentId || (activeBranchNode ? activeBranchNode.id : roots[0] ? roots[0].id : '');
+      const defaultCoordParent =
+        !role.isSuperAdmin && role.coordinatorBranchIds.length > 0 ? role.coordinatorBranchIds[0] : '';
+      const chosenParentId =
+        parentId || (activeBranchNode ? activeBranchNode.id : defaultCoordParent || (roots[0] ? roots[0].id : ''));
       if (chosenParentId) {
         parentSelect.value = chosenParentId;
         const parentNode = map.get(chosenParentId);
@@ -2936,6 +4205,10 @@
     };
 
     window.openEditModal = function (memberId) {
+      if (!canEditMember(memberId)) {
+        showToast('Anda tidak memiliki izin mengedit anggota di cabang ini', 'error');
+        return;
+      }
       const { roots, map } = buildTreeStructure();
       const node = map.get(memberId);
       if (!node) return;
@@ -3098,10 +4371,20 @@
     };
 
     window.confirmDeleteMember = function (memberId) {
+      if (!canEditMember(memberId)) {
+        showToast('Anda tidak memiliki izin menghapus anggota di cabang ini', 'error');
+        return;
+      }
       const target = members.find((m) => m.id === memberId);
       if (!target) return;
+      const { map } = buildTreeStructure();
+      const nodeWithChildren = map.get(memberId);
+      const childCount = nodeWithChildren ? countAllDescendants(nodeWithChildren) : 0;
       document.getElementById('confirmTitle').textContent = 'Hapus Anggota Silsilah?';
-      document.getElementById('confirmMessage').textContent = `Apakah Anda yakin ingin menghapus "${target.name}" dari daftar silsilah? Tindakan ini tidak dapat dibatalkan.`;
+      document.getElementById('confirmMessage').textContent =
+        childCount > 0
+          ? `PERINGATAN: "${target.name}" memiliki ${childCount} keturunan di bawahnya! Apakah Anda tetap yakin ingin menghapus anggota ini?`
+          : `Apakah Anda yakin ingin menghapus "${target.name}" dari daftar silsilah? Tindakan ini tidak dapat dibatalkan.`;
       confirmCallback = async () => {
         await removeMemberRecord(memberId, `Menghapus "${target.name}" dari silsilah`);
         closeMemberDrawer();
@@ -3467,6 +4750,7 @@
     };
 
     function refreshAllViews(shouldCenterTree = false) {
+      applyRolePermissionsToUI();
       renderFamilyBranchTabs();
       if (activeTab === 'tree') renderTreeView(shouldCenterTree);
       if (activeTab === 'directory') renderDirectoryView(true);
