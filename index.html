@@ -150,7 +150,7 @@
             </div>
           </div>
 
-          <!-- Mobile-Only Top-Right Quick Icons (Search & Share) so Action Row Never Overflows -->
+          <!-- Mobile-Only Top-Right Quick Icons (Search & Share) -->
           <div class="flex sm:hidden items-center gap-1.5 shrink-0">
             <button
               type="button"
@@ -165,7 +165,7 @@
             <button
               type="button"
               onclick="openShareModal()"
-              title="Bagikan Akses Publik &amp; Cadangan Data"
+              title="Bagikan Tautan &amp; Cadangan Data"
               class="min-h-[34px] min-w-[34px] p-1.5 rounded-xl border border-stone-200 bg-white active:bg-stone-100 text-stone-700 flex items-center justify-center transition"
             >
               <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -197,7 +197,7 @@
           </div>
         </div>
 
-        <!-- Primary Actions (Fits cleanly on 360px+ mobile screens without clipping) -->
+        <!-- Primary Actions -->
         <div class="flex items-center justify-between sm:justify-end gap-1 sm:gap-2 order-2 lg:order-3 w-full sm:w-auto pt-1.5 sm:pt-0 border-t border-stone-100 sm:border-t-0 min-w-0">
           <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
             <!-- Tablet Search Toggle Button (sm..lg) -->
@@ -225,11 +225,11 @@
               <span>Kisah<span class="hidden sm:inline"> &amp; Log</span></span>
             </button>
 
-            <!-- Desktop/Tablet Share Button (Mobile uses Top-Right Share Icon) -->
+            <!-- Desktop/Tablet Share Button -->
             <button
               type="button"
               onclick="openShareModal()"
-              title="Bagikan Akses Publik &amp; Cadangan Data"
+              title="Bagikan Tautan &amp; Cadangan Data"
               class="hidden sm:flex min-h-[36px] min-w-[36px] p-2 sm:px-3 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold items-center justify-center gap-1.5 transition"
             >
               <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -996,20 +996,20 @@
         <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
           <div class="font-bold flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-            Kolaborasi Keluarga Terbuka
+            Kolaborasi Keluarga Terbuka &amp; Terlindungi
           </div>
           <p class="text-xs leading-relaxed">
-            Setiap anggota keluarga dapat membuka tab cabangnya masing-masing untuk mengusulkan atau memperbarui data kelahiran anak/cucu/cicit maupun pasangan dan domisili, dan seluruh data langsung tergabung otomatis pada tab <strong>Gabungan Trah Tirtowiyono</strong>.
+            Seluruh anggota keluarga dapat melihat silsilah secara langsung atau mengusulkan pembaruan kelahiran dan koreksi data melalui tombol <strong>Usulkan Data</strong>. Perubahan akan ditinjau pengurus dan langsung tersinkron pada tab <strong>Gabungan Trah Tirtowiyono</strong>.
           </p>
           <div class="pt-1 text-[11px] font-mono text-emerald-800 break-all">
-            Mode Penyimpanan: <span id="displayFullUserId">Tersimpan Lokal &amp; Cloud</span>
+            Status Akses: <span id="displayFullUserId">Publik Read-Only</span>
           </div>
         </div>
 
-        <!-- Diagnostik Koneksi Real-Time -->
-        <div id="cloudDiagnosticBox" class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-1.5">
+        <!-- Diagnostik Koneksi Real-Time (Khusus Super Admin) -->
+        <div id="cloudDiagnosticBox" class="hidden p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-1.5">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-stone-800">Status Diagnostik Real-Time</span>
+            <span class="font-bold text-stone-800">Status Diagnostik Server (Super Admin)</span>
             <button type="button" onclick="runCloudConnectionTest()" class="px-2.5 py-1 rounded-lg bg-batik-indigo hover:bg-batik-indigoDark text-white text-[11px] font-semibold transition">
               Tes Koneksi
             </button>
@@ -1028,32 +1028,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Pengaturan Cloud untuk GitHub Pages / Vercel -->
-        <details class="rounded-2xl border border-stone-200 bg-stone-50/70 p-3 text-xs">
-          <summary class="font-bold text-batik-indigo cursor-pointer select-none">
-            Pengaturan Sinkronisasi Cloud (Untuk Hosting GitHub Pages / Vercel)
-          </summary>
-          <div class="mt-2.5 space-y-2 text-stone-600">
-            <p class="leading-relaxed">
-              Agar semua anggota keluarga yang membuka link <strong>GitHub Pages / Vercel</strong> melihat pembaruan data secara bersamaan, tempelkan konfigurasi <strong>Firebase Web App</strong> (gratis) di bawah ini lalu klik simpan:
-            </p>
-            <textarea
-              id="customFirebaseConfigInput"
-              rows="4"
-              placeholder='Tempel firebaseConfig dari Firebase Console (contoh: { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." })'
-              class="w-full p-2.5 rounded-xl border border-stone-300 bg-white font-mono text-[11px] focus:border-batik-indigo outline-none"
-            ></textarea>
-            <div class="flex items-center justify-end gap-2">
-              <button type="button" onclick="resetCustomFirebaseConfig()" class="px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 font-semibold">
-                Reset
-              </button>
-              <button type="button" onclick="saveCustomFirebaseConfig()" class="px-3 py-1.5 rounded-lg bg-batik-indigo hover:bg-batik-indigoDark text-white font-semibold">
-                Simpan &amp; Hubungkan Cloud
-              </button>
-            </div>
-          </div>
-        </details>
 
         <div class="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
           <button type="button" onclick="exportJsonBackup()" class="px-3.5 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-xs font-semibold text-stone-700">
@@ -1449,7 +1423,7 @@
     };
     let suggestionsList = [];
     let activeTab = 'tree';
-    let activeBranchId = 'ALL'; // 'ALL' = Gabungan Trah Tirtowiyono, or branch head ID ('b1'..'b8')
+    let activeBranchId = 'ALL';
     let selectedMemberId = null;
     let focusedLineageSet = null;
     let collapsedIds = new Set();
@@ -1457,7 +1431,6 @@
     let cachedTreeStructure = null;
     let cachedMembersRef = null;
 
-    // Directory progressive pagination state (keeps DOM light for large datasets)
     const DIRECTORY_PAGE_SIZE = 60;
     let directoryVisibleLimit = DIRECTORY_PAGE_SIZE;
     let directoryFilteredCache = [];
@@ -1627,8 +1600,8 @@
     }
 
     // =========================================================================
-    // KONFIGURASI FIREBASE UNTUK DEPLOY GITHUB PAGES / VERCEL
-    // Terhubung ke proyek Firebase: silsilah-trah-tirtowiyanan
+    // KONFIGURASI FIREBASE TERINTEGRASI
+    // Terhubung langsung ke proyek Firebase: silsilah-trah-tirtowiyanan
     // =========================================================================
     const STANDALONE_FIREBASE_CONFIG = {
       apiKey: "AIzaSyDh8B2HL8MgG4wsasq-zOizh6QtYiGj_NY",
@@ -1639,45 +1612,16 @@
       appId: "1:672799950474:web:8c344657311c29b80d8f73"
     };
 
-    const LOCAL_STORAGE_FB_CONFIG_KEY = 'trah_tirtowiyanan_firebase_config_v1';
-
-    function parseFirebaseConfigInput(rawText) {
-      if (!rawText || typeof rawText !== 'string') return null;
-      try {
-        const parsed = JSON.parse(rawText);
-        if (parsed && parsed.apiKey && parsed.projectId) return parsed;
-      } catch (_) {
-        const extracted = {};
-        const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-        keys.forEach((k) => {
-          const match = rawText.match(new RegExp(`${k}\\s*:\\s*["']([^"']+)["']`));
-          if (match && match[1]) extracted[k] = match[1].trim();
-        });
-        if (extracted.apiKey && extracted.projectId) return extracted;
-      }
-      return null;
-    }
-
     function resolveFirebaseConfig() {
       if (typeof __firebase_config !== 'undefined' && __firebase_config) {
         cloudDiagnostic.configSource = 'Environment Bawaan';
         return JSON.parse(__firebase_config);
       }
       if (STANDALONE_FIREBASE_CONFIG.apiKey && STANDALONE_FIREBASE_CONFIG.projectId) {
-        cloudDiagnostic.configSource = `STANDALONE_FIREBASE_CONFIG (${STANDALONE_FIREBASE_CONFIG.projectId})`;
+        cloudDiagnostic.configSource = `Terintegrasi (${STANDALONE_FIREBASE_CONFIG.projectId})`;
         return STANDALONE_FIREBASE_CONFIG;
       }
-      try {
-        const saved = localStorage.getItem(LOCAL_STORAGE_FB_CONFIG_KEY);
-        if (saved) {
-          const parsed = parseFirebaseConfigInput(saved);
-          if (parsed) {
-            cloudDiagnostic.configSource = `Pengaturan Browser Lokal (${parsed.projectId})`;
-            return parsed;
-          }
-        }
-      } catch (_) {}
-      cloudDiagnostic.configSource = 'Kosong (STANDALONE_FIREBASE_CONFIG belum diisi di index.html)';
+      cloudDiagnostic.configSource = 'Belum dikonfigurasi';
       return null;
     }
 
@@ -1719,24 +1663,6 @@
       }
     };
 
-    window.saveCustomFirebaseConfig = function () {
-      const raw = document.getElementById('customFirebaseConfigInput')?.value || '';
-      const parsed = parseFirebaseConfigInput(raw);
-      if (!parsed) {
-        showToast('Format konfigurasi Firebase tidak valid (pastikan ada apiKey & projectId)', 'error');
-        return;
-      }
-      localStorage.setItem(LOCAL_STORAGE_FB_CONFIG_KEY, JSON.stringify(parsed));
-      showToast('Konfigurasi Cloud tersimpan. Memuat ulang koneksi...');
-      setTimeout(() => window.location.reload(), 900);
-    };
-
-    window.resetCustomFirebaseConfig = function () {
-      localStorage.removeItem(LOCAL_STORAGE_FB_CONFIG_KEY);
-      showToast('Konfigurasi Cloud kustom dihapus');
-      setTimeout(() => window.location.reload(), 800);
-    };
-
     async function initDataLayer() {
       const statusTextEl = document.getElementById('syncStatusText');
       const userIdDisplayEl = document.getElementById('displayFullUserId');
@@ -1752,7 +1678,6 @@
           db = getFirestore(app);
           useCloudFirestore = true;
 
-          // Complete mobile redirect login if returning from Google OAuth redirect
           getRedirectResult(auth)
             .then((result) => {
               if (result && result.user) {
@@ -1779,7 +1704,6 @@
           const heritageDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'heritage');
           const accessDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'access');
 
-          // Track Authenticated Pengurus (Google / Email)
           onAuthStateChanged(auth, async (user) => {
             currentUser = user && !user.isAnonymous ? user : null;
             const roleInfo = getUserRoleInfo();
@@ -1787,7 +1711,6 @@
               cloudDiagnostic.authStatus = `Login: ${currentUser.email} (${roleInfo.roleLabel})`;
               if (userIdDisplayEl) userIdDisplayEl.textContent = `${currentUser.email} • ${roleInfo.roleLabel}`;
 
-              // If Firestore members collection is empty and a Super Admin logs in, seed initial book data
               if (roleInfo.isSuperAdmin) {
                 try {
                   const existingSnap = await getDocs(membersColRef);
@@ -1814,7 +1737,6 @@
             refreshAllViews(false);
           });
 
-          // Public Real-Time Listener: Members
           let isInitialCloudLoad = true;
           let snapshotDebounceTimer = null;
           onSnapshot(
@@ -1858,7 +1780,6 @@
             }
           );
 
-          // Public Real-Time Listener: Access Config (Super Admins & Branch Coordinators)
           onSnapshot(
             accessDocRef,
             (docSnap) => {
@@ -1887,7 +1808,6 @@
             }
           );
 
-          // Public Real-Time Listener: Family Suggestions / Corrections
           onSnapshot(
             suggestionsColRef,
             (snapshot) => {
@@ -1908,7 +1828,6 @@
             }
           );
 
-          // Public Real-Time Listener: Arsip Sejarah & Visi Misi
           onSnapshot(
             heritageDocRef,
             (docSnap) => {
@@ -1926,7 +1845,6 @@
             }
           );
 
-          // Public Real-Time Listener: Activity Audit Logs
           onSnapshot(
             logsColRef,
             (snapshot) => {
@@ -1944,17 +1862,14 @@
             }
           );
           return;
-        } else {
-          cloudDiagnostic.errorHint = 'Isi objek STANDALONE_FIREBASE_CONFIG di dalam file index.html pada GitHub Anda, lalu tunggu Vercel selesai deploy ulang.';
         }
       } catch (err) {
         console.warn('Cloud sync fallback to local browser storage:', err);
         const code = err?.code || '';
         cloudDiagnostic.authStatus = `Gagal (${code || 'error'})`;
-        cloudDiagnostic.errorHint = `Error Firebase (${code || err.message}). Periksa apiKey & projectId di STANDALONE_FIREBASE_CONFIG.`;
+        cloudDiagnostic.errorHint = `Error Firebase (${code || err.message}).`;
       }
 
-      // Offline / Local Browser Storage Fallback
       if (statusTextEl) statusTextEl.textContent = 'Tersimpan di Perangkat';
       if (userIdDisplayEl) userIdDisplayEl.textContent = 'Penyimpanan Lokal Browser';
       updateDiagnosticUI();
@@ -2044,7 +1959,7 @@
     }
 
     // =========================================================================
-    // 3B. PAKET LENGKAP: ROLE-BASED ACCESS CONTROL, AUTH & MODERATION
+    // 3B. ROLE-BASED ACCESS CONTROL, AUTH & MODERATION
     // =========================================================================
     function getUserRoleInfo() {
       const isLoggedIn = Boolean(currentUser && currentUser.email);
@@ -2141,6 +2056,7 @@
       const pendingBadge = document.getElementById('pendingSuggestionsBadge');
       const heritageTopEditBtn = document.getElementById('heritageTopEditBtn');
       const importJsonLabelBtn = document.getElementById('importJsonLabelBtn');
+      const cloudDiagnosticBox = document.getElementById('cloudDiagnosticBox');
 
       if (roleBadge) {
         roleBadge.textContent = role.roleLabel;
@@ -2165,7 +2081,6 @@
         }
       }
 
-      // Show "Usulkan Data" for public visitors, and "+ Tambah" for authorized editors
       if (role.isAnyEditor) {
         publicSuggestBtn?.classList.add('hidden');
         publicSuggestBtn?.classList.remove('flex');
@@ -2202,7 +2117,6 @@
         moderationBtn?.classList.remove('flex');
       }
 
-      // Heritage Edit & JSON Import restricted strictly to Super Admin
       if (heritageTopEditBtn) {
         if (canEditHeritage()) {
           heritageTopEditBtn.classList.remove('hidden');
@@ -2218,6 +2132,14 @@
           importJsonLabelBtn.classList.remove('hidden');
         } else {
           importJsonLabelBtn.classList.add('hidden');
+        }
+      }
+
+      if (cloudDiagnosticBox) {
+        if (role.isSuperAdmin) {
+          cloudDiagnosticBox.classList.remove('hidden');
+        } else {
+          cloudDiagnosticBox.classList.add('hidden');
         }
       }
     }
@@ -4843,6 +4765,7 @@
     window.openShareModal = function () {
       const shareInput = document.getElementById('shareUrlInput');
       if (shareInput) shareInput.value = window.location.href;
+      applyRolePermissionsToUI();
       updateDiagnosticUI();
       document.getElementById('shareModal').classList.remove('hidden');
     };
