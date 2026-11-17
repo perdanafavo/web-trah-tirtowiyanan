@@ -45,6 +45,9 @@
       color: #1C1917;
       overscroll-behavior: none;
     }
+    button, a, [role="button"] {
+      touch-action: manipulation;
+    }
     .heritage-bg {
       background-color: #FAF8F5;
       background-image: radial-gradient(#D6CFC7 0.75px, transparent 0.75px);
@@ -116,37 +119,63 @@
 <body class="h-screen h-[100dvh] overflow-hidden flex flex-col font-sans antialiased selection:bg-amber-200 selection:text-stone-900">
 
   <!-- ==================== TOP NAVIGATION BAR ==================== -->
-  <header class="shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-sm no-print">
+  <header class="shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-sm max-w-full overflow-x-clip no-print">
     <div class="max-w-[1600px] mx-auto px-3 sm:px-6 pt-2 sm:pt-2.5 pb-1.5 sm:pb-2">
-      <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
         
-        <!-- Brand & Heritage Emblem -->
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-batik-indigo to-batik-indigoDark text-amber-300 flex items-center justify-center shadow-sm border border-amber-400/30 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-14c-3.5 0-6 2-6 5m6-5c3.5 0 6 2 6 5m-6 4c-4.5 0-8 2-8 5m8-5c4.5 0 8 2 8 5" />
-            </svg>
-          </div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <h1 class="font-serif font-bold text-sm sm:text-lg text-batik-indigo leading-tight truncate">
-                Trah Tirtowiyanan
-              </h1>
-              <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="syncStatusText">Siap &amp; Tersimpan</span>
-              </span>
-              <span id="roleStatusBadge" class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
-                Mode Publik
-              </span>
+        <!-- Brand & Heritage Emblem + Mobile Top-Right Utility Icons -->
+        <div class="flex items-center justify-between gap-2 w-full sm:w-auto min-w-0">
+          <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-batik-indigo to-batik-indigoDark text-amber-300 flex items-center justify-center shadow-sm border border-amber-400/30 shrink-0">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-14c-3.5 0-6 2-6 5m6-5c3.5 0 6 2 6 5m-6 4c-4.5 0-8 2-8 5m8-5c4.5 0 8 2 8 5" />
+              </svg>
             </div>
-            <p class="text-[11px] sm:text-xs text-stone-500 hidden sm:block">
-              Eyang Kakung Suprapto Tirtowiyono &amp; Eyang Putri Sumiyati &bull; Silsilah Digital Publik
-            </p>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <h1 class="font-serif font-bold text-sm sm:text-lg text-batik-indigo leading-tight truncate">
+                  Trah Tirtowiyanan
+                </h1>
+                <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span id="syncStatusText" class="max-w-[96px] min-[400px]:max-w-none truncate">Siap &amp; Tersimpan</span>
+                </span>
+                <span id="roleStatusBadge" class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
+                  Mode Publik
+                </span>
+              </div>
+              <p class="text-[11px] sm:text-xs text-stone-500 hidden sm:block">
+                Eyang Kakung Suprapto Tirtowiyono &amp; Eyang Putri Sumiyati &bull; Silsilah Digital Publik
+              </p>
+            </div>
+          </div>
+
+          <!-- Mobile-Only Top-Right Quick Icons (Search & Share) so Action Row Never Overflows -->
+          <div class="flex sm:hidden items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onclick="toggleMobileSearch()"
+              title="Cari Anggota Keluarga"
+              class="min-h-[34px] min-w-[34px] p-1.5 rounded-xl border border-stone-200 bg-white active:bg-stone-100 text-stone-700 flex items-center justify-center transition"
+            >
+              <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              onclick="openShareModal()"
+              title="Bagikan Akses Publik &amp; Cadangan Data"
+              class="min-h-[34px] min-w-[34px] p-1.5 rounded-xl border border-stone-200 bg-white active:bg-stone-100 text-stone-700 flex items-center justify-center transition"
+            >
+              <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
-        <!-- Global Search Bar (Collapsible on Mobile, Always Visible on Desktop) -->
+        <!-- Global Search Bar (Collapsible on Mobile/Tablet, Always Visible on Desktop) -->
         <div id="mobileSearchContainer" class="hidden lg:block relative flex-1 max-w-md order-3 lg:order-2 w-full lg:w-auto mt-1 lg:mt-0">
           <div class="relative">
             <svg class="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -168,99 +197,104 @@
           </div>
         </div>
 
-        <!-- Primary Actions -->
-        <div class="flex items-center gap-1.5 sm:gap-2 order-2 lg:order-3">
-          <!-- Mobile Search Toggle Button -->
-          <button
-            type="button"
-            onclick="toggleMobileSearch()"
-            title="Cari Anggota Keluarga"
-            class="lg:hidden p-2 rounded-xl border border-stone-200 bg-white active:bg-stone-100 text-stone-700 transition"
-          >
-            <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
-            </svg>
-          </button>
+        <!-- Primary Actions (Fits cleanly on 360px+ mobile screens without clipping) -->
+        <div class="flex items-center justify-between sm:justify-end gap-1 sm:gap-2 order-2 lg:order-3 w-full sm:w-auto pt-1.5 sm:pt-0 border-t border-stone-100 sm:border-t-0 min-w-0">
+          <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <!-- Tablet Search Toggle Button (sm..lg) -->
+            <button
+              type="button"
+              onclick="toggleMobileSearch()"
+              title="Cari Anggota Keluarga"
+              class="hidden sm:flex lg:hidden min-h-[36px] min-w-[36px] p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 items-center justify-center transition"
+            >
+              <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.3-4.3"/>
+              </svg>
+            </button>
 
-          <button
-            id="topHeritageBtn"
-            type="button"
-            onclick="switchTab('heritage')"
-            title="Sejarah, Visi Misi &amp; Log Pembaruan Trah"
-            class="flex px-2 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-700 text-xs font-semibold items-center gap-1 sm:gap-1.5 transition shrink-0"
-          >
-            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <span class="text-[11px] sm:text-xs">Kisah<span class="hidden sm:inline"> &amp; Log</span></span>
-          </button>
+            <button
+              id="topHeritageBtn"
+              type="button"
+              onclick="switchTab('heritage')"
+              title="Sejarah, Visi Misi &amp; Log Pembaruan Trah"
+              class="min-h-[34px] sm:min-h-[36px] flex px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-700 text-[11px] sm:text-xs font-semibold items-center gap-1 sm:gap-1.5 transition shrink-0"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              <span>Kisah<span class="hidden sm:inline"> &amp; Log</span></span>
+            </button>
 
-          <button
-            type="button"
-            onclick="openShareModal()"
-            title="Bagikan Akses Publik &amp; Cadangan Data"
-            class="p-2 sm:px-3 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition"
-          >
-            <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-            </svg>
-            <span class="hidden xl:inline">Bagikan</span>
-          </button>
+            <!-- Desktop/Tablet Share Button (Mobile uses Top-Right Share Icon) -->
+            <button
+              type="button"
+              onclick="openShareModal()"
+              title="Bagikan Akses Publik &amp; Cadangan Data"
+              class="hidden sm:flex min-h-[36px] min-w-[36px] p-2 sm:px-3 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold items-center justify-center gap-1.5 transition"
+            >
+              <svg class="w-4 h-4 text-batik-indigo" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+              </svg>
+              <span class="hidden xl:inline">Bagikan</span>
+            </button>
+          </div>
 
-          <!-- Moderation Inbox Button (Visible to Super Admin & Branch Coordinators) -->
-          <button
-            id="moderationInboxBtn"
-            type="button"
-            onclick="openModerationModal()"
-            title="Kotak Masuk Usulan Pembaruan Data Keluarga"
-            class="hidden px-2.5 sm:px-3 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-950 text-xs font-bold items-center gap-1.5 transition shrink-0"
-          >
-            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-            </svg>
-            <span class="hidden sm:inline">Usulan</span>
-            <span id="pendingSuggestionsBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-600 text-white font-extrabold">0</span>
-          </button>
+          <div class="flex items-center justify-end gap-1 sm:gap-1.5 ml-auto sm:ml-0 min-w-0">
+            <!-- Moderation Inbox Button (Visible to Super Admin & Branch Coordinators) -->
+            <button
+              id="moderationInboxBtn"
+              type="button"
+              onclick="openModerationModal()"
+              title="Kotak Masuk Usulan Pembaruan Data Keluarga"
+              class="hidden min-h-[34px] sm:min-h-[36px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-950 text-[11px] sm:text-xs font-bold items-center gap-1 transition shrink-0"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+              </svg>
+              <span class="hidden min-[380px]:inline">Usulan</span>
+              <span id="pendingSuggestionsBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-600 text-white font-extrabold">0</span>
+            </button>
 
-          <!-- Admin / Pengurus Login & Role Manager Button -->
-          <button
-            id="adminAuthBtn"
-            type="button"
-            onclick="openAdminModal()"
-            title="Login Pengurus &amp; Pengaturan Hak Akses"
-            class="px-2.5 sm:px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition shrink-0"
-          >
-            <svg class="w-4 h-4 text-batik-indigo shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-            <span id="adminAuthBtnLabel" class="text-[11px] sm:text-xs">Login Pengurus</span>
-          </button>
+            <!-- Admin / Pengurus Login & Role Manager Button -->
+            <button
+              id="adminAuthBtn"
+              type="button"
+              onclick="openAdminModal()"
+              title="Login Pengurus &amp; Pengaturan Hak Akses"
+              class="min-h-[34px] sm:min-h-[36px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-700 text-[11px] sm:text-xs font-semibold flex items-center gap-1 sm:gap-1.5 transition min-w-0 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-batik-indigo shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <span id="adminAuthBtnLabel" class="truncate">Login Pengurus</span>
+            </button>
 
-          <!-- Public Suggestion Button (Shown when in Public Read-Only Mode) -->
-          <button
-            id="publicSuggestHeaderBtn"
-            type="button"
-            onclick="openSuggestionModal()"
-            class="px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs sm:text-sm font-bold shadow-sm flex items-center gap-1 sm:gap-1.5 transition shrink-0"
-          >
-            <svg class="w-4 h-4 text-stone-900 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-            <span class="truncate max-w-[95px] sm:max-w-none">Usulkan Data</span>
-          </button>
+            <!-- Public Suggestion Button (Shown when in Public Read-Only Mode) -->
+            <button
+              id="publicSuggestHeaderBtn"
+              type="button"
+              onclick="openSuggestionModal()"
+              class="min-h-[34px] sm:min-h-[36px] px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-stone-950 text-[11px] sm:text-sm font-bold shadow-sm flex items-center gap-1 sm:gap-1.5 transition shrink-0 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-stone-900 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              <span class="whitespace-nowrap">Usulkan Data</span>
+            </button>
 
-          <!-- Direct Add Button (Shown ONLY to Super Admin / Authorized Branch Coordinator) -->
-          <button
-            id="primaryAddHeaderBtn"
-            type="button"
-            onclick="openAddModal({ mode: 'descendant' })"
-            class="hidden px-2.5 sm:px-4 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs sm:text-sm font-semibold shadow-sm items-center gap-1 sm:gap-1.5 transition shrink-0"
-          >
-            <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-            </svg>
-            <span id="primaryAddBtnLabel" class="truncate max-w-[105px] sm:max-w-none">Tambah</span>
-          </button>
+            <!-- Direct Add Button (Shown ONLY to Super Admin / Authorized Branch Coordinator) -->
+            <button
+              id="primaryAddHeaderBtn"
+              type="button"
+              onclick="openAddModal({ mode: 'descendant' })"
+              class="hidden min-h-[34px] sm:min-h-[36px] px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark active:bg-batik-indigoDark text-white text-[11px] sm:text-sm font-semibold shadow-sm items-center gap-1 sm:gap-1.5 transition shrink-0 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span id="primaryAddBtnLabel" class="truncate max-w-[78px] sm:max-w-none">Tambah</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -542,6 +576,176 @@
   <aside id="memberDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl border-l border-stone-200 z-50 transform translate-x-full transition-transform duration-300 flex flex-col no-print">
     <div id="memberDrawerContent" class="flex-1 flex flex-col overflow-hidden"></div>
   </aside>
+
+  <!-- ==================== ADMIN / PENGURUS LOGIN & ROLE MANAGEMENT MODAL ==================== -->
+  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/55 backdrop-blur-xs no-print">
+    <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/90 shrink-0">
+        <div>
+          <h3 class="font-serif font-bold text-lg text-batik-indigo">Portal Pengurus &amp; Hak Akses</h3>
+          <p class="text-xs text-stone-500">Khusus Super Admin &amp; Koordinator 8 Cabang Keluarga</p>
+        </div>
+        <button type="button" onclick="closeAdminModal()" class="p-2 rounded-xl hover:bg-stone-200/70 text-stone-500">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="smooth-scroll-y p-5 space-y-4 text-xs sm:text-sm flex-1 min-h-0">
+        <!-- SECTION 1: LOGIN FORM (SHOWN WHEN NOT LOGGED IN) -->
+        <div id="adminLoginSection" class="space-y-4">
+          <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200/80 text-indigo-950 text-xs leading-relaxed">
+            Pengunjung umum dapat melihat seluruh silsilah secara terbuka tanpa login. Silakan masuk menggunakan akun pengurus terdaftar untuk menambah, mengedit, atau menyetujui usulan data keluarga.
+          </div>
+
+          <!-- In-App Browser Notice (WhatsApp / Instagram / Line on Mobile) -->
+          <div id="inAppBrowserNotice" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs space-y-1.5">
+            <div class="font-bold">Terdeteksi Browser Internal Aplikasi (WhatsApp / Medsos)</div>
+            <p class="leading-relaxed">
+              Google sering memblokir tombol <strong>Masuk dengan Google</strong> di dalam browser bawaan WhatsApp. Jika gagal, ketuk ikon <strong>titik tiga (⋮)</strong> atau <strong>Kompas/Safari</strong> di pojok layar lalu pilih <strong>Buka di Chrome / Safari</strong>, atau gunakan login Email &amp; Kata Sandi di bawah.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onclick="loginAdminWithGoogle()"
+            class="w-full py-3 px-4 rounded-2xl bg-batik-indigo hover:bg-batik-indigoDark active:bg-batik-indigoDark text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2.5 transition cursor-pointer"
+          >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"/>
+            </svg>
+            <span>Masuk dengan Akun Google (Gmail)</span>
+          </button>
+
+          <div class="relative flex items-center py-1">
+            <div class="flex-grow border-t border-stone-200"></div>
+            <span class="shrink mx-3 text-[11px] font-semibold text-stone-400 uppercase">Atau Email Pengurus</span>
+            <div class="flex-grow border-t border-stone-200"></div>
+          </div>
+
+          <form onsubmit="loginAdminWithEmail(event)" class="space-y-3">
+            <div>
+              <label for="adminLoginEmail" class="block text-xs font-semibold text-stone-700 mb-1">Email Pengurus</label>
+              <input
+                id="adminLoginEmail"
+                type="email"
+                required
+                placeholder="nama@gmail.com"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none"
+              />
+            </div>
+            <div>
+              <label for="adminLoginPassword" class="block text-xs font-semibold text-stone-700 mb-1">Kata Sandi</label>
+              <input
+                id="adminLoginPassword"
+                type="password"
+                required
+                placeholder="Masukkan kata sandi akun Firebase"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:border-batik-indigo outline-none"
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs sm:text-sm transition"
+            >
+              Masuk dengan Email &amp; Sandi
+            </button>
+          </form>
+        </div>
+
+        <!-- SECTION 2: LOGGED-IN PROFILE & SUPER ADMIN ROLE MANAGER -->
+        <div id="adminProfileSection" class="hidden space-y-4">
+          <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Akun Terhubung</div>
+              <div id="loggedInEmailText" class="font-bold text-xs sm:text-sm text-stone-900 truncate"></div>
+              <div id="loggedInRoleDesc" class="text-xs font-semibold text-emerald-800 mt-0.5"></div>
+            </div>
+            <button
+              type="button"
+              onclick="logoutAdmin()"
+              class="px-3 py-2 rounded-xl bg-white hover:bg-red-50 text-red-700 border border-red-200 text-xs font-bold shrink-0 transition"
+            >
+              Keluar
+            </button>
+          </div>
+
+          <!-- First-Time Super Admin Bootstrap Box -->
+          <div id="bootstrapSuperAdminBox" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-2.5">
+            <div class="font-bold text-amber-950 text-sm">Belum Ada Super Admin Terdaftar</div>
+            <p class="text-xs text-amber-900 leading-relaxed">
+              Karena daftar Super Admin masih kosong, Anda dapat mengklaim akun yang sedang login ini sebagai <strong>Super Admin pertama</strong> untuk mengelola seluruh 8 cabang Trah Tirtowiyanan.
+            </p>
+            <button
+              type="button"
+              onclick="claimFirstSuperAdmin()"
+              class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-xs transition"
+            >
+              Daftarkan Akun Saya sebagai Super Admin
+            </button>
+          </div>
+
+          <!-- Unregistered Email Notice -->
+          <div id="unregisteredEmailBox" class="hidden p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-1.5 text-xs text-stone-600">
+            <div class="font-bold text-stone-800">Akun Belum Terdaftar Sebagai Pengurus</div>
+            <p class="leading-relaxed">
+              Email Anda belum ditambahkan ke daftar Super Admin maupun Koordinator Cabang. Hubungi Ketua/Sekretaris Paguyuban Trah agar email Anda didaftarkan pada menu <strong>Kelola Admin</strong>.
+            </p>
+          </div>
+
+          <!-- Super Admin Role Management Panel -->
+          <div id="superAdminManagerBox" class="hidden space-y-4 pt-1">
+            <!-- Super Admins List -->
+            <div class="p-3.5 rounded-2xl border border-stone-200 space-y-2.5">
+              <div class="text-xs font-bold text-batik-indigo uppercase tracking-wider">1. Daftar Super Admin (Akses Penuh)</div>
+              <div id="superAdminsListContainer" class="space-y-1.5"></div>
+              <div class="flex gap-2 pt-1">
+                <input
+                  id="newSuperAdminEmailInput"
+                  type="email"
+                  placeholder="Tambah email Gmail Super Admin..."
+                  class="flex-1 px-3 py-2 rounded-xl border border-stone-300 text-base sm:text-xs focus:border-batik-indigo outline-none"
+                />
+                <button
+                  type="button"
+                  onclick="addSuperAdminEmail()"
+                  class="px-3 py-2 rounded-xl bg-batik-indigo hover:bg-batik-indigoDark text-white text-xs font-bold shrink-0"
+                >
+                  + Tambah
+                </button>
+              </div>
+            </div>
+
+            <!-- Branch Coordinators List -->
+            <div class="p-3.5 rounded-2xl border border-stone-200 space-y-2.5">
+              <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">2. Koordinator Per Cabang Keluarga</div>
+              <div id="coordinatorsListContainer" class="space-y-1.5"></div>
+              <div class="space-y-2 pt-1 border-t border-stone-100">
+                <input
+                  id="newCoordEmailInput"
+                  type="email"
+                  placeholder="Email Gmail Koordinator Cabang..."
+                  class="w-full px-3 py-2 rounded-xl border border-stone-300 text-base sm:text-xs focus:border-batik-indigo outline-none"
+                />
+                <div class="flex gap-2">
+                  <select
+                    id="newCoordBranchSelect"
+                    class="flex-1 px-3 py-2 rounded-xl border border-stone-300 bg-white text-base sm:text-xs focus:border-batik-indigo outline-none"
+                  ></select>
+                  <button
+                    type="button"
+                    onclick="addBranchCoordinator()"
+                    class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0"
+                  >
+                    Tugaskan
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== ADD / EDIT MEMBER MODAL ==================== -->
   <div id="memberFormModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/50 backdrop-blur-xs no-print">
@@ -953,7 +1157,7 @@
           </div>
           <div>
             <label for="sugSpouseDeceased" class="block text-xs font-semibold text-stone-700 mb-1">Status Pasangan</label>
-            <select id="sugSpouseDeceased" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
+            <select id="sugSpouseDeceased" class="w-full px-3.5 py-2 rounded-xl border border-stone-300 bg-white text-base sm:text-sm focus:border-batik-indigo outline-none">
               <option value="false">Hidup</option>
               <option value="true">Alm.</option>
             </select>
@@ -1029,6 +1233,8 @@
       getAuth,
       GoogleAuthProvider,
       signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult,
       signInWithEmailAndPassword,
       signOut,
       onAuthStateChanged
@@ -1328,8 +1534,8 @@
       if (!container) return;
       const el = document.createElement('div');
       const bgClass = type === 'error' ? 'bg-red-700 text-white' : 'bg-stone-900 text-white';
-      el.className = `${bgClass} px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2`;
-      el.innerHTML = `<span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-300' : 'bg-amber-400'}"></span><span>${escapeHtml(message)}</span>`;
+      el.className = `${bgClass} px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2 max-w-[92vw]`;
+      el.innerHTML = `<span class="w-2 h-2 rounded-full shrink-0 ${type === 'error' ? 'bg-red-300' : 'bg-amber-400'}"></span><span>${escapeHtml(message)}</span>`;
       container.appendChild(el);
       requestAnimationFrame(() => {
         el.classList.remove('opacity-0', 'translate-y-2');
@@ -1337,7 +1543,7 @@
       setTimeout(() => {
         el.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => el.remove(), 300);
-      }, 3200);
+      }, 3600);
     }
 
     // =========================================================================
@@ -1545,6 +1751,22 @@
           auth = getAuth(app);
           db = getFirestore(app);
           useCloudFirestore = true;
+
+          // Complete mobile redirect login if returning from Google OAuth redirect
+          getRedirectResult(auth)
+            .then((result) => {
+              if (result && result.user) {
+                showToast('Berhasil masuk dengan Akun Google');
+              }
+            })
+            .catch((err) => {
+              const code = err?.code || '';
+              if (code === 'auth/unauthorized-domain') {
+                showToast(`Daftarkan domain "${window.location.hostname}" di Firebase Authentication -> Authorized domains`, 'error');
+              } else if (code) {
+                showToast(`Gagal login Google: ${err.message}`, 'error');
+              }
+            });
 
           cloudDiagnostic.authStatus = 'Mode Publik Aktif (Siap Login Pengurus)';
           if (statusTextEl) statusTextEl.textContent = 'Terhubung Publik (Live)';
@@ -2001,13 +2223,20 @@
     }
 
     // --- Admin Auth & Role Management Modal ---
+    function isEmbeddedWebView() {
+      const ua = navigator.userAgent || '';
+      return /FBAN|FBAV|Instagram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
+    }
+
     window.openAdminModal = function () {
       renderAdminModalContent();
-      document.getElementById('adminAuthModal').classList.remove('hidden');
+      const modal = document.getElementById('adminAuthModal');
+      if (modal) modal.classList.remove('hidden');
     };
 
     window.closeAdminModal = function () {
-      document.getElementById('adminAuthModal').classList.add('hidden');
+      const modal = document.getElementById('adminAuthModal');
+      if (modal) modal.classList.add('hidden');
     };
 
     window.loginAdminWithGoogle = async function () {
@@ -2015,9 +2244,9 @@
         showToast('Konfigurasi Firebase belum aktif di halaman ini', 'error');
         return;
       }
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
       try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
         await signInWithPopup(auth, provider);
         showToast('Berhasil masuk dengan Akun Google');
       } catch (err) {
@@ -2026,8 +2255,13 @@
           showToast(`Daftarkan domain "${window.location.hostname}" di Firebase Authentication -> Authorized domains`, 'error');
         } else if (code === 'auth/operation-not-allowed') {
           showToast('Aktifkan metode login Google di Firebase Console -> Authentication -> Sign-in method', 'error');
-        } else if (code === 'auth/popup-blocked') {
-          showToast('Popup login diblokir browser. Izinkan popup untuk situs ini lalu coba lagi.', 'error');
+        } else if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+          showToast('Mengalihkan ke halaman login Google...');
+          try {
+            await signInWithRedirect(auth, provider);
+          } catch (redirErr) {
+            showToast(`Gagal mengalihkan login Google: ${redirErr.message}`, 'error');
+          }
         } else if (code !== 'auth/popup-closed-by-user') {
           showToast(`Gagal login Google: ${err.message}`, 'error');
         }
@@ -2068,6 +2302,12 @@
       const loginSec = document.getElementById('adminLoginSection');
       const profileSec = document.getElementById('adminProfileSection');
       if (!loginSec || !profileSec) return;
+
+      const webViewNotice = document.getElementById('inAppBrowserNotice');
+      if (webViewNotice) {
+        if (isEmbeddedWebView()) webViewNotice.classList.remove('hidden');
+        else webViewNotice.classList.add('hidden');
+      }
 
       const role = getUserRoleInfo();
       if (!role.isLoggedIn) {
